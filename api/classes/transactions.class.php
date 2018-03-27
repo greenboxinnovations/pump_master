@@ -517,15 +517,19 @@ class Transactions
 			$this->_db->execute();
 
 			
-			$output['success'] = true;
-			$output['msg'] = 'Rates updated successfully!';
+
 
 			$table_name	  = "rates";
 			$id           = "rate_id";
 			$date_new = date("Y-m-d H:i:s");
 			$unix = strtotime($date_new); 
 
-			$this->updateSyncTable($table_name,$id,$unix);
+			$this->updateSyncTableRates($table_name,$id,$unix);
+
+
+			$output['success'] = true;
+			$output['msg'] = 'Rates updated successfully!';
+			$output['unix'] = $unix;
 			
 		}
 		else{
@@ -661,6 +665,35 @@ class Transactions
 		exec("/usr/bin/mysqldump -u\"pump_master_user\" --password=\"pump_master_user123!@#\"  -t \"".$db_name."\" \"".$table_name."\"  --where=\"".$id." > '".$old_id."' \" > ".$filename);
 
 		$sql = "UPDATE `sync` SET `last_updated`= '".$unix."' WHERE `table_name` = '".$table_name."';";
+		
+		$this->_db->query($sql);
+		$this->_db->execute();
+
+		
+	}
+
+	private function updateSyncTableRates($table_name, $id, $unix){
+		date_default_timezone_set("Asia/Kolkata");
+		$date = date("Y-m-d H:i:s");
+
+		// get previous id
+		$sql2 	= "SELECT * FROM `sync` WHERE `table_name` = '".$table_name."';";
+		$this->_db->query($sql2);
+		$this->_db->execute();
+		$r2 = $this->_db->single();
+		$old_id = $r2['id'];
+		
+		$upload_dir =  realpath(__DIR__ . '/../../mysql_uploads');
+		$filename = $upload_dir ."/".$table_name.'.sql';
+		$db_name = "pump_master_test";
+		
+		exec("/usr/bin/mysqldump -u\"pump_master_user\" --password=\"pump_master_user123!@#\"  -t \"".$db_name."\" \"".$table_name."\"  --where=\"".$id." > '".$old_id."' \" > ".$filename);
+
+
+		// $sql_last_id = "SELECT `rate_id` FROM `rates` WHERE 1 ORDER BY `rate_id` DESC 1;";
+
+
+		$sql = "UPDATE `sync` SET `last_updated`= '".$unix."', `id` = `id`+1 WHERE `table_name` = '".$table_name."';";
 		
 		$this->_db->query($sql);
 		$this->_db->execute();

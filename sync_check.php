@@ -34,20 +34,24 @@ function queryServer(){
 			$last_updated 	= $value['last_updated'];
 
 
-			$sql 	= "SELECT * FROM `sync` WHERE `table_name` = '".$table_name."';";
+			$sql = "SELECT * FROM `sync` WHERE `table_name` = '".$table_name."';";
 			$exe = mysqli_query($conn, $sql);
 			$row = mysqli_fetch_assoc($exe);
 
-			if($table_name == 'rates' || $table_name == 'transactions'){
+			// if($table_name == 'rates' || $table_name == 'transactions'){
+			if($table_name == 'rates'){
 				// if($row['id'] > $id){
 				// 	echo 'upload '.$table_name;
-				// 	echo '<br>';
+					
 				// }
 
-				// else if($row['id'] < $id){
-				// 	echo 'download '.$table_name;
-				// 	echo '<br>';
-				// }
+				if($row['id'] < $id){
+					
+					downloadRates($id, $last_updated);
+				}
+				else if($row['id'] > $id){
+					uploadRates();
+				}
 			}
 			else{
 				if($row['last_updated'] != $last_updated){
@@ -103,6 +107,77 @@ function updateServerId($table_name, $id){
 }
 
 
+
+function downloadRates($new_id, $new_time){
+
+	Global $conn;
+	$proceed = false;
+	$target_url = 'http://pumpmastertest.greenboxinnovations.in/exe/check_rates.php?pump_id=1&date=';
+		
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL,$target_url);
+	curl_setopt($ch, CURLOPT_TIMEOUT, 40);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+	if($result = curl_exec ($ch)){
+		$output = json_decode($result, true);
+		 
+		$petrol 	= $output['petrol'];
+		$diesel 	= $output['diesel'];
+		$date 	    = date("Y-m-d", strtotime($output['date']));
+
+		$sql = "INSERT INTO `rates` (`pump_id`,`diesel`,`petrol`,`date`) VALUES (1,'".$diesel."','".$petrol."','".$date."');";
+		$exe = mysqli_query($conn, $sql);
+
+		$sql = "UPDATE `sync` SET `id` = ".$new_id." , `last_updated` = '".$new_time."' WHERE `table_name` = 'rates';";
+		$exe = mysqli_query($conn, $sql);
+		
+	}
+	curl_close ($ch);
+
+}
+
+
+function uploadRates(){
+	Global $conn;
+	$output = array();
+
+	$sql = "SELECT * FROM `rates` WHERE 1 ORDER BY `rate_id` DESC LIMIT 1;";
+	$exe = mysqli_query($conn, $sql);
+	$row = mysqli_fetch_assoc($exe);
+	if(mysqli_num_rows($exe) > 0){
+		$output['rate_set'] = true;	
+		$output['petrol']	= $row['petrol'];			
+		$output['diesel']	= $row['diesel'];
+		$output['date']	    = $row['date'];
+		$output['pump_id']	= 1;
+	}
+
+
+	$data_json = json_encode($output);
+	$url = "http://pumpmastertest.greenboxinnovations.in/api/transactions/rates";
+
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS,$data_json);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	$response  = curl_exec($ch);
+	curl_close($ch);
+
+	
+	$json = json_decode($response, true);
+	$new_time = $json['unix'];	
+
+	echo $sql = "UPDATE `sync` SET `last_updated` = '".$new_time."' WHERE `table_name` = 'rates';";
+	$exe = mysqli_query($conn, $sql);
+
+}
+
+
+
+
 function downloadTable($table_name, $last_updated){
 
 	Global $conn;
@@ -112,7 +187,7 @@ function downloadTable($table_name, $last_updated){
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $target_url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 40);
+	curl_setopt($ch, CURLOPT_TIMEOUT, 400);
 
 	// if server is up and file is available {proceed = true}
 	if($result = curl_exec ($ch)){
@@ -125,12 +200,13 @@ function downloadTable($table_name, $last_updated){
 
 	if($proceed){		
 		$destination = "mysql_dump/".$table_name.".sql";
+
 		$file = fopen($destination, "w+");
 		fputs($file, $result);
 		fclose($file);
 
 		// linux
-		echo exec('/opt/lampp/bin/mysql -u"root" --password="toor"  "pump_master" < /opt/lampp/htdocs/pump_master/mysql_dump/'.$table_name.".sql");
+		exec('/opt/lampp/bin/mysql -u"root" --password="toor"  "pump_master" < /opt/lampp/htdocs/pump_master/mysql_dump/'.$table_name.".sql");
 
 		// windows
 		// exec('C:/xampp/mysql/bin/mysql -u"root" --password="toor"  "pump_master" < '.$destination);

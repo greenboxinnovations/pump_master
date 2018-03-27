@@ -17,16 +17,20 @@
 
 		$date = date("Y-m-d" , strtotime($date));
 
+		if(isset($_GET['pump_id'])){
+			$pump_id = 1;
+		}else{
+			$user_id   = $_SESSION['user_id'];
 
+			$sql = "SELECT `role`,`user_pump_id` FROM `users` WHERE `user_id` = '".$user_id."';";
+		    $exe = mysqli_query($conn, $sql);
+		    while($row = mysqli_fetch_assoc($exe)){
+		    	$_SESSION['access'] = $row['role'];
+		    	$pump_id = $row['user_pump_id'];
+		    }
+		}
 
-		$user_id   = $_SESSION['user_id'];
-
-		$sql = "SELECT `role`,`user_pump_id` FROM `users` WHERE `user_id` = '".$user_id."';";
-	    $exe = mysqli_query($conn, $sql);
-	    while($row = mysqli_fetch_assoc($exe)){
-	    	$_SESSION['access'] = $row['role'];
-	    	$pump_id = $row['user_pump_id'];
-	    }
+		
 
 
 	    $output = array();
@@ -41,6 +45,7 @@
 			$output['rate_set'] = true;	
 			$output['petrol']	= $row['petrol'];			
 			$output['diesel']	= $row['diesel'];
+			$output['date']	    = $row['date'];
 		}
 
 
