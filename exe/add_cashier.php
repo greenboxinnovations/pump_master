@@ -11,16 +11,6 @@ if(!isset($_SESSION))
 
 function updateSyncTable($table_name, $id, $unix){
 	Global $conn;	
-
-	// get previous id
-	$sql 	= "SELECT * FROM `sync` WHERE `table_name` = '".$table_name."';";
-	$exe = mysqli_query($conn ,$sql);
-
-	if(mysqli_num_rows($exe) > 0){
-		$row = mysqli_fetch_assoc($exe);
-		$old_id = $row['id'];
-	}
-	
 	
 	// $upload_dir =  realpath(__DIR__ . '/../../mysql_uploads');
 	// $filename = $upload_dir ."/".$table_name.'.sql';
@@ -30,7 +20,9 @@ function updateSyncTable($table_name, $id, $unix){
 
 	$db_name = "pump_master_test";
 	
-	exec("/usr/bin/mysqldump -u\"pump_master_user\" --password=\"pump_master_user123!@#\"  -t \"".$db_name."\" \"".$table_name."\"  --where=\"".$id." > '".$old_id."' \" > ".$filename);
+	exec("/usr/bin/mysqldump -u\"pump_master_user\" --password=\"pump_master_user123!@#\"  \"".$db_name."\" \"".$table_name."\" > ".$filename);
+	//add -t for data only for appending data
+	//exec("/usr/bin/mysqldump -u\"pump_master_user\" --password=\"pump_master_user123!@#\"  -t \"".$db_name."\" \"".$table_name."\" > ".$filename);
 
 	// if exists update else insert
 	$sql1 = "SELECT MAX(".$id.") as d FROM ".$table_name." WHERE 1 LIMIT 1;";
@@ -40,12 +32,10 @@ function updateSyncTable($table_name, $id, $unix){
 		$row1 = mysqli_fetch_assoc($exe1);
 		$new_id = $row1['d'];
 
-		$sql3 = "UPDATE `sync` SET `last_updated`= '".$unix."', `id` = '".$new_id."' WHERE `table_name` = '".$table_name."';";
+		$sql3 = "UPDATE `sync` SET `last_updated`= '".$unix."' WHERE `table_name` = '".$table_name."';";
 		$exe3 = mysqli_query($conn ,$sql3);
 	}	
 }
-
-
 
 if(isset($_POST['new_cashier'])){
 
@@ -69,10 +59,5 @@ if(isset($_POST['new_cashier'])){
 	}	
 	
 }
-
-
-
-
-
 
 ?>

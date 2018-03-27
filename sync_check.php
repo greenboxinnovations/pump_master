@@ -130,10 +130,10 @@ function downloadTable($table_name, $last_updated){
 		fclose($file);
 
 		// linux
-		// exec('/usr/bin/mysql -u"neon_online" --password="neon_online123!@#"  "neon_online" < '.$table_name.".sql".);
+		echo exec('/opt/lampp/bin/mysql -u"root" --password="toor"  "pump_master" < /opt/lampp/htdocs/pump_master/mysql_dump/'.$table_name.".sql");
 
 		// windows
-		exec('C:/xampp/mysql/bin/mysql -u"root" --password="toor"  "pump_master" < '.$destination);
+		// exec('C:/xampp/mysql/bin/mysql -u"root" --password="toor"  "pump_master" < '.$destination);
 
 		// update local sync table
 		switch ($table_name) {
