@@ -43,21 +43,30 @@ class Transactions
 				$this->postTransactionBackup($this->_postParams);
 			}
 
-			if ($this->_getParams[0] == 'regular')
+			else if ($this->_getParams[0] == 'regular')
 			{
 				$this->postTransaction($this->_postParams);
 			}
 
-			if ($this->_getParams[0] == 'android')
+			else if ($this->_getParams[0] == 'android')
 			{
 				$this->postAndroidTransaction($this->_postParams);
 			}	
 
-			if ($this->_getParams[0] == 'rates')
+			else if ($this->_getParams[0] == 'rates')
 			{
 				$this->postRates($this->_postParams);
-			}	
-			if ($this->_getParams[0] == 'delete')
+			}
+
+
+			else if ($this->_getParams[0] == 'save_local_transactions')
+			{
+				$this->save_local_transactions($this->_postParams);				
+			}
+			
+
+
+			else if ($this->_getParams[0] == 'delete')
 			{
 				$this->deleteTransaction($this->_postParams);
 			}		
@@ -699,6 +708,18 @@ class Transactions
 		$this->_db->execute();
 
 		
+	}
+
+
+	// takes json array of transactions
+	// send back prim key of local
+	// local will delete keys received
+	private function save_local_transactions($postParams){
+		$output = array();
+		foreach ($postParams as $row) {			
+			array_push($output, $row['trans_id']);			
+		}
+		echo json_encode($output);
 	}
 }
 ?>

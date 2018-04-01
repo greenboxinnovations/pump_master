@@ -243,6 +243,65 @@ function downloadTable($table_name, $last_updated){
 	}	
 }
 
+
+function sendLocalTransactions(){
+	Global $conn;
+	$sql = "SELECT * FROM `transactions` WHERE 1 LIMIT 10;";
+	$exe = mysqli_query($conn, $sql);
+
+	if(mysqli_num_rows($exe) > 0){
+
+		$output = array();
+
+
+
+
+		
+		while ($row = mysqli_fetch_assoc($exe)) {			
+			array_push($output, $row);
+		}
+
+		$data_json = json_encode($output);
+
+
+		echo 'send transactions';
+
+
+
+		// send to server
+		$url = "http://pumpmastertest.greenboxinnovations.in/api/transactions/save_local_transactions";
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS,$data_json);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+
+		// if server is up and file is available {proceed = true}
+		if($response = curl_exec ($ch)){
+			$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+			if($http_code == 200) {
+				$json = json_decode($response, true);
+				foreach ($json as $trans_id) {
+					echo $trans_id;
+				}
+			}		
+		}
+		else{
+			echo 'no result';
+		}
+		curl_close($ch);
+
+	}
+	else{
+		echo 'No transactions present';
+	}
+}
+
+
+
 queryServer();
+sendLocalTransactions();
 
 ?>
