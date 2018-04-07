@@ -423,6 +423,13 @@ class Transactions
 		$date 			= date("Y-m-d H:i:s");
 		$last_updated	= $date;
 
+		$pump_code      = trim($postParams['pump_code']);	
+
+		$sql = "SELECT `trans_string` FROM `cameras` WHERE `cam_qr_code` = '".$pump_code."';";		
+		$this->_db->query($sql);
+		$r = $this->_db->single();
+		$trans_string = $r['trans_string'];
+
 
 		$sql_pre = "SELECT `last_updated` FROM `transactions` 
 					WHERE `pump_id` = :field1
@@ -454,8 +461,8 @@ class Transactions
 		}
 
 		if($valid){
-			$sql = "INSERT INTO `transactions` (`pump_id`,`cust_id`,`car_id`,`user_id`,`fuel`,`amount`,`rate`,`liters`,`date`,`last_updated`,`shift`) 
-							VALUES (:field1,:field2,:field3,:field4,:field6,:field7,:field8,:field9,:field10,:field11,:field12);";
+			$sql = "INSERT INTO `transactions` (`pump_id`,`cust_id`,`car_id`,`user_id`,`fuel`,`amount`,`rate`,`liters`,`date`,`last_updated`,`shift`,`trans_string`) 
+							VALUES (:field1,:field2,:field3,:field4,:field6,:field7,:field8,:field9,:field10,:field11,:field12,:field13);";
 
 			$this->_db->query($sql);
 
@@ -470,6 +477,7 @@ class Transactions
 			$this->_db->bind(':field10', $date);
 			$this->_db->bind(':field11', $last_updated);
 			$this->_db->bind(':field12', $shift);
+			$this->_db->bind(':field13', $trans_string);
 			$this->_db->execute();
 
 			$output['success'] = true;	
@@ -716,7 +724,19 @@ class Transactions
 	// local will delete keys received
 	private function save_local_transactions($postParams){
 		$output = array();
-		foreach ($postParams as $row) {			
+		foreach ($postParams as $row) {	
+
+			$sql1 = "SELECT * FROM `transactions` WHERE `car_id` = '".$row['car_id']."' AND  `date` = '".$row['date']."' AND `amount` = '".$row['amount']."' ;";	
+			$this->_db->query($sql1);
+			$this->_db->execute();		
+
+			if($this->_db->rowCount() == 0){
+				$sql = "INSERT INTO `transactions`(`pump_id`, `cust_id`, `car_id`, `user_id`, `receipt_no`, `shift`, `fuel`, `amount`, `rate`, `liters`, `billed`, `date`, `last_updated`) VALUES ('".$row['pump_id']."','".$row['cust_id']."','".$row['car_id']."','".$row['user_id']."','".$row['receipt_no']."','".$row['shift']."','".$row['fuel']."','".$row['amount']."','".$row['rate']."','".$row['liters']."','".$row['billed']."','".$row['date']."','".$row['last_updated']."');";
+		
+				$this->_db->query($sql);
+				$this->_db->execute();
+			}
+
 			array_push($output, $row['trans_id']);			
 		}
 		echo json_encode($output);

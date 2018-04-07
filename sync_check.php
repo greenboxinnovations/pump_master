@@ -38,20 +38,17 @@ function queryServer(){
 			$exe = mysqli_query($conn, $sql);
 			$row = mysqli_fetch_assoc($exe);
 
-			// if($table_name == 'rates' || $table_name == 'transactions'){
 			if($table_name == 'rates'){
-				// if($row['id'] > $id){
-				// 	echo 'upload '.$table_name;
-					
-				// }
 
 				if($row['id'] < $id){
-					
 					downloadRates($id, $last_updated);
 				}
 				else if($row['id'] > $id){
 					uploadRates();
 				}
+			}
+			else if($table_name == 'transactions'){
+
 			}
 			else{
 				if($row['last_updated'] != $last_updated){
@@ -59,9 +56,6 @@ function queryServer(){
 					echo '<br>';
 					downloadTable($table_name, $last_updated);
 				}
-				// else{
-				// 	echo 'nothing to download';
-				// }
 			}		
 		}	
 	}
@@ -246,27 +240,19 @@ function downloadTable($table_name, $last_updated){
 
 function sendLocalTransactions(){
 	Global $conn;
-	$sql = "SELECT * FROM `transactions` WHERE 1 LIMIT 10;";
+	$sql = "SELECT * FROM `transactions` WHERE 1 ORDER BY `trans_id` ASC LIMIT 10 ;";
 	$exe = mysqli_query($conn, $sql);
 
 	if(mysqli_num_rows($exe) > 0){
 
 		$output = array();
-
-
-
-
 		
 		while ($row = mysqli_fetch_assoc($exe)) {			
 			array_push($output, $row);
 		}
 
 		$data_json = json_encode($output);
-
-
 		echo 'send transactions';
-
-
 
 		// send to server
 		$url = "http://pumpmastertest.greenboxinnovations.in/api/transactions/save_local_transactions";
@@ -284,7 +270,8 @@ function sendLocalTransactions(){
 			if($http_code == 200) {
 				$json = json_decode($response, true);
 				foreach ($json as $trans_id) {
-					echo $trans_id;
+					$sql = "DELETE FROM `transactions` WHERE `trans_id` = '".$trans_id."' ;";
+					$exe = mysqli_query($conn, $sql);
 				}
 			}		
 		}
@@ -302,6 +289,6 @@ function sendLocalTransactions(){
 
 
 queryServer();
-sendLocalTransactions();
+// sendLocalTransactions();
 
 ?>

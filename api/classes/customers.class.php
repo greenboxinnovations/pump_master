@@ -113,14 +113,6 @@ class Customers
 
 		$cust_deposit		 = $postParams['cust_deposit'];	
 
-
-		// // ensure phone number is unique
-		// $sql = "SELECT 1 FROM `customers` WHERE `cust_ph_no` = :field1;";
-		// $this->_db->query($sql);
-		// $this->_db->bind(':field1', $cust_ph_no);
-		// $this->_db->execute();
-		
-
 		if ($cust_id == null ) {
 			$account_num = $this->generateAccountNumber($cust_f_name, $cust_l_name);		
 		}
@@ -164,12 +156,6 @@ class Customers
 			$id           = "cust_id";
 			$unix = $last_updated;
 			
-			// $sql = "UPDATE `sync` SET `last_updated` = :field2 WHERE `table_name` = :field1;";
-			// $this->_db->query($sql);
-			// $this->_db->bind(':field1', $table_name);
-			// $this->_db->bind(':field2', $last_updated);
-			// $this->_db->execute();
-
 			$this->updateSyncTable($table_name,$id,$unix);
 			
 			$output['success'] = true;			
@@ -202,23 +188,19 @@ class Customers
 			$this->_db->bind(':field15', $cust_service);
 			$this->_db->bind(':field16', $date);
 			$this->_db->bind(':field17', $cust_id);
-			$this->_db->execute();
+			$this->_db->execute();				
 
-			
-			// $sql = "UPDATE `sync` SET `last_updated` = :field2 WHERE `table_name` = :field1;";
-			// $this->_db->query($sql);
-			// $this->_db->bind(':field1', $table_name);
-			// $this->_db->bind(':field2', $last_updated);
-			// $this->_db->execute();
-			
+			date_default_timezone_set("Asia/Kolkata");
+			$date = date("Y-m-d H:i:s");		
+			$table_name	  = "customers";
+			$last_updated = strtotime($date);
+			$id           = "cust_id";
+			$unix = $last_updated;
+
+			$this->updateSyncTable($table_name,$id,$unix);
+
 			$output['success'] = true;			
-			echo json_encode($output);		
-
-			// $table_name	  = "customers";
-			// $id           = "cust_id";
-			// $unix = $last_updated;
-
-			// $this->updateSyncTable($table_name,$id,$unix);
+			echo json_encode($output);	
 		}
 		else{
 			$output['success'] = false;		
