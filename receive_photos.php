@@ -1,17 +1,24 @@
 <?php
-
-
-// echo 'working';
 // print_r($_FILES);
+// print_r($_POST);
 
+if (isset($_POST) ){
+	$output = array();
 
-// $upDir = 'test_uploads/';
-// move_uploaded_file($_FILES['file_contents']['tmp_name'], $upDir. $_FILES['file_contents']['name']);
+	for ($i=0; $i < sizeof($_FILES['file']['name']); $i++) { 
 
+		$dir = $_POST['path'][$i];
 
-$upDir = 'test_uploads/';
-for ($i=0; $i < sizeof($_FILES['file']['name']); $i++) { 
-	move_uploaded_file($_FILES['file']['tmp_name'][$i], $upDir.$_FILES['file']['name'][$i]);	
+		if (!file_exists($dir)) {
+			mkdir($dir);
+		}
+
+		move_uploaded_file($_FILES['file']['tmp_name'][$i], $dir."/".$_FILES['file']['name'][$i]);	
+
+		array_push($output,$dir."/".$_FILES['file']['name'][$i]);
+
+	}
+	echo json_encode($output);
 }
 
 ?>

@@ -88,16 +88,7 @@ void setCamStatus(string cam_no) {
 
 
 
-void getCamStatus() {
-
-
-
-
-
-
-
-
-	
+void getCamStatus() {	
 
 	try {
 		// housekeeping
@@ -125,7 +116,7 @@ void getCamStatus() {
 
 
 				// make directory if not exists
-				string cmd = "mkdir ./uploads/"+date;
+				string cmd = "mkdir -m 777 ./uploads/"+date;
 				system("clear");
 				system(cmd.c_str());
 

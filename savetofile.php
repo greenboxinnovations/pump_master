@@ -78,7 +78,7 @@ if (isset($_FILES['myFile']))
 		else
 		{			
 			//if not then make new dir
-			if(mkdir($dir, 0777, true))
+			if(mkdir($dir, 777, true))
 			{			
 				$cars['directory'] = "directory does not exist";
 				//make new file

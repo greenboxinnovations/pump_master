@@ -1,78 +1,62 @@
 <?php
-
-
-// $dir = "uploads";
-
-// // if (is_dir_empty($dir)) {
-// // 	echo $dir." is empty";
-// // }
-// // else{
-// // 	echo "not empty";
-// // }
-
-// function is_dir_empty($dir) {
-//   if (!is_readable($dir)) return NULL; 
-//   return (count(scandir($dir)) == 2);
-// }
-
-
-
-// // $curl_handle = curl_init('http://http://pumpmastertest.greenboxinnovations.in/test.php');
-// // $curl_handle = curl_init('http://localhost/pump_master/receive_photos.php');
-// $target_url = 'http://localhost/pump_master/receive_photos.php';
-// $cFile = curl_file_create('C:/xampp/htdocs/pump_master/uploads/image1.jpg');
-// $post = array('extra_info' => '123456','file_contents'=> $cFile);
-// $ch = curl_init();
-// curl_setopt($ch, CURLOPT_URL,$target_url);
-// curl_setopt($ch, CURLOPT_POST,1);
-// curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
-// echo $result=curl_exec ($ch);
-// echo "\n";
-// echo $response = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-// curl_close ($ch);
-// // echo '<pre>';
-// // print_r($args);
-// // echo '</pre>';
-
-
-
-
+date_default_timezone_set("Asia/Kolkata");
 // multiple images
+$dirs = array_filter(glob('uploads/*'), 'is_dir');
 
-// list all files in directory
-$path    = 'uploads';
-$files = array_values(array_diff(scandir($path), array('.', '..')));
-//print_r($files);
+$index = 0;
+$postData = array();
 
-// Create array of files to post
-foreach ($files as $index => $file) {
-    $postData['file[' . $index . ']'] = curl_file_create(
-        realpath($path.'/'.$file),
-        mime_content_type($path.'/'.$file),
-        basename($path.'/'.$file)
-    );
+foreach ($dirs as $key => $path) {
+	// list all files in directory
+	$files = array_values(array_diff(scandir($path), array('.', '..')));
+	// Create array of files to post
+	foreach ($files as $i => $file) {
+	    $postData['file[' . $index . ']'] = curl_file_create(
+	        realpath($path.'/'.$file),
+	        mime_content_type($path.'/'.$file),
+	        basename($path.'/'.$file)
+	    );
+	    $postData['path[' . $index . ']'] = $path;
+	    $index++;
+	}
+
 }
 
 // echo '<pre>';
 // print_r($postData);
 // echo '</pre>';
 
-
-
-
-// $curl_handle = curl_init('http://http://pumpmastertest.greenboxinnovations.in/test.php');
-// $curl_handle = curl_init('http://localhost/pump_master/receive_photos.php');
-$target_url = 'http://localhost/pump_master/receive_photos.php';
+$target_url = 'http://pumpmastertest.greenboxinnovations.in/receive_photos.php';
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL,$target_url);
 curl_setopt($ch, CURLOPT_POST,1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
-echo '<pre>';
-echo $result=curl_exec ($ch);
-echo '</pre>';
-echo "\n";
-echo $response = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+$result=curl_exec ($ch);
+
+$response = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close ($ch);
+
+
+$data =  json_decode($result);
+
+
+if ($response == 200) {
+
+	foreach ($data as $key => $path) {
+		unlink($path);
+	}	
+
+	foreach ($dirs as $key => $dir) {
+
+		if ($dir != "uploads/".date("Y-m-d")) {
+			rmdir($dir);		
+		}
+	}
+
+}
+
 // echo '<pre>';
 // print_r($args);
 // echo '</pre>';
