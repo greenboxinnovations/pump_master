@@ -240,7 +240,7 @@ function downloadTable($table_name, $last_updated){
 
 function sendLocalTransactions(){
 	Global $conn;
-	$sql = "SELECT * FROM `transactions` WHERE 1 ORDER BY `trans_id` ASC LIMIT 10 ;";
+	$sql = "SELECT * FROM `transactions` WHERE 1;";
 	$exe = mysqli_query($conn, $sql);
 
 	if(mysqli_num_rows($exe) > 0){
@@ -289,6 +289,6 @@ function sendLocalTransactions(){
 
 
 queryServer();
-// sendLocalTransactions();
+sendLocalTransactions();
 
 ?>

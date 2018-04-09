@@ -461,8 +461,7 @@ class Transactions
 		}
 
 		if($valid){
-			$sql = "INSERT INTO `transactions` (`pump_id`,`cust_id`,`car_id`,`user_id`,`fuel`,`amount`,`rate`,`liters`,`date`,`last_updated`,`shift`,`trans_string`) 
-							VALUES (:field1,:field2,:field3,:field4,:field6,:field7,:field8,:field9,:field10,:field11,:field12,:field13);";
+			$sql = "INSERT INTO `transactions` (`pump_id`,`cust_id`,`car_id`,`user_id`,`fuel`,`amount`,`rate`,`liters`,`date`,`last_updated`,`shift`,`trans_string`) VALUES (:field1,:field2,:field3,:field4,:field5,:field6,:field7,:field8,:field9,:field10,:field11,:field12);";
 
 			$this->_db->query($sql);
 
@@ -470,14 +469,14 @@ class Transactions
 			$this->_db->bind(':field2', $cust_id);
 			$this->_db->bind(':field3', $car_id);
 			$this->_db->bind(':field4', $user_id);		
-			$this->_db->bind(':field6', $fuel);
-			$this->_db->bind(':field7', $amount);
-			$this->_db->bind(':field8', $rate);
-			$this->_db->bind(':field9', $liters);
-			$this->_db->bind(':field10', $date);
-			$this->_db->bind(':field11', $last_updated);
-			$this->_db->bind(':field12', $shift);
-			$this->_db->bind(':field13', $trans_string);
+			$this->_db->bind(':field5', $fuel);
+			$this->_db->bind(':field6', $amount);
+			$this->_db->bind(':field7', $rate);
+			$this->_db->bind(':field8', $liters);
+			$this->_db->bind(':field9', $date);
+			$this->_db->bind(':field10', $last_updated);
+			$this->_db->bind(':field11', $shift);
+			$this->_db->bind(':field12', $trans_string);
 			$this->_db->execute();
 
 			$output['success'] = true;	
@@ -532,9 +531,6 @@ class Transactions
 			$this->_db->bind(':field4', $date);
 
 			$this->_db->execute();
-
-			
-
 
 			$table_name	  = "rates";
 			$id           = "rate_id";
@@ -731,7 +727,7 @@ class Transactions
 			$this->_db->execute();		
 
 			if($this->_db->rowCount() == 0){
-				$sql = "INSERT INTO `transactions`(`pump_id`, `cust_id`, `car_id`, `user_id`, `receipt_no`, `shift`, `fuel`, `amount`, `rate`, `liters`, `billed`, `date`, `last_updated`) VALUES ('".$row['pump_id']."','".$row['cust_id']."','".$row['car_id']."','".$row['user_id']."','".$row['receipt_no']."','".$row['shift']."','".$row['fuel']."','".$row['amount']."','".$row['rate']."','".$row['liters']."','".$row['billed']."','".$row['date']."','".$row['last_updated']."');";
+				$sql = "INSERT INTO `transactions`(`pump_id`, `cust_id`, `car_id`, `user_id`, `receipt_no`, `shift`, `fuel`, `amount`, `rate`, `liters`, `billed`, `date`, `last_updated`,`trans_string`) VALUES ('".$row['pump_id']."','".$row['cust_id']."','".$row['car_id']."','".$row['user_id']."','".$row['receipt_no']."','".$row['shift']."','".$row['fuel']."','".$row['amount']."','".$row['rate']."','".$row['liters']."','".$row['billed']."','".$row['date']."','".$row['last_updated']."','".$row['trans_string']."');";
 		
 				$this->_db->query($sql);
 				$this->_db->execute();

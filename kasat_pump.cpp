@@ -39,9 +39,9 @@ std::atomic<bool> first3(0);
 
 
 
-const string CAM1_IP = "rtsp://192.168.0.123:554/Streaming/Channels/1/?transportmode=unicast";
-const string CAM2_IP = "rtsp://192.168.0.124:554/Streaming/Channels/1/?transportmode=unicast";
-const string CAM3_IP = "rtsp://192.168.0.127:554/Streaming/Channels/1/?transportmode=unicast";
+const string CAM1_IP = "rtsp://192.168.0.123:554/Streaming/Channels/2/?transportmode=unicast";
+const string CAM2_IP = "rtsp://192.168.0.124:554/Streaming/Channels/2/?transportmode=unicast";
+const string CAM3_IP = "rtsp://192.168.0.127:554/Streaming/Channels/2/?transportmode=unicast";
 
 
 const string C1WINDOW = "cam-ONE";
