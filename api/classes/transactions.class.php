@@ -279,119 +279,6 @@ class Transactions
 		echo json_encode($output);
 	}
 
-	private function postTransactionBackup($postParams){
-
-		date_default_timezone_set("Asia/Kolkata");
-
-		$data = $postParams['backup_data']; 
-
-		$output = array();
-		$response = array();
-
-		foreach ($data as $obj) {
-
-			$json = array();
-
-			$json['trans_id']= $obj['trans_id'];
-
-			$pump_id		 = $obj['pump_id'];
-			$pump_id		 = trim($pump_id);
-
-			$cust_id		 = $obj['cust_id'];
-			$cust_id	 	 = trim($cust_id);
-
-			$car_id			 = $obj['car_id'];
-			$car_id	 		 = trim($car_id);
-
-			if ($car_id == -1) {
-				$fuel = $postParams['fuel'];
-			}else{
-				$sql = "SELECT `car_fuel_type` FROM `cars` WHERE `car_id` = '".$car_id."';";		
-				$this->_db->query($sql);
-				$r = $this->_db->single();
-				$fuel = $r['car_fuel_type'];
-			}
-
-			$user_id			 = $postParams['user_id'];
-			$user_id	 		 = trim($user_id);
-
-			$is_postpaid	 = $obj['is_postpaid'];
-		
-			$date = date("Y-m-d H:i:s" , strtotime($obj['date']));
-
-			$last_updated	 = $date;		
-
-			$amount		 	 = $postParams['amount'];
-			$liters		 	 = $postParams['liters'];
-
-			$rate 			 = $amount/$liters;
-			$rate 			 = number_format(round($rate,2),2) ;
-			//////////////////////////////
-			///////////////////////////////
-			// CHANGE THIS to $rate  = $postParams['rate']
-			////////////////////////////
-			///////////////////////////////
-			////////////////////////////////
-			///////////////////////////////
-
-				
-			$sql = "INSERT INTO `transactions` (`pump_id`,`cust_id`,`car_id`,`amount`,`date`,`last_updated`,`liters`,`rate`,`fuel`,`user_id`) VALUES (:field1,:field2,:field3,:field4,:field5,:field6,:field7,:field8,:field9,:field10);";
-
-			$this->_db->query($sql);
-
-			$this->_db->bind(':field1', $pump_id);
-			$this->_db->bind(':field2', $cust_id);
-			$this->_db->bind(':field3', $car_id);
-			$this->_db->bind(':field4', $amount);
-			$this->_db->bind(':field5', $date);
-			$this->_db->bind(':field6', $last_updated);
-		    $this->_db->bind(':field7', $liters);
-		    $this->_db->bind(':field8', $rate);
-		    $this->_db->bind(':field9', $fuel);
-		    $this->_db->bind(':field10',$user_id);
-
-			$this->_db->execute();
-
-			if ($is_postpaid) {
-				$sql = "UPDATE `customers` SET `cust_outstanding` = `cust_outstanding`+ '".$amount."' WHERE `cust_id` = '".$cust_id."' ;";
-			}else{
-				$sql = "UPDATE `customers` SET `cust_balance` = `cust_balance`- '".$amount."' WHERE `cust_id` = '".$cust_id."' ;";
-			}
-
-
-			$this->_db->query($sql);
-			$this->_db->execute();
-
-
-			$table_name	  = "customers";
-			$last_updated = strtotime($last_updated); 
-
-			$sql = "UPDATE `sync` SET `last_updated` = :field2 WHERE `table_name` = :field1;";
-
-			$this->_db->query($sql);
-
-			$this->_db->bind(':field1', $table_name);
-			$this->_db->bind(':field2', $last_updated);
-
-			$this->_db->execute();
-
-			array_push($response, $json);
-
-			$output['success'] = true;
-
-			$table_name	  = "transactions";
-			$id           = "trans_id";
-			$unix = strtotime($last_updated); 
-
-			$this->updateSyncTable($table_name,$id,$unix);
-
-		}
-
-		$output['data'] = $response;
-		echo json_encode($output);
-	}
-
-
 	private function postAndroidTransaction($postParams){
 
 		date_default_timezone_set("Asia/Kolkata");
@@ -554,6 +441,7 @@ class Transactions
 
 
 	private function updateOldRate($rate, $date, $fuel_type, $pump_id){
+		date_default_timezone_set("Asia/Kolkata");
 		$check_date = date("Y-m-d" , strtotime($date));
 
 		if($fuel_type == 'petrol'){
@@ -664,43 +552,47 @@ class Transactions
 		date_default_timezone_set("Asia/Kolkata");
 		$date = date("Y-m-d H:i:s");
 
-		// get previous id
-		$sql2 	= "SELECT * FROM `sync` WHERE `table_name` = '".$table_name."';";
-		$this->_db->query($sql2);
-		$this->_db->execute();
-		$r2 = $this->_db->single();
-		$old_id = $r2['id'];
+		// // get previous id
+		// $sql2 	= "SELECT * FROM `sync` WHERE `table_name` = '".$table_name."';";
+		// $this->_db->query($sql2);
+		// $this->_db->execute();
+		// $r2 = $this->_db->single();
+		// $old_id = $r2['id'];
 		
 		$upload_dir =  realpath(__DIR__ . '/../../mysql_uploads');
 		$filename = $upload_dir ."/".$table_name.'.sql';
 		$db_name = "pump_master_test";
+
+		if ($table_name == "customers") {
+			
+			exec("/usr/bin/mysqldump -u\"pump_master_user\" --password=\"pump_master_user123!@#\"  -t \"".$db_name."\" \"".$table_name."\"  --where=\"".$id." > '".$old_id."' \" > ".$filename);
+		}
 		
-		exec("/usr/bin/mysqldump -u\"pump_master_user\" --password=\"pump_master_user123!@#\"  -t \"".$db_name."\" \"".$table_name."\"  --where=\"".$id." > '".$old_id."' \" > ".$filename);
 
 		$sql = "UPDATE `sync` SET `last_updated`= '".$unix."' WHERE `table_name` = '".$table_name."';";
 		
 		$this->_db->query($sql);
 		$this->_db->execute();
 
-		
-	}
+		 
+	} 
 
 	private function updateSyncTableRates($table_name, $id, $unix){
 		date_default_timezone_set("Asia/Kolkata");
 		$date = date("Y-m-d H:i:s");
 
-		// get previous id
-		$sql2 	= "SELECT * FROM `sync` WHERE `table_name` = '".$table_name."';";
-		$this->_db->query($sql2);
-		$this->_db->execute();
-		$r2 = $this->_db->single();
-		$old_id = $r2['id'];
+		// // get previous id
+		// $sql2 	= "SELECT * FROM `sync` WHERE `table_name` = '".$table_name."';";
+		// $this->_db->query($sql2);
+		// $this->_db->execute();
+		// $r2 = $this->_db->single();
+		// $old_id = $r2['id'];
 		
-		$upload_dir =  realpath(__DIR__ . '/../../mysql_uploads');
-		$filename = $upload_dir ."/".$table_name.'.sql';
-		$db_name = "pump_master_test";
+		// $upload_dir =  realpath(__DIR__ . '/../../mysql_uploads');
+		// $filename = $upload_dir ."/".$table_name.'.sql';
+		// $db_name = "pump_master_test";
 		
-		exec("/usr/bin/mysqldump -u\"pump_master_user\" --password=\"pump_master_user123!@#\"  -t \"".$db_name."\" \"".$table_name."\"  --where=\"".$id." > '".$old_id."' \" > ".$filename);
+		// exec("/usr/bin/mysqldump -u\"pump_master_user\" --password=\"pump_master_user123!@#\"  -t \"".$db_name."\" \"".$table_name."\"  --where=\"".$id." > '".$old_id."' \" > ".$filename);
 
 
 		// $sql_last_id = "SELECT `rate_id` FROM `rates` WHERE 1 ORDER BY `rate_id` DESC 1;";
@@ -719,6 +611,7 @@ class Transactions
 	// send back prim key of local
 	// local will delete keys received
 	private function save_local_transactions($postParams){
+		date_default_timezone_set("Asia/Kolkata");
 		$output = array();
 		foreach ($postParams as $row) {	
 
@@ -731,10 +624,37 @@ class Transactions
 		
 				$this->_db->query($sql);
 				$this->_db->execute();
+
+				$sql = "SELECT `cust_post_paid` FROM `customers` WHERE `cust_id` = '".$row['cust_id']."';";		
+				$this->_db->query($sql);
+				$r = $this->_db->single();
+				if($r['cust_post_paid'] == "Y"){
+					$is_postpaid = true;
+				}else{
+					$is_postpaid = false;
+				}
+
+				if ($is_postpaid) {
+					$sql = "UPDATE `customers` SET `cust_outstanding` = `cust_outstanding`+ '".$row['amount']."' WHERE `cust_id` = '".$row['cust_id']."' ;";
+				}else{
+					$sql = "UPDATE `customers` SET `cust_balance` = `cust_balance`- '".$row['amount']."' WHERE `cust_id` = '".$row['cust_id']."' ;";
+				}
+				$this->_db->query($sql);
+				$this->_db->execute();
 			}
 
 			array_push($output, $row['trans_id']);			
 		}
+
+		$date_new = date("Y-m-d H:i:s");
+		$unix = strtotime($date_new);
+
+		$table_name	  = "customers";
+		$id           = "cust_id";
+		$unix = strtotime($last_updated); 
+
+		$this->updateSyncTable($table_name,$id,$unix);
+		
 		echo json_encode($output);
 	}
 }

@@ -67,13 +67,6 @@ class users
 	private function updateSyncTable($table_name, $id, $unix){
 		date_default_timezone_set("Asia/Kolkata");
 		$date = date("Y-m-d H:i:s");
-
-		// get previous id
-		$sql2 	= "SELECT * FROM `sync` WHERE `table_name` = '".$table_name."';";
-		$this->_db->query($sql2);
-		$this->_db->execute();
-		$r2 = $this->_db->single();
-		$old_id = $r2['id'];
 		
 		$upload_dir =  realpath(__DIR__ . '/../../mysql_uploads');
 		$filename = $upload_dir ."/".$table_name.'.sql';
