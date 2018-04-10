@@ -22,8 +22,14 @@
 	<meta name="msapplication-TileImage" content="css/favi/ms-icon-144x144.png">
 	<meta name="theme-color" content="#ffffff">
 
-
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<style type="text/css">
+		*{padding: 0;margin: 0;}
+		#cust_details{font-size: 20px;font-family: 'Open Sans',sans-serif;padding: 10px;}
+		#cust_display_name{font-family: 'Roboto Slab', serif;font-size: 30px;}
+	</style>
 </head>
 <body>
 <?php
@@ -75,20 +81,24 @@ if(isset($_GET['trans_string'])){
 			}
 
 
-			echo $display_name 	= ucwords($display_name);
-			echo '<br>';
-			echo $date_time 	= $row['date'];
-			echo '<br>';
-			echo $car 			= $row['car_no_plate'];
-			echo '<br>';
-			echo $fuel_type 	= $row['fuel'];
-			echo '<br>';
-			echo $amount 		= $row['amount'];
-			echo '<br>';
-			echo $liters 		= $row['liters'];
-			echo '<br>';
-			echo $rate 			= $row['rate'];
 
+			echo '<div id="cust_details">';
+				$display_name 	= ucwords($display_name);
+				
+				echo '<div id="cust_display_name">'.$display_name.'</div>';
+
+				echo $date_time 	= $row['date'];
+				echo '<br>';
+				echo $car 			= $row['car_no_plate'];
+				echo '<br>';
+				echo $fuel_type 	= $row['fuel'];
+				echo '<br>';
+				echo $amount 		= $row['amount'];
+				echo '<br>';
+				echo $liters 		= $row['liters'];
+				echo '<br>';
+				echo $rate 			= $row['rate'];
+			echo '</div>';
 
 
 			echo '<br>';
