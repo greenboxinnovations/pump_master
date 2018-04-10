@@ -63,8 +63,6 @@ class Transactions
 			{
 				$this->save_local_transactions($this->_postParams);				
 			}
-			
-
 
 			else if ($this->_getParams[0] == 'delete')
 			{
@@ -565,7 +563,7 @@ class Transactions
 
 		if ($table_name == "customers") {
 			
-			exec("/usr/bin/mysqldump -u\"pump_master_user\" --password=\"pump_master_user123!@#\"  -t \"".$db_name."\" \"".$table_name."\"  --where=\"".$id." > '".$old_id."' \" > ".$filename);
+			exec("/usr/bin/mysqldump -u\"pump_master_user\" --password=\"pump_master_user123!@#\"  -t \"".$db_name."\" \"".$table_name."\" > ".$filename);
 		}
 		
 
@@ -641,6 +639,16 @@ class Transactions
 				}
 				$this->_db->query($sql);
 				$this->_db->execute();
+
+				$sql = "SELECT `car_no_plate` FROM `cars` WHERE `car_id` = '".$row['car_id']."';";		
+				$this->_db->query($sql);
+				$r = $this->_db->single();
+				$car_no_plate = $r['car_no_plate'];
+
+				$url = "http://pumpmastertest.greenboxinnovations.in/c_msg.php?t=".$row['trans_string'];
+
+				$this->sendMSG($car_no_plate,$row['fuel'],$row['amount'],$url);
+
 			}
 
 			array_push($output, $row['trans_id']);			
@@ -651,11 +659,35 @@ class Transactions
 
 		$table_name	  = "customers";
 		$id           = "cust_id";
-		$unix = strtotime($last_updated); 
+		
 
 		$this->updateSyncTable($table_name,$id,$unix);
-		
+
 		echo json_encode($output);
+		
+	}
+
+	private function sendMSG($car_no_plate,$fuel,$amount,$url){
+
+		$message = "Hi, Yor vehicle no ".$car_no_plate." just filled ".$fuel." worth ".$amount.". details: ".$url;
+	    $encodedMessage = urlencode($message);
+	    $api = "https://www.fast2sms.com/dev/bulk?authorization=CbSpQve5NE&sender_id=FSTSMS&message=" . $encodedMessage . "&language=english&route=p&numbers=8411815106&flash=0";
+
+	    // Get cURL resource
+		$curl = curl_init();
+		// Set some options - we are passing in a useragent too here
+		curl_setopt_array($curl, array(
+		    CURLOPT_RETURNTRANSFER => 1,
+		    CURLOPT_URL => $api,
+		    //CURLOPT_USERAGENT => 'Codular Sample cURL Request'
+		));
+		// Send the request & save response to $resp
+		$resp = curl_exec($curl);
+		echo $resp;
+		// Close request to clear up some resources
+		curl_close($curl);
+		
+		
 	}
 }
 ?>

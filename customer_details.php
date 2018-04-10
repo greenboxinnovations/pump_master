@@ -1,3 +1,6 @@
+<?php
+require 'exe/lock.php';
+?>
 <!DOCTYPE html>
 <html>
 <head>

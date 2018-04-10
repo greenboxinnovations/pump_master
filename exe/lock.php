@@ -29,10 +29,12 @@ if (isset($_SESSION['user_id'])) {
 
 } 
 
-if (!isset($_SESSION['access'])) 
+if (!isset($_SESSION['role'])) 
 {
 
 	header("location: login.php");
 }
+
+
 
 ?> 

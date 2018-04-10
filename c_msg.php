@@ -36,8 +36,8 @@
 
 require 'query/conn.php';
 
-if(isset($_GET['trans_string'])){
-	$trans_string = $_GET['trans_string'];
+if(isset($_GET['t'])){
+	$trans_string = $_GET['t'];
 	
 	// prepared statement
 	// $sql = "SELECT * FROM `transactions` WHERE `trans_string` = ?";
