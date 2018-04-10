@@ -199,8 +199,11 @@ function downloadTable($table_name, $last_updated){
 		fputs($file, $result);
 		fclose($file);
 
+		$sql = "TRUNCATE TABLE `".$table_name."` ;";
+		$exe = mysqli_query($conn, $sql);
+
 		// linux
-		exec('/opt/lampp/bin/mysql -u"root" --password="toor"  "pump_master" < /opt/lampp/htdocs/pump_master/mysql_dump/'.$table_name.".sql");
+		echo exec('/opt/lampp/bin/mysql -u"root" --password="toor"  "pump_master" < /opt/lampp/htdocs/pump_master/mysql_dump/'.$table_name.".sql");
 
 		// windows
 		// exec('C:/xampp/mysql/bin/mysql -u"root" --password="toor"  "pump_master" < '.$destination);
