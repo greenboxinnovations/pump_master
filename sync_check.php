@@ -263,15 +263,19 @@ function sendLocalTransactions(){
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
 		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_TIMEOUT,1000);
 		curl_setopt($ch, CURLOPT_POSTFIELDS,$data_json);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
 
 		// if server is up and file is available {proceed = true}
 		if($response = curl_exec ($ch)){
+			print_r($response);
 			$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 			if($http_code == 200) {
 				$json = json_decode($response, true);
+
+				print_r($json);
 				foreach ($json as $trans_id) {
 					$sql = "DELETE FROM `transactions` WHERE `trans_id` = '".$trans_id."' ;";
 					$exe = mysqli_query($conn, $sql);

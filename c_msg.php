@@ -55,24 +55,6 @@ if(isset($_GET['t'])){
 
 		while($row = mysqli_fetch_assoc($exe)) {
 
-			// print_r($row);
-
-			//--------------------------------//
-
-			// customer company or cust name
-			// date - time
-			// car details			
-			// fuel-type
-			// amount
-			// litres
-			// rate
-
-			// 0 photo
-			// 0 top
-			// amount photo
-			// amount top
-
-
 			//--------------------------------//
 			// customer details
 			$display_name = $row['cust_company'];
@@ -122,6 +104,8 @@ if(isset($_GET['t'])){
 					echo '<br>';
 					echo '<img src="'.$file_path.'">';
 					echo '<br>';
+				}else{
+					echo "photo error";
 				}
 			}
 		}	
