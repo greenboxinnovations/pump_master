@@ -193,7 +193,7 @@ function downloadTable($table_name, $last_updated){
 	curl_close($ch);
 
 	if($proceed){		
-		$destination = "mysql_dump/".$table_name.".sql";
+		$destination = "/opt/lampp/htdocs/pump_master/mysql_dump/".$table_name.".sql";
 
 		$file = fopen($destination, "w+");
 		fputs($file, $result);

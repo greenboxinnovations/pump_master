@@ -116,14 +116,18 @@ void getCamStatus() {
 
 
 				// make directory if not exists
-				string cmd = "mkdir -m 777 ./uploads/"+date;
+				// string cmd = "mkdir -m 777 ./uploads/"+date;
+				string cmd = "mkdir -m 777 /opt/lampp/htdocs/pump_master/uploads/"+date;
+				
 				system("clear");
 				system(cmd.c_str());
 
 
 				// make file names
-				string file_name = "uploads/"+date+"/"+res->getString("trans_string") + "_" +res->getString("type")+".jpeg";
-				string file_name2 = "uploads/"+date+"/"+res->getString("trans_string") + "_" + res->getString("type")+"_top.jpeg";
+				// string file_name = "uploads/"+date+"/"+res->getString("trans_string") + "_" +res->getString("type")+".jpeg";
+				// string file_name2 = "uploads/"+date+"/"+res->getString("trans_string") + "_" + res->getString("type")+"_top.jpeg";
+				string file_name = "/opt/lampp/htdocs/pump_master/uploads/"+date+"/"+res->getString("trans_string") + "_" +res->getString("type")+".jpeg";
+				string file_name2 = "/opt/lampp/htdocs/pump_master/uploads/"+date+"/"+res->getString("trans_string") + "_" + res->getString("type")+"_top.jpeg";
 
 
 				// select camera
@@ -188,11 +192,14 @@ void camThread(const string IP) {
 	}
 }
 
+void systemThread() {
+
+	system("python3.5 /opt/lampp/htdocs/pump_master/start_cameras.py");
+
+}
+
 
 int main(int argc, char** argv) {
-
-	
-
 
 	cout << "ESC on window to exit" << endl;
 	namedWindow(C1WINDOW,WINDOW_NORMAL);
@@ -214,6 +221,9 @@ int main(int argc, char** argv) {
 
 	thread t3(camThread, CAM3_IP);
 	t3.detach();
+
+	thread t4(systemThread);
+	t4.detach();
 
 	string checkExit;
 	while (1) {
