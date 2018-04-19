@@ -45,8 +45,8 @@
 # echo $1
 case $1 in
 	"status") 
-		echo "status"
-		p=$(pidof /opt/lampp/htdocs/pump_master/./kasat_pump)
+		# echo "status"
+		p=$(pidof /opt/lampp/htdocs/pump_master/kasat_pump)
 		if [ -z "$p" ]
 			then
 				echo "program not running"					
@@ -54,8 +54,21 @@ case $1 in
 				echo $p				
 		fi
 		;;
-	"start") echo "start";;
-	"kill") echo "kill";;
+	"start") 
+		echo "start"
+		/opt/lampp/htdocs/pump_master/kasat_pump
+		;;
+	"kill")
+		echo "kill"
+		p=$(pidof /opt/lampp/htdocs/pump_master/kasat_pump)
+		if [ -z "$p" ]
+			then
+				echo "program not running..."					
+			else
+				echo "program is runnning at pid "$p
+				kill -9 $p
+		fi
+		;;
 esac
 
 

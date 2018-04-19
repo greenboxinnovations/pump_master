@@ -3,6 +3,12 @@ from tkinter import *
 import subprocess
 # Here, we are creating our class, Window, and inheriting from the Frame
 # class. Frame is a class from the tkinter module. (see Lib/tkinter/__init__)
+
+import os
+
+isCamUp = 0
+
+
 class Window(Frame):
 
     # Define settings upon initialization. Here you can specify
@@ -43,20 +49,80 @@ class Window(Frame):
         exit()
 
     def kill_program(self):
-        call('./program.sh kill',shell=True)
-        exit()
+        result = subprocess.run('/opt/lampp/htdocs/pump_master/program.sh kill',shell=True, stdout=subprocess.PIPE)
+        print(result.stdout.decode('utf-8'))
+        # exit()
+
+
+def check_ping():
+    hostname = "192.168.0.128"
+    response = os.system("ping -c 1 " + hostname)
+    # and then check the response...
+    if response == 0:
+        print("Network Active")
+    else:
+        print("Network Error")
+        kill_program_from_out()
+
+
+
+def kill_program_from_out():
+	result = subprocess.run('/opt/lampp/htdocs/pump_master/program.sh kill',shell=True, stdout=subprocess.PIPE)
+	print(result.stdout.decode('utf-8'))
+
 
 
 def check_program_status():
-    result = subprocess.run('./program.sh status',shell=True,stdout=subprocess.PIPE)
-    print(result.stdout.decode('utf-8'))
-    root.after(1000, check_program_status)  
+    global isCamUp    
+    result = subprocess.run('/opt/lampp/htdocs/pump_master/program.sh status',shell=True,stdout=subprocess.PIPE)
+
+    result_formatted = result.stdout.decode('utf-8').rstrip()
+    # print(result.stdout.decode('utf-8'))
+    print(result_formatted)
+    if(result_formatted == "program not running"):
+        if(isCamUp == 1):
+            print("start program")            
+            start_program()
+        else:            
+            print("Please Check the cameras")            
+
+    else:
+        if(isCamUp == 1):
+            print("everything OK")            
+            
+        else:
+            print("kill program")
+            kill_program_from_out()        
+    root.after(5000, check_program_status) 
+
+
+def start_program():
+	result = subprocess.run('/opt/lampp/htdocs/pump_master/program.sh start&',shell=True)
+	# print(result.stdout.decode('utf-8'))
+
+
+
+def ping_camera():
+    global isCamUp
+    hostname = "192.168.0.128"
+    response = os.system("ping -c 1 " + hostname)
+    # and then check the response...
+    if response == 0:
+        print("Network Active")
+        isCamUp = 1
+    else:
+        print("Network Error")        
+        isCamUp = 0
+        # kill_program_from_out()    
+    root.after(5000, ping_camera)
+
 
 
 def send_photos():
     result = subprocess.run('/opt/lampp/bin/php /opt/lampp/htdocs/pump_master/send_photos.php',shell=True,stdout=subprocess.PIPE)
     print(result.stdout.decode('utf-8'))
     root.after(5000, send_photos)   
+
 
 def sync_check():
     result = subprocess.run('/opt/lampp/bin/php /opt/lampp/htdocs/pump_master/sync_check.php',shell=True,stdout=subprocess.PIPE)
@@ -74,11 +140,13 @@ app = Window(root)
 
 
 # loops here
-# root.after(1000, check_program_status)
 
-root.after(5000, send_photos)
+root.after(3000, ping_camera)
+root.after(5000, check_program_status)
 
-root.after(3000, sync_check)
+# root.after(5000, send_photos)
+# root.after(3000, sync_check)
+
 
 
 
