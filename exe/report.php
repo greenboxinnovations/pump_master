@@ -11,6 +11,8 @@ $type = $_GET['type'];
 
 $invoice_no = $_GET['invoice_no'];
 
+$late_fee = $_GET['late_fee'];
+
 
 
 if ($type == 'new') {
@@ -19,7 +21,7 @@ if ($type == 'new') {
 
 	// $html_file_url = "http://fuelmaster.greenboxinnovations.in/bill.php?cust_id=".$cust_id."&date1=".$date1."&date2=".$date2."&type=".$type."&date_invoice=".$date_invoice; // html file 
 
-	$html_file_url = "http://192.168.1.110/pump_master/bill.php?cust_id=".$cust_id."&date1=".$date1."&date2=".$date2."&type=".$type."&date_invoice=".$date_invoice;
+	$html_file_url = "http://192.168.0.104/pump_master/bill.php?cust_id=".$cust_id."&date1=".$date1."&date2=".$date2."&type=".$type."&date_invoice=".$date_invoice."&late_fee=".$late_fee;
 
 	$pdf_file_url = "../reports/Invoice-".$invoice_no.".pdf"; // pdf file 
 

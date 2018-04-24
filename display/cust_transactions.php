@@ -42,6 +42,11 @@ if (isset($_GET['cust_id'])) {
 		echo' <input type="text" id="date_invoice" value="'.$date1.'"></input>';
 	echo'</div>';
 
+	echo'<div style="display:inline-block;margin-right:10px;">Late Fee<br>';
+		// echo'<input type="date" id="date2" value="'.$date2.'"></input>';
+		echo' <input type="number" id="late_fee" value=""></input>';
+	echo'</div>';
+
 	echo'<div style="display:inline-block;margin-right:10px;"><br>';
 		echo'<button id="view_bill" custid="'.$cust_id.'">Invoice</button>';
 	echo'</div><br/><br/>';

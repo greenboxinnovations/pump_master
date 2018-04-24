@@ -63,6 +63,8 @@ if(isset($_GET['cust_id'])){
 	$date2 = $_GET['date2'];
 	$type = $_GET['type'];
 	$date_invoice = $_GET['date_invoice'];
+	$late_fee =0;
+	$late_fee = $_GET['late_fee'];
 
 	$sql = "SELECT * FROM `customers` WHERE `cust_id` = '".$cust_id."';";
 	$exe = mysqli_query($conn, $sql);
@@ -204,6 +206,8 @@ if(isset($_GET['cust_id'])){
 		$hsd = 0;
 		$ms = 0;
 		
+		$hsd_lit = 0;
+		$ms_lit =0;
 
 		while($row = mysqli_fetch_assoc($exe)){
 
@@ -222,9 +226,11 @@ if(isset($_GET['cust_id'])){
 
 			if($fuel == 'Diesel'){
 				$hsd += $amount;
+				$hsd_lit += $liters;
 			}
 			else{
 				$ms += $amount;
+				$ms_lit += $liters;
 			}
 
 			echo '<tr>';
@@ -243,13 +249,15 @@ if(isset($_GET['cust_id'])){
 
 		$service = round($total*($cust_service/100),2);
 
-		$grand = round($total+$service);
+		$grand = round($total+$service+$late_fee);
 
-		echo '<tr style="border-top:2px solid rgb(170,170,170);"><td colspan="6" class="td_num g">HSD</td><td class="td_num">'.$hsd.'</td></tr>';
-		echo '<tr style="border-bottom:2px solid rgb(170,170,170);"><td colspan="6" class="td_num g">MS</td><td class="td_num">'.$ms.'</td></tr>';
+		echo '<tr style="border-top:2px solid rgb(170,170,170);"><td colspan="4" class="td_num g">HSD</td><td class="td_num">'.$hsd_lit.'</td><td></td><td class="td_num">'.$hsd.'</td></tr>';
+		echo '<tr style="border-bottom:2px solid rgb(170,170,170);"><td colspan="4" class="td_num g">MS</td><td class="td_num">'.$ms_lit.'</td><td></td><td class="td_num">'.$ms.'</td></tr>';
+
 
 		echo '<tr><td colspan="6" class="td_num g">TOTAL ITEM AMOUNT</td><td class="td_num">'.$total.'</td></tr>';
 		echo '<tr><td colspan="6" class="td_num g">MISC CHARGES</td><td class="td_num">'.$service.'</td></tr>';
+		echo '<tr><td colspan="6" class="td_num g">LATE PAYMENT FEE</td><td class="td_num">'.$late_fee.'</td></tr>';
 		echo '<tr style="font-weight: 700;"><td colspan="6" class="td_num g">TOTAL BILL AMOUNT</td><td class="td_num">'.$grand.'</td></tr>';
 		echo '</table>';
 

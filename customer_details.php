@@ -909,6 +909,7 @@ require 'exe/lock.php';
 				var date1 			= $("#date1").datepicker("option", "dateFormat", "yy-mm-dd" ).val();
 				var date2 			= $("#date2").datepicker("option", "dateFormat", "yy-mm-dd" ).val();
 				var date_invoice 	= $("#date_invoice").datepicker("option", "dateFormat", "yy-mm-dd" ).val();
+				var late_fee 		= $("#late_fee").val();
 
 				$("#date1").datepicker("option", "dateFormat", "dd-mm-yy" );
 				$("#date2").datepicker("option", "dateFormat", "dd-mm-yy" );
@@ -918,7 +919,7 @@ require 'exe/lock.php';
 				// console.log(date2);
 
 				if ((date1 != "")&&(date2 != "")) {
-					window.open('view_bill.php?cust_id='+cust_id+'&date1='+date1+'&date2='+date2+'&date_invoice='+date_invoice+'&invoice_no=0', '_blank');
+					window.open('view_bill.php?cust_id='+cust_id+'&date1='+date1+'&date2='+date2+'&date_invoice='+date_invoice+'&invoice_no=0'+'&late_fee='+late_fee, '_blank');
 					$('#cars').trigger('click');
 				} 
 			});

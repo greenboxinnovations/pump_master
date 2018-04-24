@@ -4,16 +4,19 @@ if(!isset($_SESSION)) {
 }
 require '../query/conn.php';
 
-$sql = "SELECT * FROM `customers` WHERE 1";
+$sql = "SELECT * FROM `customers` WHERE 1 ORDER BY `cust_post_paid` ASC, `cust_id` ASC ";
 $exe = mysqli_query($conn, $sql);
 
+$payment = 0;
 
+echo "<h3>Prepaid Accounts</h3>";
+echo "<br/>";
 
 $count = mysqli_num_rows($exe);
 if ($count > 0) { 
 	
 	echo '<table id="header-fixed"></table>';
-	echo '<table id="table-1">';
+	echo '<table id="table-2">';
 
 	echo '<thead>';
 		echo '<tr style="border:1px solid rgb(207,216,220);">';
@@ -21,9 +24,9 @@ if ($count > 0) {
 			echo '<th>Customer Name</th>';
 			echo '<th>Phone</th>';
 			// echo '<th>Pump ID</th>';
-			echo '<th>Payment</th>';
+
 			echo '<th>Balance</th>';
-			echo '<th>Outstanding</th>';
+			// echo '<th>Outstanding</th>';
 			echo '<th>Last Updated</th>';
 			if ($_SESSION['role'] == "admin") {
 					echo '<th ></th>';
@@ -46,6 +49,7 @@ if ($count > 0) {
 
 
 		$cust_post_paid	= $row["cust_post_paid"];
+		
 		$cust_balance	= $row["cust_balance"];
 		$cust_credit_limit	 = $row["cust_credit_limit"];
 		$cust_outstanding	 = $row["cust_outstanding"];
@@ -66,6 +70,7 @@ if ($count > 0) {
 		if ($cust_post_paid == "Y") {
 			$cust_post_paid = "Postpaid";
 			$upper_limit = round(($cust_outstanding/$cust_credit_limit)*100);
+			$payment++;
 		}
 		else{
 			$cust_post_paid = "Prepaid";
@@ -79,6 +84,35 @@ if ($count > 0) {
 			$limit = true;			
 		}
 
+		if ($payment == 1 ) {
+
+			echo '</tbody>';
+			echo '</table>';
+
+			echo "<br/>";
+			echo "<h3>Postpaid Accounts</h3>";
+			echo "<br/>";
+
+			echo '<table id="header-fixed"></table>';
+			echo '<table id="table-1">';
+
+			echo '<thead>';
+				echo '<tr style="border:1px solid rgb(207,216,220);">';
+					echo '<th>Sr No</th>';
+					echo '<th>Customer Name</th>';
+					echo '<th>Phone</th>';
+					// echo '<th>Pump ID</th>';
+					echo '<th>Outstanding</th>';
+					echo '<th>Last Updated</th>';
+					if ($_SESSION['role'] == "admin") {
+							echo '<th></th>';
+					}
+				echo '</tr>';
+			echo '</thead>';
+
+			echo '<tbody>';
+		}
+
 		// for ($i=0; $i < 30; $i++) { 
 		if($limit){
 			echo '<tr custid="'.$cust_id.'" class="highlight red">';
@@ -90,9 +124,13 @@ if ($count > 0) {
 				echo '<td>'.$cust_name.'</td>';
 				echo '<td>'.$cust_ph_no.'</td>';
 				// echo '<td>'.$cust_pump_id.'</td>';
-				echo '<td>'.$cust_post_paid	.'</td>';
-				echo '<td>'.$cust_balance.'</td>';
-				echo '<td>'.$cust_outstanding.'</td>';
+				// echo '<td>'.$cust_post_paid	.'</td>';
+				if ($payment == 0) {
+					echo '<td>'.$cust_balance.'</td>';
+				}else{
+					echo '<td>'.$cust_outstanding.'</td>';
+				}
+				
 				echo '<td>'.$cust_last_updated.'</td>';
 				if ($_SESSION['role'] == "admin") {
 					echo '<td custid='.$cust_id.' class="edit" >Edit</td>';
