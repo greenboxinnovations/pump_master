@@ -28,7 +28,8 @@ class Cars
 					$this->getAllCarsPump($this->_getParams[0]);
 					break;
 				case 2:
-					//$this->getAllCarsShifts(0,$today);
+					// pass pump id, and customer id
+					$this->getCarByCustId($this->_getParams[0],$this->_getParams[1]);
 					break;
 				default:
 					$output = array();
@@ -91,6 +92,11 @@ class Cars
 		$this->updateSyncTable($table_name,$id,$unix);
 	}
 
+
+	private function getCarByCustId($pump_id, $cust_id){
+		echo $pump_id;
+		echo $cust_id;
+	}
 
 
 	private function getAllCarsPump($pump_id) {
