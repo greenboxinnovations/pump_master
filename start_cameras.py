@@ -5,8 +5,12 @@ import subprocess
 # class. Frame is a class from the tkinter module. (see Lib/tkinter/__init__)
 
 import os
+import time
+ 
+
 
 isCamUp = 0
+isStarting = 0
 
 
 class Window(Frame):
@@ -81,8 +85,9 @@ def check_program_status():
     print(result_formatted)
     if(result_formatted == "program not running"):
         if(isCamUp == 1):
-            print("start program")            
-            start_program()
+            print("start program")
+            if(isStarting == 0):
+                start_program()
         else:            
             print("Please Check the cameras")            
 
@@ -97,7 +102,11 @@ def check_program_status():
 
 
 def start_program():
-	result = subprocess.run('/opt/lampp/htdocs/pump_master/program.sh start&',shell=True)
+    isStarting = 1
+    time.sleep(10)
+    print("starting program now")
+    result = subprocess.run('/opt/lampp/htdocs/pump_master/program.sh start&',shell=True)
+    isStarting = 0
 	# print(result.stdout.decode('utf-8'))
 
 
@@ -142,10 +151,10 @@ app = Window(root)
 # loops here
 
 root.after(3000, ping_camera)
-root.after(5000, check_program_status)
+root.after(3000, check_program_status)
 
-# root.after(5000, send_photos)
-# root.after(3000, sync_check)
+root.after(5000, send_photos)
+root.after(3000, sync_check)
 
 
 

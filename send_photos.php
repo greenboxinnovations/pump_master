@@ -51,13 +51,13 @@ else{
 		echo 'Photos Sent';
 
 		foreach ($data as $key => $path) {
-			// unlink("/opt/lampp/htdocs/pump_master/".$path);
+			unlink("/opt/lampp/htdocs/pump_master/".$path);
 		}	
 
 		foreach ($dirs as $key => $dir) {
 
 			if ($dir != "/opt/lampp/htdocs/pump_master/uploads/".date("Y-m-d")) {
-				// rmdir($dir);		
+				rmdir($dir);		
 			}
 		}
 

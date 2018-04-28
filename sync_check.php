@@ -162,11 +162,15 @@ function uploadRates(){
 
 	
 	$json = json_decode($response, true);
-	$new_time = $json['unix'];	
-
-	echo $sql = "UPDATE `sync` SET `last_updated` = '".$new_time."' WHERE `table_name` = 'rates';";
-	$exe = mysqli_query($conn, $sql);
-
+	print_r($response);
+	if($json['success']){
+		$new_time = $json['unix'];
+		echo $sql = "UPDATE `sync` SET `last_updated` = '".$new_time."' WHERE `table_name` = 'rates';";
+		$exe = mysqli_query($conn, $sql);	
+	}
+	else{
+		echo 'debug';
+	}
 }
 
 
