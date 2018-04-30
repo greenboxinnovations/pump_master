@@ -14,26 +14,39 @@ $invoice_no = $_GET['invoice_no'];
 $late_fee = $_GET['late_fee'];
 
 
+function url(){
+  return sprintf(
+    "%s://%s",
+    isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https' : 'http',
+    $_SERVER['SERVER_NAME']
+  );
+}
+
+
+
 
 if ($type == 'new') {
 
 	$date_invoice = $_GET['date_invoice'];
 
-	// $html_file_url = "http://fuelmaster.greenboxinnovations.in/bill.php?cust_id=".$cust_id."&date1=".$date1."&date2=".$date2."&type=".$type."&date_invoice=".$date_invoice; // html file 
 
-	$html_file_url = "http://192.168.0.104/pump_master/bill.php?cust_id=".$cust_id."&date1=".$date1."&date2=".$date2."&type=".$type."&date_invoice=".$date_invoice."&late_fee=".$late_fee;
+	// $html_file_url = $_SERVER["DOCUMENT_ROOT"]."/bill.php?cust_id=".$cust_id."&date1=".$date1."&date2=".$date2."&type=".$type."&date_invoice=".$date_invoice."&late_fee=".$late_fee;
+
+	$html_file_url = url()."/bill.php?cust_id=".$cust_id."&date1=".$date1."&date2=".$date2."&type=".$type."&date_invoice=".$date_invoice."&late_fee=".$late_fee;
+
+	// $html_file_url = "http://fuelmaster.greenboxinnovations.in/bill.php?cust_id=".$cust_id."&date1=".$date1."&date2=".$date2."&type=".$type."&date_invoice=".$date_invoice."&late_fee=".$late_fee; // html file 
+
+	// $html_file_url = "http://192.168.1.110/pump_master/bill.php?cust_id=".$cust_id."&date1=".$date1."&date2=".$date2."&type=".$type."&date_invoice=".$date_invoice."&late_fee=".$late_fee;
 
 	$pdf_file_url = "../reports/Invoice-".$invoice_no.".pdf"; // pdf file 
 
-	if (!file_exists($pdf_file_url)) {   
-		                     
-	
+	if (!file_exists($pdf_file_url)) {  
 
 		//linux
-		// $cmd = "../wkhtmltopdf/bin/wkhtmltopdf --page-size A4 --enable-smart-shrinking \"".$html_file_url."\" \"".$pdf_file_url."\" 2>&1";// command
+		$cmd = "../wkhtmltopdf/bin/wkhtmltopdf --page-size A4 --enable-smart-shrinking \"".$html_file_url."\" \"".$pdf_file_url."\" 2>&1 > output.log";// command
 
 		//windows
-		$cmd = "C:/wkhtmltopdf/bin/wkhtmltopdf.exe --page-size A4 --enable-smart-shrinking \"".$html_file_url."\" \"".$pdf_file_url."\" 2>&1";// command
+		// $cmd = "C:/wkhtmltopdf/bin/wkhtmltopdf.exe --page-size A4 --enable-smart-shrinking \"".$html_file_url."\" \"".$pdf_file_url."\" 2>&1";// command
 
 
 		echo exec($cmd); // execute command from php
@@ -53,7 +66,12 @@ if ($type == 'new') {
 		flush(); 
 		echo $pdf;
 	}
-}else{
+	else{
+		echo 'exists';
+	}
+
+}
+else{
 
 
 	$pdf_file_url = "../reports/Invoice-".$invoice_no.".pdf"; // pdf file 
