@@ -107,6 +107,9 @@ if ($count > 0) {
 					if ($_SESSION['role'] == "admin") {
 							echo '<th></th>';
 					}
+					if ($_SESSION['role'] == "office") {
+						echo '<td custid='.$cust_id.' class="disable" >Disable</td>';
+					}
 				echo '</tr>';
 			echo '</thead>';
 
