@@ -94,8 +94,34 @@ class Cars
 
 
 	private function getCarByCustId($pump_id, $cust_id){
-		echo $pump_id;
-		echo $cust_id;
+		// echo $pump_id;
+		// echo $cust_id;
+
+		$sql = "SELECT * FROM `cars` WHERE `car_pump_id` = '".$pump_id."' AND `car_cust_id` = '".$cust_id."';";		
+		$this->_db->query($sql);
+		$this->_db->execute();
+
+		$output=array();
+		
+
+		if($this->_db->rowCount() > 0)
+		{
+			$r = $this->_db->resultset();
+			foreach ($r as $row) {
+				$json=array();
+				$json["car_id"]	 		 = $row["car_id"];
+				$json["car_pump_id"]	 = $row["car_pump_id"];
+				$json["car_brand"]	     = $row["car_brand"];
+				$json["car_sub_brand"]	 = $row["car_sub_brand"];
+				$json["car_no_plate"]	 = $row["car_no_plate"];
+				$json["car_fuel_type"]	 = $row["car_fuel_type"];
+				$json["car_cust_id"]	 = $row["car_cust_id"];
+				$json["car_qr_code"]	 = $row["car_qr_code"];
+				array_push($output, $json);
+			}
+
+		}
+		echo json_encode($output,JSON_NUMERIC_CHECK);
 	}
 
 
