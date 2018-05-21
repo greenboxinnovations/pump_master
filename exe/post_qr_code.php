@@ -2,7 +2,7 @@
 
 require '../query/conn.php';
 
-private function updateSyncTable($table_name){
+function updateSyncTable($table_name){
 	Global $conn;
 	
 	date_default_timezone_set("Asia/Kolkata");
@@ -40,14 +40,44 @@ if($_SERVER['REQUEST_METHOD'] == "POST"){
 		$cust_id 	= $postParams["cust_id"];	
 		$car_id 	= $postParams["car_id"];
 		$qr_code 	= $postParams["qr_code"];
+
+		$sql = "SELECT 1 FROM `codes` WHERE `qr_code` = '".$qr_code."' ;";
+		$exe = mysqli_query($conn, $sql);
+		$count = mysqli_num_rows($exe);
+
+		if ($count == 1) {
+			
+			$sql = "SELECT 1 FROM `cars` WHERE `car_qr_code` = '".$qr_code."' ;";
+			$exe = mysqli_query($conn, $sql);
+			$count = mysqli_num_rows($exe);
+
+			if ($count == 0) {
+
+				$sql5 = "UPDATE `cars` SET `car_qr_code` = '".$qr_code."'  WHERE `car_id` = '".$car_id."' ;";
+				$exe5 = mysqli_query($conn, $sql5);
+
+				date_default_timezone_set("Asia/Kolkata");
+				$date_new = date("Y-m-d H:i:s");
+				$unix = strtotime($date_new);
+
+				$json['success'] 	= false;
+
+				updateSyncTable("users", "user_id", $unix);
+			}else{
+
+				$json['msg']  = "Duplicate Code";
+			}
+			
+
+		}else{
+			$json['msg']  = "Invalid Code";
+		}	
 		
 		updateSyncTable("cars");
 	}
 	// not all parameters sent
 	else{
-		$json['success'] 	= false;
-		$json['msg']		= "Insuficient Data";
-
+		$json['msg']  = "Insuficient Data";
 	}
 
 	// encode response
