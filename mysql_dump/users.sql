@@ -30,7 +30,7 @@ CREATE TABLE `users` (
   `imei` text,
   `role` varchar(11) NOT NULL,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -39,7 +39,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'admin','$2y$12$BU0Y5a331F2kK4Ji1.4aGudgD67ItgOfWitjhmZNM2oOj/Du0tsuS',1,NULL,'admin'),(2,'vijay','123456',1,NULL,'operator'),(3,'dharmendra','123456',1,NULL,'operator'),(4,'omprakash','123456',1,NULL,'operator'),(5,'mhaske','123456',1,NULL,'operator'),(6,'maherban','123456',1,NULL,'operator'),(7,'ravi','123456',1,NULL,'operator'),(8,'vasant','123456',1,NULL,'operator'),(9,'sanjay','123456',1,NULL,'operator'),(10,'santosh','123456',1,NULL,'operator'),(11,'gopi','123456',1,NULL,'operator'),(12,'superadmin','$2y$12$bU.T1unXE7UqBled5qCSOu0QALdLxwFf5Qc1GcZKpQ.uahtd9pB16',1,NULL,'admin'),(25,'manager','$2y$12$qjbTZ5Jis3b5shP5WU.zK.I3d8edks5Uq6CJke5GsTgiaLtLVFoIa',1,NULL,'manager'),(28,'akshay','12345',1,NULL,'operator'),(29,'sou','12345',1,NULL,'operator'),(30,'fff','12345',1,NULL,'operator'),(31,'tum','12345',1,NULL,'operator'),(32,'yyy','12345',1,NULL,'operator'),(33,'f','12345',1,NULL,'operator'),(34,'wwwww','12345',1,NULL,'operator'),(35,'sss','12345',1,NULL,'operator'),(36,'aaaaaa','12345',1,NULL,'operator'),(37,'fvfdvfd','12345',1,NULL,'operator'),(38,'dsaads','12345',1,NULL,'operator'),(39,'dcdd','12345',1,NULL,'operator'),(40,'cxx','12345',1,NULL,'operator'),(41,'dccdcd','12345',1,NULL,'operator'),(42,'vfdvdfvfdvfdvfd','12345',1,NULL,'operator'),(43,'jmjhhjh','12345',1,NULL,'operator'),(44,'vvvvvvvvvvvvvvvv','12345',1,NULL,'operator'),(45,'rahul','12345',1,NULL,'operator');
+INSERT INTO `users` VALUES (1,'admin','$2y$12$SxVbULKczn.SHeY7r.LfO.hzbX/OADc0PCu/uOyJxpDRx0HMi10l2',1,NULL,'admin'),(2,'vijay','$2y$12$bU.T1unXE7UqBled5qCSOu0QALdLxwFf5Qc1GcZKpQ.uahtd9pB16',1,NULL,'operator'),(3,'dharmendra','$2y$12$bU.T1unXE7UqBled5qCSOu0QALdLxwFf5Qc1GcZKpQ.uahtd9pB16',1,NULL,'operator'),(4,'omprakash','$2y$12$bU.T1unXE7UqBled5qCSOu0QALdLxwFf5Qc1GcZKpQ.uahtd9pB16',1,NULL,'operator'),(5,'mhaske','$2y$12$bU.T1unXE7UqBled5qCSOu0QALdLxwFf5Qc1GcZKpQ.uahtd9pB16',1,NULL,'operator'),(6,'maherban','$2y$12$bU.T1unXE7UqBled5qCSOu0QALdLxwFf5Qc1GcZKpQ.uahtd9pB16',1,NULL,'operator'),(7,'ravi','$2y$12$bU.T1unXE7UqBled5qCSOu0QALdLxwFf5Qc1GcZKpQ.uahtd9pB16',1,NULL,'operator'),(8,'vasant','$2y$12$bU.T1unXE7UqBled5qCSOu0QALdLxwFf5Qc1GcZKpQ.uahtd9pB16',1,NULL,'operator'),(9,'sanjay','$2y$12$bU.T1unXE7UqBled5qCSOu0QALdLxwFf5Qc1GcZKpQ.uahtd9pB16',1,NULL,'operator'),(10,'santosh','$2y$12$bU.T1unXE7UqBled5qCSOu0QALdLxwFf5Qc1GcZKpQ.uahtd9pB16',1,NULL,'operator'),(11,'gopi','$2y$12$bU.T1unXE7UqBled5qCSOu0QALdLxwFf5Qc1GcZKpQ.uahtd9pB16',1,NULL,'operator'),(12,'superadmin','$2y$12$bU.T1unXE7UqBled5qCSOu0QALdLxwFf5Qc1GcZKpQ.uahtd9pB16',1,NULL,'admin'),(14,'Imran','$2y$12$bU.T1unXE7UqBled5qCSOu0QALdLxwFf5Qc1GcZKpQ.uahtd9pB16',1,NULL,'operator'),(15,'DHANRAJ','$2y$12$bU.T1unXE7UqBled5qCSOu0QALdLxwFf5Qc1GcZKpQ.uahtd9pB16',1,NULL,'operator'),(16,'manager','$2y$12$bU.T1unXE7UqBled5qCSOu0QALdLxwFf5Qc1GcZKpQ.uahtd9pB16',1,NULL,'manager'),(17,'NIKITA','$2y$12$bU.T1unXE7UqBled5qCSOu0QALdLxwFf5Qc1GcZKpQ.uahtd9pB16',1,NULL,'operator'),(18,'ANIKET','$2y$12$bU.T1unXE7UqBled5qCSOu0QALdLxwFf5Qc1GcZKpQ.uahtd9pB16',1,NULL,'operator'),(19,'CHIMAN','$2y$12$bU.T1unXE7UqBled5qCSOu0QALdLxwFf5Qc1GcZKpQ.uahtd9pB16',1,NULL,'operator'),(20,'NIKHIL','$2y$12$bU.T1unXE7UqBled5qCSOu0QALdLxwFf5Qc1GcZKpQ.uahtd9pB16',1,NULL,'operator'),(21,'accounts','$2y$12$i6x2JYoT6CebVBBpgoIp0OBMaIKhliq4q/QoKwfbjTq4bFogNKdyS',1,NULL,'office'),(22,'demo','12345',1,NULL,'operator');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -52,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-04-10  2:57:55
+-- Dump completed on 2018-05-29  1:09:36

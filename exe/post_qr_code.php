@@ -60,7 +60,9 @@ if($_SERVER['REQUEST_METHOD'] == "POST"){
 				$date_new = date("Y-m-d H:i:s");
 				$unix = strtotime($date_new);
 
-				$json['success'] 	= false;
+				$json['success'] 	= true;
+
+				$json['msg']  = "QR Added Succesfully";
 
 				updateSyncTable("users", "user_id", $unix);
 			}else{

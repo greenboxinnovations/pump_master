@@ -212,7 +212,7 @@ class Customers
 	// get all 
 	private function getAllCustomers($pump_id){
 
-		$sql = "SELECT * FROM `customers` WHERE  `cust_pump_id` = '".$pump_id."';";
+		$sql = "SELECT * FROM `customers` WHERE  `cust_pump_id` = '".$pump_id."' ORDER BY `cust_company`;";
 		$this->_db->query($sql);
 		$this->_db->execute();
 

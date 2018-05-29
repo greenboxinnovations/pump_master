@@ -50,6 +50,8 @@ if (password_verify($pass, $hash)) {
 		$json['user_name'] 	= $myuser;
 		$json['date'] 	 	= $date;
 	}	
+}else{
+	$json['msg'] 	= "password error";
 }
 
 echo json_encode($json, JSON_NUMERIC_CHECK);
