@@ -1,0 +1,7 @@
+URL/DB Changes File
+
+post_qr_code.php
+add_cashier.php
+del_car.php
+sync_check.php
+send_photos.php

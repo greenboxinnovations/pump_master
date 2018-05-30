@@ -18,7 +18,7 @@ function updateSyncTable($table_name, $id, $unix){
 	$upload_dir =  realpath(__DIR__ . '/../');
 	$filename = $upload_dir ."/mysql_uploads/".$table_name.'.sql';
 
-	$db_name = "pump_master_test";
+	$db_name = "pump_master";
 	
 	exec("/usr/bin/mysqldump -u\"pump_master_user\" --password=\"pump_master_user123!@#\"  \"".$db_name."\" \"".$table_name."\" > ".$filename);
 	//add -t for data only for appending data

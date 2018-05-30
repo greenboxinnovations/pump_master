@@ -54,7 +54,7 @@ if($method == 'POST'){
 						$json['message'] = "reset";
 					} else {							
 
-						if (password_verify($password, $hash)) {
+						if ((password_verify($password, $hash)) && ($role != 'operator')) {
 							$json['success'] = true;
 							$json['message'] = "Authentication Success";
 

@@ -3,6 +3,8 @@ date_default_timezone_set("Asia/Kolkata");
 // multiple images
 $dirs = array_filter(glob('/opt/lampp/htdocs/pump_master/uploads/*'), 'is_dir');
 
+$url_main = 'http://fuelmaster.greenboxinnovations.in';
+
 $index = 0;
 $postData = array();
 
@@ -30,7 +32,7 @@ if(sizeof($postData) == 0){
 	echo 'No Photos Found';
 }
 else{
-	$target_url = 'http://pumpmastertest.greenboxinnovations.in/receive_photos.php';
+	$target_url = $url_main.'/receive_photos.php';
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL,$target_url);
 	curl_setopt($ch, CURLOPT_POST,1);

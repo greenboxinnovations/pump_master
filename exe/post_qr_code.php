@@ -11,17 +11,13 @@ function updateSyncTable($table_name){
 
 	$upload_dir =  realpath(__DIR__ . '/../mysql_uploads');
 	$filename = $upload_dir ."/".$table_name.'.sql';
-	$db_name = "pump_master_test";
+	$db_name = "pump_master";
 	
 	exec("/usr/bin/mysqldump -u\"pump_master_user\" --password=\"pump_master_user123!@#\" \"".$db_name."\" \"".$table_name."\" > ".$filename);
 
 	$sql = "UPDATE `sync` SET `last_updated`= '".$unix."' WHERE `table_name` = '".$table_name."';";
 	$exe = mysqli_query($conn, $sql);
 }
-
-
-
-
 
 if($_SERVER['REQUEST_METHOD'] == "POST"){
 

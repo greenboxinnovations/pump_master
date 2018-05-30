@@ -2,12 +2,22 @@
 date_default_timezone_set("Asia/Kolkata");
 require 'query/conn.php';
 
+function url(){
+  // return sprintf(
+  //   "%s://%s",
+  //   isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https' : 'http',
+  //   $_SERVER['SERVER_NAME']
+  // );
+	return 'http://fuelmaster.greenboxinnovations.in';
+}
+
+
 
 function queryServer(){
 
 	Global $conn;
 	$proceed = false;
-	$target_url = 'http://pumpmastertest.greenboxinnovations.in/api/sync/1';
+	$target_url = url().'/api/sync/1';
 		
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL,$target_url);
@@ -75,7 +85,7 @@ function updateServerId($table_name, $id){
 	];
 	$data_string = json_encode($post);
 
-	$target_url = "http://pumpmastertest.greenboxinnovations.in/api/sync";
+	$target_url = url()."/api/sync";
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $target_url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -106,7 +116,7 @@ function downloadRates($new_id, $new_time){
 
 	Global $conn;
 	$proceed = false;
-	$target_url = 'http://pumpmastertest.greenboxinnovations.in/exe/check_rates.php?pump_id=1&date=';
+	$target_url = url().'/exe/check_rates.php?pump_id=1&date=';
 		
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL,$target_url);
@@ -149,7 +159,7 @@ function uploadRates(){
 
 
 	$data_json = json_encode($output);
-	$url = "http://pumpmastertest.greenboxinnovations.in/api/transactions/rates";
+	$url = url()."/api/transactions/rates";
 
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
@@ -181,7 +191,7 @@ function downloadTable($table_name, $last_updated){
 	Global $conn;
 	$proceed = false;
 
-	$target_url = "http://pumpmastertest.greenboxinnovations.in/mysql_uploads/".$table_name.".sql";
+	$target_url = url()."/mysql_uploads/".$table_name.".sql";
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $target_url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -262,7 +272,7 @@ function sendLocalTransactions(){
 		echo 'send transactions';
 
 		// send to server
-		$url = "http://pumpmastertest.greenboxinnovations.in/api/transactions/save_local_transactions";
+		$url = url()."/api/transactions/save_local_transactions";
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
