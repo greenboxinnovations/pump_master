@@ -921,8 +921,16 @@ require 'exe/lock.php';
 <!-- snackbar -->
 <div id="snackbar"></div>
 
-<!-- fab -->
-<div id="fab"></div>
+
+<?php 
+
+	if ($_SESSION['role'] != 'manager' ) {
+		// <!-- fab -->
+		echo'<div id="fab"></div>';
+
+	}
+?>
+
 
 <div id="rate_holder">
 	<div>

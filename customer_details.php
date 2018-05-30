@@ -911,6 +911,10 @@ require 'exe/lock.php';
 				var date_invoice 	= $("#date_invoice").datepicker("option", "dateFormat", "yy-mm-dd" ).val();
 				var late_fee 		= $("#late_fee").val();
 
+				if (late_fee == "") {
+					late_fee =0;
+				}
+
 				$("#date1").datepicker("option", "dateFormat", "dd-mm-yy" );
 				$("#date2").datepicker("option", "dateFormat", "dd-mm-yy" );
 				$("#date_invoice").datepicker("option", "dateFormat", "dd-mm-yy" );
@@ -1043,8 +1047,13 @@ require 'exe/lock.php';
 <!-- snackbar -->
 <div id="snackbar"></div>
 
-<!-- fab -->
-<div id="fab"><span class="tooltiptext">ADD CAR</span></div>
+
+<?php 
+	if ($_SESSION['role'] != 'manager' ) {
+		// <!-- fab -->
+		echo'<div id="fab"><span class="tooltiptext">ADD CAR</span></div>';
+	}
+?>
 
 </body>
 </html>
