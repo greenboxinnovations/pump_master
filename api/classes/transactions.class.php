@@ -552,7 +552,7 @@ class Transactions
 		
 		$upload_dir =  realpath(__DIR__ . '/../../mysql_uploads');
 		$filename = $upload_dir ."/".$table_name.'.sql';
-		$db_name = "pump_master_test";
+		$db_name = "pump_master";
 
 		if ($table_name == "customers") {
 			
@@ -623,9 +623,10 @@ class Transactions
 				$r = $this->_db->single();
 				$car_no_plate = $r['car_no_plate'];
 
-				$url = "http://pumpmastertest.greenboxinnovations.in/c_msg.php?t=".$row['trans_string'];
+				$url = "http://fuelmaster.greenboxinnovations.in/c_msg.php?t=".$row['trans_string'];
 
-				$this->sendMSG($car_no_plate,$row['fuel'],$row['amount'],$url);
+				$this->sendMSG($car_no_plate, $row['fuel'], $row['amount'], $url, 9822848336);
+				$this->sendMSG($car_no_plate, $row['fuel'], $row['amount'], $url, 8411815106);
 
 				$d = true;
 
@@ -650,11 +651,11 @@ class Transactions
 
 	}
 
-	private function sendMSG($car_no_plate,$fuel,$amount,$url){
+	private function sendMSG($car_no_plate, $fuel, $amount, $url, $phone_no){
 
 		$message = "Hi, Yor vehicle no ".$car_no_plate." just filled ".$fuel." worth ".$amount.". details: ".$url;
 	    $encodedMessage = urlencode($message);
-	    $api = "https://www.fast2sms.com/dev/bulk?authorization=CbSpQve5NE&sender_id=FSTSMS&message=" . $encodedMessage . "&language=english&route=p&numbers=8411815106&flash=0";
+	    $api = "https://www.fast2sms.com/dev/bulk?authorization=CbSpQve5NE&sender_id=FSTSMS&message=" . $encodedMessage . "&language=english&route=p&numbers=".trim($phone_no)."&flash=0";
 
 	    // Get cURL resource
 		$curl = curl_init();

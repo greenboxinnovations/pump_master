@@ -24,11 +24,15 @@
 
 	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 	<style type="text/css">
 		*{padding: 0;margin: 0;}
 		#cust_details{font-size: 20px;font-family: 'Open Sans',sans-serif;padding: 10px;}
 		#cust_display_name{font-family: 'Roboto Slab', serif;font-size: 30px;}
+		img {
+		  height: auto;
+		  width: 100%;
+		}
 	</style>
 </head>
 <body>
@@ -69,17 +73,23 @@ if(isset($_GET['t'])){
 				
 				echo '<div id="cust_display_name">'.$display_name.'</div>';
 
-				echo $date_time 	= $row['date'];
-				echo '<br>';
 				echo $car 			= $row['car_no_plate'];
 				echo '<br>';
-				echo $fuel_type 	= $row['fuel'];
 				echo '<br>';
-				echo $amount 		= $row['amount'];
+
+				echo $date_time 	= $row['date'];
 				echo '<br>';
-				echo $liters 		= $row['liters'];
+
+				echo "Fuel: ".$fuel_type 	= $row['fuel'];
 				echo '<br>';
-				echo $rate 			= $row['rate'];
+
+				echo "Amount: ".$amount 		= $row['amount'];
+				echo '<br>';
+
+				echo "Litres: ".$liters 		= $row['liters'];
+				echo '<br>';
+				
+				echo "Fuel Rate: ".$rate 			= $row['rate'];
 			echo '</div>';
 
 

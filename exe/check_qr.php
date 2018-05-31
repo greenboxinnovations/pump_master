@@ -37,7 +37,7 @@ if($qr != ""){
 		$car_no 	= $pre_row['car_no_plate'];
 
 		// details from CUSTOMERS
-		$sql = "SELECT * FROM `customers` WHERE '".$cust_id."';";
+		$sql = "SELECT * FROM `customers` WHERE `cust_id` = '".$cust_id."';";
 		$exe = mysqli_query($conn ,$sql);
 		$row = mysqli_fetch_assoc($exe);
 

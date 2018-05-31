@@ -5,3 +5,7 @@ add_cashier.php
 del_car.php
 sync_check.php
 send_photos.php
+
+api/transactions
+api/customers
+api/cars

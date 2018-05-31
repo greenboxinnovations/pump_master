@@ -2,6 +2,30 @@
 
 require '../query/conn.php';
 
+
+function sendMSG($car_no_plate, $phone_no){
+
+	$message = "Hi, Yor vehicle no ".$car_no_plate." has been assigned a QR code";
+    $encodedMessage = urlencode($message);
+    $api = "https://www.fast2sms.com/dev/bulk?authorization=CbSpQve5NE&sender_id=FSTSMS&message=" . $encodedMessage . "&language=english&route=p&numbers=".trim($phone_no)."&flash=0";
+
+    // Get cURL resource
+	$curl = curl_init();
+	// Set some options - we are passing in a useragent too here
+	curl_setopt_array($curl, array(
+	    CURLOPT_RETURNTRANSFER => 1,
+	    CURLOPT_URL => $api,
+	    //CURLOPT_USERAGENT => 'Codular Sample cURL Request'
+	));
+	// Send the request & save response to $resp
+	$resp = curl_exec($curl);
+	// Close request to clear up some resources
+	curl_close($curl);
+}
+
+
+
+
 function updateSyncTable($table_name){
 	Global $conn;
 	
@@ -59,6 +83,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST"){
 				$json['success'] 	= true;
 
 				$json['msg']  = "QR Added Succesfully";
+				sendMSG($car_id, 8411815106);
 
 				updateSyncTable("users", "user_id", $unix);
 			}else{
@@ -70,7 +95,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST"){
 		}else{
 			$json['msg']  = "Invalid Code";
 		}	
-		
+				
 		updateSyncTable("cars");
 	}
 	// not all parameters sent

@@ -68,7 +68,7 @@ class Cars
 
 
 
-		$sql = "INSERT INTO `cars` (`car_brand`,`car_sub_brand`,`car_no_plate`,`car_fuel_type`,`car_cust_id`,`car_qr_code`) VALUES (:field1,:field2,:field3,:field4,:field5,:field6);";
+		$sql = "INSERT INTO `cars` (`car_brand`,`car_sub_brand`,`car_no_plate`,`car_fuel_type`,`car_cust_id`,`car_qr_code`,`car_pump_id`) VALUES (:field1,:field2,:field3,:field4,:field5,:field6,:field7);";
 
 		$this->_db->query($sql);
 
@@ -78,6 +78,7 @@ class Cars
 		$this->_db->bind(':field4', $car_fuel_type);
 		$this->_db->bind(':field5', $car_cust_id);
 		$this->_db->bind(':field6', $car_qr_code);
+		$this->_db->bind(':field7', 1);
 
 		$this->_db->execute();
 
@@ -161,7 +162,7 @@ class Cars
 
 		$upload_dir =  realpath(__DIR__ . '/../../mysql_uploads');
 		$filename = $upload_dir ."/".$table_name.'.sql';
-		$db_name = "pump_master_test";
+		$db_name = "pump_master";
 		
 		exec("/usr/bin/mysqldump -u\"pump_master_user\" --password=\"pump_master_user123!@#\" \"".$db_name."\" \"".$table_name."\" > ".$filename);
 
