@@ -64,7 +64,10 @@ if(isset($_GET['cust_id'])){
 	$type = $_GET['type'];
 	$date_invoice = $_GET['date_invoice'];
 	$late_fee =0;
-	$late_fee = $_GET['late_fee'];
+	if (isset($_GET['late_fee'])) {
+		$late_fee = $_GET['late_fee'];
+	}
+	
 
 	$sql = "SELECT * FROM `customers` WHERE `cust_id` = '".$cust_id."';";
 	$exe = mysqli_query($conn, $sql);

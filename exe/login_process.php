@@ -60,11 +60,11 @@ if($method == 'POST'){
 
 							$token = substr(strtr(base64_encode(openssl_random_pseudo_bytes(22)), '+', '.'), 0, 22);
 
-							$json['token'] = $token;
-							$_SESSION['token'] = $token;
-							$_SESSION['pump_id'] = $pump_id;
-							$_SESSION['user_id'] = $user_id;
-							$_SESSION['role'] = $role;
+							$json['token'] 			= $token;
+							$_SESSION['token'] 		= $token;
+							$_SESSION['pump_id'] 	= $pump_id;
+							$_SESSION['user_id'] 	= $user_id;
+							$_SESSION['role'] 		= $role;
 							
 							//create token table
 						} else {
