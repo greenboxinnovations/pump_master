@@ -11,7 +11,10 @@ $type = $_GET['type'];
 
 $invoice_no = $_GET['invoice_no'];
 
-$late_fee = $_GET['late_fee'];
+$late_fee = 0;
+if (isset($_GET['late_fee'])) {
+	$late_fee = $_GET['late_fee'];
+}
 
 
 function url(){
@@ -21,8 +24,6 @@ function url(){
     $_SERVER['SERVER_NAME']
   );
 }
-
-
 
 
 if ($type == 'new') {
