@@ -655,7 +655,7 @@ class Transactions
 
 		$message = "Hi, Yor vehicle no ".$car_no_plate." just filled ".$fuel." worth ".$amount.". details: ".$url;
 	    $encodedMessage = urlencode($message);
-	    $api = "https://www.fast2sms.com/dev/bulk?authorization=CbSpQve5NE&sender_id=FSTSMS&message=" . $encodedMessage . "&language=english&route=p&numbers=".trim($phone_no)."&flash=0";
+	    $api = "https://www.fast2sms.com/dev/bulk?authorization=CbSpQve5NE&sender_id=SLAUTO&message=" . $encodedMessage . "&language=english&route=t&numbers=".trim($phone_no)."&flash=0";
 
 	    // Get cURL resource
 		$curl = curl_init();

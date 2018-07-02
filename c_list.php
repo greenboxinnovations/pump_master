@@ -30,14 +30,13 @@
 	<script type="text/javascript">
 		$(document).ready(function(){
 
-			$('body').delegate('#view_all', 'click', function(e) {
-				e.stopPropagation(); 
-				var cust_id = $(this).attr('custid');
-
-				//As an HTTP redirect (back button will not work )
-				// window.location.replace("http://www.google.com");
-				window.location.replace("http://fuelmaster.greenboxinnovations.in/c_list.php?cust_id="+cust_id+"");
+			$('body').delegate('.row', 'click', function() {
+				  
+				var trans_string = $(this).attr('t');
+				window.location.href = "http://fuelmaster.greenboxinnovations.in/c_msg.php?t="+trans_string+"&btn=no";
+			
 			});
+
 		});
 	</script>
 
@@ -55,36 +54,45 @@
 			 
 		}
 		.inline{
-			display: inline-table;width: 50%;
+			display: inline-table;padding: 10px;
+		}
+		.amount{
+			width:50px;
+		}
+		.fuel{
+			width: 40px;
+		}
+		.date{
+			width:85px;
+		}
+		.sr{
+			width: 40px;
 		}
 	</style>
+
 </head>
 <body>
 <?php
 
 require 'query/conn.php';
 
-if(isset($_GET['t'])){
-	$trans_string = $_GET['t'];
-	$btn = true;
+if(isset($_GET['cust_id'])){
+	$cust_id = $_GET['cust_id'];
 	
-	if (isset($_GET['btn'])) {
-		$btn = false;
-	}
-
 	// prepared statement
 	// $sql = "SELECT * FROM `transactions` WHERE `trans_string` = ?";
-	$sql = "SELECT a.*,b.car_no_plate, c.cust_company,c.cust_f_name,c.cust_l_name
+	$sql = "SELECT a.*, b.cust_company,b.cust_f_name,b.cust_l_name
 			FROM `transactions` a
-			JOIN `cars` b
-			ON a.car_id = b.car_id
-			JOIN `customers` c
-			ON c.cust_id = a.cust_id
-			where a.trans_string = '".$trans_string."'";
+			JOIN `customers` b
+			ON b.cust_id = a.cust_id
+			WHERE a.cust_id = 28 AND a.billed = 'N' ;";
 	
 
 	$exe = mysqli_query($conn, $sql);
 	if(mysqli_num_rows($exe) > 0){
+
+		$i=0;
+		$total = 0;
 
 		while($row = mysqli_fetch_assoc($exe)) {
 
@@ -96,71 +104,40 @@ if(isset($_GET['t'])){
 			}
 
 
-
-			echo '<div id="cust_details">';
+			if ($i == 0) {
 				$display_name 	= ucwords($display_name);
 				
 				echo '<div id="cust_display_name">'.$display_name.'</div>';
-
-				echo '<div class="title inline">'.$row['car_no_plate'] .'</div>'; 
-				if ($btn) {
-					echo '<div class="val inline" id="view_all" custid="'.$row['cust_id'].'"><button>View All</button></div>';
-				}				
-				echo '<br>';
-				echo '<br>';
+				echo'<br/>';
 
 				echo'<div class="container" >';
-					echo '<div class="title inline">Fuel</div>';  echo '<div class="val inline">'.ucwords($row['fuel']).'</div>';
+					echo '<div class="title inline sr">Sr No</div>';  
+					echo '<div class="title inline date">Date</div>';  
+					echo '<div class="val inline fuel">Fuel</div>';
+					echo '<div class="val inline amount">Amount</div>';
 				echo '</div>';
-
-				echo'<div class="container" >';
-					echo '<div class="title inline">Amount</div>';  echo '<div class="val inline">'.$row['amount'].'</div>';
-				echo '</div>';
-
-				echo'<div class="container" >';
-					echo '<div class="title inline">Litres</div>';  echo '<div class="val inline">'.$row['liters'].'</div>';
-				echo '</div>';
-
-				echo'<div class="container" >';
-					echo '<div class="title inline">Fuel Rate</div>';  echo '<div class="val inline" >'.$row['rate'].'</div>';
-				echo '</div>';
+			}
+			$i++;
+	
+			echo'<div class="container row" t="'.$row['trans_string'].'">';
+				echo '<div class="title inline sr">'.$i.'</div>';  
+				echo '<div class="title inline date">'.date('d-m-Y',strtotime($row['date'])).'</div>';  
+				echo '<div class="val inline fuel" >'.$row['fuel'].'</div>';
+				echo '<div class="val inline amount">'.$row['amount'].'</div>';
 
 			echo '</div>';
 
-			echo '<br>';
-			echo '<br>';
-
-			//--------------------------------//
-			// transaction photos
-			$upload_dir = 'uploads';
-			$date_dir 	= date('Y-m-d', strtotime($row['date']));
-
-			$check 			= ['_start.jpeg','_start_top.jpeg','_stop.jpeg','_stop_top.jpeg'];
-			$description 	= ['Zero Photo','Zero Overhead Photo','Completion Photo','Completed Overhead Photo'];
-
-			foreach ($check as $i => $extention) {
-
-				$file_path = $upload_dir."/".$date_dir."/".$trans_string.$extention;
-
-				if(file_exists($file_path)) {
-					echo $description[$i];
-					echo '<br>';
-					echo '<img src="'.$file_path.'">';
-					echo '<br>';
-				}else{
-					// echo "photo error";
-					// echo '<br>';
-				}
-			}
-
-			echo'<br/>';
-			echo $date_time 	= $row['date'];
-			echo '<br/>';
+			$total += $row['amount']; 
 		}	
+
+		echo'<div class="container" >';
+			echo '<div class="title inline sr"></div>';  
+			echo '<div class="title inline date">Pending</div>';  
+			echo '<div class="val inline fuel">Total</div>';
+			echo '<div class="val inline amount">'.$total.'</div>';
+		echo '</div>';
 	}
 }
-
-
 
 ?>
 </body>

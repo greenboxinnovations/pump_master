@@ -44,7 +44,7 @@ if (isset($_GET['cust_id'])) {
 
 	echo'<div style="display:inline-block;margin-right:10px;">Late Fee<br>';
 		// echo'<input type="date" id="date2" value="'.$date2.'"></input>';
-		echo' <input type="number" id="late_fee" value=""></input>';
+		echo' <input type="number" id="late_fee" value="0"></input>';
 	echo'</div>';
 
 	echo'<div style="display:inline-block;margin-right:10px;"><br>';

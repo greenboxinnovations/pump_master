@@ -911,7 +911,7 @@ require 'exe/lock.php';
 				var date_invoice 	= $("#date_invoice").datepicker("option", "dateFormat", "yy-mm-dd" ).val();
 				var late_fee 		= $("#late_fee").val();
 
-				if (late_fee == "") {
+				if ((late_fee == "")||(late_fee == " ")) {
 					late_fee =0;
 				}
 
