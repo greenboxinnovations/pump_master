@@ -42,12 +42,91 @@
 	</script>
 
 	<style type="text/css">
-		*{padding: 0;}
-		#cust_details{font-size: 20px;font-family: 'Open Sans',sans-serif;padding: 10px;}
-		#cust_display_name{font-family: 'Roboto Slab', serif;font-size: 30px;}
+		*{padding: 0;margin: 0;}
+		body{font-family: 'Open Sans',sans-serif;background-color: rgb(240,240,240);}
+
+		#top_header{
+			padding-top: 10px;
+			/*height: 70px;*/
+			background-color: #FFCB05;
+			/*background-color: #2E66B1;*/
+			width: 100%;}
+		#top_header_bar{background-color: #2E66B1;height: 30px;}
+
+		#padding_div{			
+			padding: 20px;
+			}
+
+		#cust_details{
+			font-size: 20px;
+			padding: 20px;
+			background-color: white;
+			border-radius: 5px;
+			border: 1px solid rgb(220,220,220);
+			margin-bottom: 30px;
+		}
+		#cust_display_name{
+			font-family: 'Roboto Slab', serif;font-size: 30px;
+			/*background-color: green;*/
+			display: inline-block;
+			vertical-align: top;
+			width: 50%;
+		}
+		#button_div{
+			text-align: right;
+			display: inline-block;
+			vertical-align: top;
+			width: 50%;
+			margin-top: 5px;
+		}
+		#button_div button{
+			/*background-color: green;padding: 0px 10px 0px 10px;*/
+			  position: relative;
+
+/*display: block;*/
+/*margin: 30px auto;*/
+padding: 10px;
+
+overflow: hidden;
+
+border-width: 0;
+outline: none;
+border-radius: 2px;
+box-shadow: 0 1px 4px rgba(0, 0, 0, .6);
+font-weight: 600;
+background-color: #2E66B1;
+color: #ecf0f1;
+
+transition: background-color .3s;
+		}
+		#clear_both{clear: both;}
 		img {
+			display: block;
+			vertical-align: bottom;
 		  height: auto;
 		  width: 100%;
+		  border-bottom-left-radius: 5px;
+		  border-bottom-right-radius: 5px;
+		  /*margin-left: auto;		  */
+		  /*margin-right: auto;*/
+		  /*margin: 20px;*/
+		}
+
+		.img_border{			
+			border: 1px solid rgb(180,180,180);margin-bottom: 20px;
+			border-radius: 5px;
+		}
+		.img_desc{
+			/*background-color: rgb(200,200,200);*/
+			background-color: #2E66B1;
+			color: rgba(255,255,255,0.9);
+			padding-left: 20px;
+			padding-top: 5px;
+			padding-bottom: 5px;
+			font-weight: 600;
+			border-top-left-radius: 5px;
+			border-top-right-radius: 5px;
+			/*margin-top: 25px;			*/
 		}
 
 		.title{text-align: left;}
@@ -60,6 +139,15 @@
 	</style>
 </head>
 <body>
+
+<div id="top_header">
+	<img src="css/cmsg_header.png">
+</div>
+<div id="top_header_bar"></div>
+
+
+<div id="padding_div">
+
 <?php
 
 require 'query/conn.php';
@@ -102,10 +190,18 @@ if(isset($_GET['t'])){
 				
 				echo '<div id="cust_display_name">'.$display_name.'</div>';
 
-				echo '<div class="title inline">'.$row['car_no_plate'] .'</div>'; 
+				echo '<div id="button_div">';
+
 				if ($btn) {
-					echo '<div class="val inline" id="view_all" custid="'.$row['cust_id'].'"><button>View All</button></div>';
-				}				
+					echo '<button custid="'.$row['cust_id'].'" id="view_all" >VIEW ALL</button>';
+				}
+				echo '</div>';				
+				echo '<div id="clear_both"></div>';
+
+				echo '<div class="title inline">'.$row['car_no_plate'] .'</div>'; 
+				// if ($btn) {
+				// 	echo '<div class="val inline" id="view_all" custid="'.$row['cust_id'].'"><button>View All</button></div>';
+				// }				
 				echo '<br>';
 				echo '<br>';
 
@@ -126,9 +222,7 @@ if(isset($_GET['t'])){
 				echo '</div>';
 
 			echo '</div>';
-
-			echo '<br>';
-			echo '<br>';
+		
 
 			//--------------------------------//
 			// transaction photos
@@ -143,10 +237,11 @@ if(isset($_GET['t'])){
 				$file_path = $upload_dir."/".$date_dir."/".$trans_string.$extention;
 
 				if(file_exists($file_path)) {
-					echo $description[$i];
-					echo '<br>';
+					echo '<div class="img_border">';
+					echo '<div class="img_desc">'.strtoupper($description[$i]).'</div>';
 					echo '<img src="'.$file_path.'">';
-					echo '<br>';
+					echo '</div>';
+					// echo '<br>';
 				}else{
 					// echo "photo error";
 					// echo '<br>';
@@ -163,5 +258,8 @@ if(isset($_GET['t'])){
 
 
 ?>
+
+</div><!-- padding div -->
+
 </body>
 </html>
