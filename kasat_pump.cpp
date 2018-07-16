@@ -31,17 +31,17 @@ using namespace cv;
 
 cv::Mat displayFrame1;
 cv::Mat displayFrame2;
-// cv::Mat displayFrame3;
+cv::Mat displayFrame3;
 
 std::atomic<bool> first1(0);
 std::atomic<bool> first2(0);
-// std::atomic<bool> first3(0);
+std::atomic<bool> first3(0);
 
 
 
 const string CAM1_IP = "rtsp://192.168.0.129:554/Streaming/Channels/2/?transportmode=unicast";
 const string CAM2_IP = "rtsp://192.168.0.128:554/Streaming/Channels/2/?transportmode=unicast";
-// const string CAM3_IP = "rtsp://192.168.0.129:554/Streaming/Channels/2/?transportmode=unicast";
+const string CAM3_IP = "rtsp://192.168.0.127:554/Streaming/Channels/1/?transportmode=unicast";
 
 
 const string C1WINDOW = "cam-ONE";
@@ -141,7 +141,7 @@ void getCamStatus() {
 				}else{
 					imwrite(file_name, displayFrame2 );
 				}
-				// imwrite(file_name2, displayFrame3 );
+				imwrite(file_name2, displayFrame3 );
 
 
 				// reset status in cameras
@@ -188,10 +188,10 @@ void camThread(const string IP) {
 				frame.copyTo(displayFrame2);
 					first2 = true;
 			}
-			// else{
-			// 	frame.copyTo(displayFrame3);
-			// 	first3 = true;
-			// }
+			else{
+				frame.copyTo(displayFrame3);
+				first3 = true;
+			}
 		}
 	}
 }
@@ -236,8 +236,8 @@ int main(int argc, char** argv) {
 	// std::string date(buffer);	
 
 
-	// thread t3(camThread, CAM3_IP);
-	// t3.detach();
+	thread t3(camThread, CAM3_IP);
+	t3.detach();
 
 	// thread t4(systemThread);
 	// t4.detach();
@@ -245,8 +245,8 @@ int main(int argc, char** argv) {
 	string checkExit;
 	while (1) {
 
-		// if (first1 && first2 && first3) {
-		if (first1 && first2) {
+		if (first1 && first2 && first3) {
+		// if (first1 && first2) {
 
 			imshow(C1WINDOW, displayFrame1);
 			imshow(C2WINDOW, displayFrame2);

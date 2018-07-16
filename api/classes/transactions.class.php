@@ -625,7 +625,7 @@ class Transactions
 
 				$url = "http://fuelmaster.greenboxinnovations.in/c_msg.php?t=".$row['trans_string'];
 
-				$this->sendMSG($car_no_plate, $row['fuel'], $row['amount'], $url, 9822848336);
+				// $this->sendMSG($car_no_plate, $row['fuel'], $row['amount'], $url, 9822848336);
 				$this->sendMSG($car_no_plate, $row['fuel'], $row['amount'], $url, 8411815106);
 
 				$d = true;

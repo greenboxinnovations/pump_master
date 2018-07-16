@@ -66,13 +66,14 @@ if(isset($_GET['rbook_num'])){
 		$exe = mysqli_query($conn, $sql);
 		echo '<select id="sel_car" style="margin-bottom:6px;">';
 		echo '<option value="-1" ftype="invalid_fuel">Choose Car</option>';
+		echo '<option value="-1" ftype="unknown">Unknown</option>';
 		while($row = mysqli_fetch_assoc($exe)){
 			$car_id	 		= $row["car_id"];
 			$car_no_plate	= $row["car_no_plate"];
 			$car_fuel_type	= $row["car_fuel_type"];
 			echo '<option value="'.$car_id.'" ftype="'.$car_fuel_type.'">'.$car_no_plate.'</option>';
 		}
-		echo '<option value="-1" ftype="unknown">Unknown</option>';
+		
 		echo '</select>';
 
 		// NO VALIDATION

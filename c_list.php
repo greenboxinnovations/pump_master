@@ -85,7 +85,7 @@ if(isset($_GET['cust_id'])){
 			FROM `transactions` a
 			JOIN `customers` b
 			ON b.cust_id = a.cust_id
-			WHERE a.cust_id = 28 AND a.billed = 'N' ;";
+			WHERE a.cust_id = '".$cust_id."' AND a.billed = 'N' ;";
 	
 
 	$exe = mysqli_query($conn, $sql);
