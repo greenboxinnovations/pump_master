@@ -9,3 +9,7 @@ send_photos.php
 api/transactions
 api/customers
 api/cars
+
+
+
+api/transactions -> print function for receipt needs localhost ip address

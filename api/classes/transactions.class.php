@@ -58,6 +58,11 @@ class Transactions
 				$this->postRates($this->_postParams);
 			}
 
+			else if ($this->_getParams[0] == 'print')
+			{
+				$this->printReceipt(8183);
+			}
+
 
 			else if ($this->_getParams[0] == 'save_local_transactions')
 			{
@@ -370,13 +375,32 @@ class Transactions
 			$id           = "trans_id";
 			$unix = strtotime($last_updated); 
 
+			$sql = "SELECT `trans_id` FROM `transactions` WHERE 1 ORDER BY `trans_id` DESC LIMIT 1;";		
+			$this->_db->query($sql);
+			$r = $this->_db->single();
+			$trans_id = $r['trans_id'];
+
+			$this->printReceipt($trans_id);
+
 			$this->updateSyncTable($table_name,$id,$unix);
+
+
 		}
 		else{
 			$output['success'] 	= false;		
 			$output['msg'] 		= "Something went wrong";		
 		}		
 		echo json_encode($output);
+	}
+
+	private function printReceipt($trans_id){
+
+		try {
+	      file_get_contents("http://192.168.0.100/pump_master/print/print.php?trans_id=".$trans_id);
+	    } catch (Exception $e) {
+	    	
+	    }
+
 	}
 
 	private function postRates($postParams){

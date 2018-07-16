@@ -34,15 +34,38 @@ require '../query/conn.php';
 date_default_timezone_set("Asia/Kolkata");
 echo $date = date('l jS F Y h:i:s A');
 $date1 = date('Y-m-d');
+$p =false;
 
-if (isset($_GET['trans_id'])) {
+
+function httpGet($url)
+{
+    $ch = curl_init();  
+ 
+    curl_setopt($ch,CURLOPT_URL,$url);
+    curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+    curl_setopt($ch, CURLOPT_NOBODY, true);    // we don't need body
+	curl_setopt($ch, CURLOPT_TIMEOUT,1);
+	$output = curl_exec($ch);
+	$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+ 
+    curl_close($ch);
+    return $httpcode;
+}
+ 
+$d = httpGet("http://192.168.0.101/");
+
+if ($d == 200) {
+	$p = true;
+}
+
+if ((isset($_GET['trans_id']))&&($p)) {
 
 	$trans_id = $_GET['trans_id'];
 	
 	/* Start the printer */
-	$logo = new EscposImage("marrakesh.png");
+	$logo = new EscposImage("header_bw.png");
 	// $connector = new WindowsPrintConnector("TM-T81");
-	$connector = new NetworkPrintConnector("192.168.1.108", 9100);
+	$connector = new NetworkPrintConnector("192.168.0.101", 9100);
 	$printer = new Escpos($connector);
 
 	/* Print top logo */
@@ -76,6 +99,8 @@ if (isset($_GET['trans_id'])) {
 
 	$sql0 = "SELECT a.*,b.car_no_plate FROM  `transactions` a JOIN  `cars` b ON a.car_id=b.car_id WHERE a.trans_id = '".$trans_id."' ;";
 	$result0 = mysqli_query($conn,$sql0);
+
+	$line = "";
 
 	while ($row = mysqli_fetch_assoc($result0)) {
 		$vh_no = $row['car_no_plate'];
