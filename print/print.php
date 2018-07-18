@@ -32,9 +32,21 @@ require_once(dirname(__FILE__) . "/Escpos.php");
 require '../query/conn.php';
 
 date_default_timezone_set("Asia/Kolkata");
-echo $date = date('l jS F Y h:i:s A');
+$date = date('l jS F Y h:i:s A');
 $date1 = date('Y-m-d');
 $p =false;
+
+
+function intLowHigh($input, $length)
+{
+    // Function to encode a number as two bytes. This is straight out of Mike42\Escpos\Printer
+    $outp = "";
+    for ($i = 0; $i < $length; $i++) {
+        $outp .= chr($input % 256);
+        $input = (int)($input / 256);
+    }
+    return $outp;
+}
 
 
 function httpGet($url)
@@ -68,9 +80,14 @@ if ((isset($_GET['trans_id']))&&($p)) {
 	$connector = new NetworkPrintConnector("192.168.0.101", 9100);
 	$printer = new Escpos($connector);
 
+
+
 	/* Print top logo */
 	$printer -> setJustification(Escpos::JUSTIFY_CENTER);
 	$printer -> graphics($logo);
+
+	// add padding left
+	$connector->write(Escpos::GS.'L'.intLowHigh(32, 2));
 
 	/* Name of shop */
 	$printer -> selectPrintMode(Escpos::MODE_DOUBLE_WIDTH);
@@ -81,7 +98,27 @@ if ((isset($_GET['trans_id']))&&($p)) {
 	$printer -> text("Ph No: +91 8329347297");
 	$printer -> feed();		
 	$printer -> setJustification(Escpos::JUSTIFY_LEFT);
-	$printer -> text("------------------------------------------------\n");
+
+
+
+	$sql0 = "SELECT a.*,b.car_no_plate FROM  `transactions` a JOIN  `cars` b ON a.car_id=b.car_id WHERE a.trans_id = '".$trans_id."' ;";
+	$result0 = mysqli_query($conn,$sql0);
+	$line = "";
+
+	while ($row = mysqli_fetch_assoc($result0)) {
+		$t_id 	= $row['trans_id'] + 100000;
+		$vh_no 	= str_replace(" ", "-",  $row['car_no_plate']);
+		$fuel 	= $row['fuel'];
+		$ltr 	= $row['liters'];
+		$rate 	= $row['rate'];
+		$amount = $row['amount'];
+
+		$line = new item(" ".$vh_no,$fuel,$rate,$ltr,$amount);
+	}
+
+
+	$printer -> text("T-ID: ".$t_id."\n");
+	$printer -> text("--------------------------------------------\n");
 
 
 
@@ -91,31 +128,14 @@ if ((isset($_GET['trans_id']))&&($p)) {
 	$header = new item("Vehicle No","Fuel","Rate","Ltr","Amount");
 
 	$printer ->text($header);
-	$printer -> text("------------------------------------------------\n");
+	$printer -> text("--------------------------------------------\n");
 	$printer -> feed();
 
 	/* Items */
 	$printer -> setJustification(Escpos::JUSTIFY_LEFT);
-
-	$sql0 = "SELECT a.*,b.car_no_plate FROM  `transactions` a JOIN  `cars` b ON a.car_id=b.car_id WHERE a.trans_id = '".$trans_id."' ;";
-	$result0 = mysqli_query($conn,$sql0);
-
-	$line = "";
-
-	while ($row = mysqli_fetch_assoc($result0)) {
-		$vh_no = $row['car_no_plate'];
-		$fuel = $row['fuel'];
-		$ltr = $row['liters'];
-		$rate = $row['rate'];
-		$amount = $row['amount'];
-
-		$line = new item($vh_no,$fuel,$rate,$ltr,$amount);
-	}
-
-	// foreach($items as $item) {
-	$printer -> text($line);
-	// }
-	$printer -> text("------------------------------------------------\n");
+	// line from while loop on top
+	$printer -> text($line);	
+	$printer -> text("--------------------------------------------\n");
 	$printer -> setEmphasis(false);
 		
 

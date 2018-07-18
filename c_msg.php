@@ -206,6 +206,11 @@ if(isset($_GET['t'])){
 				echo '<br>';
 
 				echo'<div class="container" >';
+					echo '<div class="title inline">T-ID</div>';  echo '<div class="val inline">'.($row['trans_id']+100000).'</div>';
+				echo '</div>';
+
+
+				echo'<div class="container" >';
 					echo '<div class="title inline">Fuel</div>';  echo '<div class="val inline">'.ucwords($row['fuel']).'</div>';
 				echo '</div>';
 
