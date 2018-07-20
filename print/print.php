@@ -101,12 +101,12 @@ if ((isset($_GET['trans_id']))&&($p)) {
 
 
 
-	$sql0 = "SELECT a.*,b.car_no_plate FROM  `transactions` a JOIN  `cars` b ON a.car_id=b.car_id WHERE a.trans_id = '".$trans_id."' ;";
+	$sql0 = "SELECT a.*,b.car_no_plate,c.id as max FROM  `transactions` a JOIN  `cars` b ON a.car_id=b.car_id JOIN `sync` c   WHERE a.trans_id = '".$trans_id."' AND c.table_name = 'transactions';";
 	$result0 = mysqli_query($conn,$sql0);
 	$line = "";
 
 	while ($row = mysqli_fetch_assoc($result0)) {
-		$t_id 	= $row['trans_id'] + 100000;
+		$t_id 	= $row['max'] + 100000 +1;
 		$vh_no 	= str_replace(" ", "-",  $row['car_no_plate']);
 		$fuel 	= $row['fuel'];
 		$ltr 	= $row['liters'];

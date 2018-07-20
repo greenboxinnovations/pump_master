@@ -31,6 +31,11 @@ class Sync
 
 	private function getAllSyncTable($pump_id){
 
+		$sql = "SELECT MAX(`trans_id`) as max FROM `transactions` WHERE 1;";
+		$this->_db->query($sql);
+		$r = $this->_db->single();
+		$max = $r['max'];
+
 		$sql = "SELECT * FROM `sync` WHERE `pump_id` = '".$pump_id."'";
 		$this->_db->query($sql);
 		$r = $this->_db->resultset();
@@ -39,8 +44,12 @@ class Sync
 
 		foreach($r as $row)
 		{
+			if ($row['table_name']=='transactions') {
+				$row['id'] = $max;
+			}
 			array_push($json, $row);
 		}
+
 		echo json_encode($json);
 	}
 
