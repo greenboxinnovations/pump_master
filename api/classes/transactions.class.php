@@ -626,9 +626,10 @@ class Transactions
 
 
 				//get cust type
-				$sql = "SELECT `cust_post_paid` FROM `customers` WHERE `cust_id` = '".$row['cust_id']."';";		
+				$sql = "SELECT `cust_post_paid`,`cust_ph_no` FROM `customers` WHERE `cust_id` = '".$row['cust_id']."';";		
 				$this->_db->query($sql);
-				$r = $this->_db->single();
+				$r = $this->_db->execute();
+				$ph_no = $r['cust_ph_no'];
 
 				if($r['cust_post_paid'] == "Y"){
 
@@ -649,7 +650,7 @@ class Transactions
 
 				$url = "http://fuelmaster.greenboxinnovations.in/c_msg.php?t=".$row['trans_string'];
 
-				// $this->sendMSG($car_no_plate, $row['fuel'], $row['amount'], $url, 9822848336);
+				$this->sendMSG($car_no_plate, $row['fuel'], $row['amount'], $url, $ph_no);
 				$this->sendMSG($car_no_plate, $row['fuel'], $row['amount'], $url, 8411815106);
 
 				$d = true;
