@@ -7,7 +7,8 @@ function sendMSG($car_no_plate, $phone_no){
 
 	$message = "Hi, Yor vehicle no ".$car_no_plate." has been assigned a QR code";
     $encodedMessage = urlencode($message);
-    $api = "https://www.fast2sms.com/dev/bulk?authorization=CbSpQve5NE&sender_id=FSTSMS&message=" . $encodedMessage . "&language=english&route=p&numbers=".trim($phone_no)."&flash=0";
+   
+    $api = "https://www.fast2sms.com/dev/bulk?authorization=CbSpQve5NE&sender_id=SLAUTO&message=" . $encodedMessage . "&language=english&route=t&numbers=".trim($phone_no)."&flash=0";
 
     // Get cURL resource
 	$curl = curl_init();
@@ -25,7 +26,7 @@ function sendMSG($car_no_plate, $phone_no){
 
 
 
-
+ 
 function updateSyncTable($table_name){
 	Global $conn;
 	
