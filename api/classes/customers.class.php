@@ -99,13 +99,11 @@ class Customers
 			$valid = false;
 			$output['msg'] = 'Invalid Phone Number';
 		}
+				
+				
+		$cust_pump_id	 = 1;
 		
-		try {
-			$cust_pump_id	 = $_SESSION['pump_id'];
-		} catch (Exception $e) {
-			$cust_pump_id	 = $postParams['pump_id'];
-		}
-		
+				
 		$cust_post_paid	 = $postParams['cust_post_paid'];
 		$cust_post_paid	 = trim($cust_post_paid);
 
