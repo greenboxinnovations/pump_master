@@ -46,6 +46,10 @@ class Cars
 
 
 	private function addCars($postParams){
+
+		$output = array();
+		$output['success'] = false;
+		
 		
 		$car_brand	 = $postParams['car_brand'];
 		$car_brand	 = trim($car_brand);
@@ -67,30 +71,42 @@ class Cars
 		$car_qr_code	 = trim($car_qr_code);
 
 
-
-		$sql = "INSERT INTO `cars` (`car_brand`,`car_sub_brand`,`car_no_plate`,`car_fuel_type`,`car_cust_id`,`car_qr_code`,`car_pump_id`) VALUES (:field1,:field2,:field3,:field4,:field5,:field6,:field7);";
-
+		$sql = "SELECT * FROM `cars` WHERE `car_no_plate` = '".$car_no_plate."';";		
 		$this->_db->query($sql);
-
-		$this->_db->bind(':field1', $car_brand);
-		$this->_db->bind(':field2', $car_sub_brand);
-		$this->_db->bind(':field3', $car_no_plate);
-		$this->_db->bind(':field4', $car_fuel_type);
-		$this->_db->bind(':field5', $car_cust_id);
-		$this->_db->bind(':field6', $car_qr_code);
-		$this->_db->bind(':field7', 1);
-
 		$this->_db->execute();
 
+		if($this->_db->rowCount() == 0)
+		{
+			$sql = "INSERT INTO `cars` (`car_brand`,`car_sub_brand`,`car_no_plate`,`car_fuel_type`,`car_cust_id`,`car_qr_code`,`car_pump_id`) VALUES (:field1,:field2,:field3,:field4,:field5,:field6,:field7);";
 
-		date_default_timezone_set("Asia/Kolkata");
-		$date = date("Y-m-d H:i:s");		
+			$this->_db->query($sql);
 
-		$table_name	  = "cars";
-		$id           = "car_id";
-		$unix = strtotime($date); 
+			$this->_db->bind(':field1', $car_brand);
+			$this->_db->bind(':field2', $car_sub_brand);
+			$this->_db->bind(':field3', $car_no_plate);
+			$this->_db->bind(':field4', $car_fuel_type);
+			$this->_db->bind(':field5', $car_cust_id);
+			$this->_db->bind(':field6', $car_qr_code);
+			$this->_db->bind(':field7', 1);
 
-		$this->updateSyncTable($table_name,$id,$unix);
+			$this->_db->execute();
+
+			date_default_timezone_set("Asia/Kolkata");
+			$date = date("Y-m-d H:i:s");		
+
+			$table_name	  = "cars";
+			$id           = "car_id";
+			$unix = strtotime($date); 
+
+			$this->updateSyncTable($table_name,$id,$unix);
+
+			$output['success'] = true;
+
+		}
+
+		echo json_encode($output);
+
+		
 	}
 
 
