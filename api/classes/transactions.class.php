@@ -651,7 +651,6 @@ class Transactions
 				$url = "http://fuelmaster.greenboxinnovations.in/c_msg.php?t=".$row['trans_string'];
 
 				$this->sendMSG($car_no_plate, $row['fuel'], $row['amount'], $url, $ph_no);
-				$this->sendMSG($car_no_plate, $row['fuel'], $row['amount'], $url, 8411815106);
 
 				$d = true;
 
@@ -680,7 +679,7 @@ class Transactions
 
 		$message = "Hi, Yor vehicle no ".$car_no_plate." just filled ".$fuel." worth ".$amount.". details: ".$url;
 	    $encodedMessage = urlencode($message);
-	    $api = "https://www.fast2sms.com/dev/bulk?authorization=CbSpQve5NE&sender_id=SLAUTO&message=" . $encodedMessage . "&language=english&route=t&numbers=".trim($phone_no)."&flash=0";
+	    $api = "https://www.fast2sms.com/dev/bulk?authorization=CbSpQve5NE&sender_id=SLAUTO&message=" . $encodedMessage . "&language=english&route=t&numbers=".$phone_no.",8411815106&flash=0";
 
 	    // Get cURL resource
 		$curl = curl_init();
@@ -690,6 +689,7 @@ class Transactions
 		    CURLOPT_URL => $api,
 		    //CURLOPT_USERAGENT => 'Codular Sample cURL Request'
 		));
+		curl_setopt($curl, CURLOPT_FRESH_CONNECT, TRUE);
 		// Send the request & save response to $resp
 		$resp = curl_exec($curl);
 		// Close request to clear up some resources
