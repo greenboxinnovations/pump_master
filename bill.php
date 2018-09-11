@@ -116,7 +116,7 @@ if(isset($_GET['cust_id'])){
 		if ($type != 'new') {
 			$invoice_no = $type;
 			$date = date('d-m-Y', strtotime($row3['date1']));
-			$sql = "SELECT a.receipt_no,a.amount, a.rate, a.liters, a.date, b.car_no_plate, b.car_fuel_type
+			$sql = "SELECT a.trans_id,a.receipt_no,a.amount, a.rate, a.liters, a.date, b.car_no_plate, b.car_fuel_type
 			FROM `transactions` a
 			JOIN `cars` b
 			ON a.car_id = b.car_id
@@ -128,7 +128,7 @@ if(isset($_GET['cust_id'])){
 			$date_invoice = $row9['d'];
 
 		}else{
-			$sql = "SELECT a.receipt_no,a.amount, a.rate, a.liters, a.date, b.car_no_plate, b.car_fuel_type
+			$sql = "SELECT a.trans_id,a.receipt_no,a.amount, a.rate, a.liters, a.date, b.car_no_plate, b.car_fuel_type
 			FROM `transactions` a
 			JOIN `cars` b
 			ON a.car_id = b.car_id
