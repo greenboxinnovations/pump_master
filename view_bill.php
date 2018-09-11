@@ -235,10 +235,11 @@ if(isset($_GET['cust_id'])){
 		echo '<tr>';
 			echo '<th></th>';
 			echo '<th>Receipt no</th>';
+			echo '<th>Trans ID</th>';
 			echo '<th style="text-align:center;">Date</th>';
 			echo '<th style="text-align:center;">Vehicle No</th>';
 			echo '<th style="text-align:center;">Fuel Type</th>';				
-			echo '<th style="text-align:center;">Amount Litres</th>';
+			echo '<th style="text-align:center;">Litres</th>';
 			echo '<th style="text-align:center;">Fuel Rate</th>';
 			echo '<th style="text-align:center;">Amount Rs</th>';
 			
@@ -260,6 +261,8 @@ if(isset($_GET['cust_id'])){
 			$car_no	 = strtoupper($row["car_no_plate"]);
 			$fuel	 = ucwords($row["car_fuel_type"]);
 
+			$trans_id_disp = $row["trans_id"] + 100000;
+
 			if($fuel == 'Diesel'){
 				$hsd += $amount;
 				$hsd_lit += $liters;
@@ -272,6 +275,7 @@ if(isset($_GET['cust_id'])){
 			echo '<tr>';
 				echo '<td class="td_num delete" id="'.$row['trans_id'].'"></td>';	
 				echo '<td>'.$row["receipt_no"].'</td>';
+				echo '<td>'.$trans_id_disp.'</td>';
 				echo '<td>'.$date.'</td>';
 				echo '<td>'.$car_no.'</td>';				
 				echo '<td>'.$fuel.'</td>';
@@ -289,14 +293,14 @@ if(isset($_GET['cust_id'])){
 
 		$grand = round($total+$service+$late_fee);
 
-		echo '<tr style="border-top:2px solid rgb(170,170,170);"><td></td><td colspan="4" class="td_num g">HSD</td><td class="td_num">'.$hsd_lit.'</td><td></td><td class="td_num">'.$hsd.'</td></tr>';
-		echo '<tr style="border-bottom:2px solid rgb(170,170,170);"><td></td><td colspan="4" class="td_num g">MS</td><td class="td_num">'.$ms_lit.'</td><td></td><td class="td_num">'.$ms.'</td></tr>';
+		echo '<tr style="border-top:2px solid rgb(170,170,170);"><td></td><td colspan="5" class="td_num g">HSD</td><td class="td_num">'.$hsd_lit.'</td><td></td><td class="td_num">'.$hsd.'</td></tr>';
+		echo '<tr style="border-bottom:2px solid rgb(170,170,170);"><td></td><td colspan="5" class="td_num g">MS</td><td class="td_num">'.$ms_lit.'</td><td></td><td class="td_num">'.$ms.'</td></tr>';
 
 
-		echo '<tr><td></td><td colspan="6" class="td_num g">TOTAL ITEM AMOUNT</td><td class="td_num">'.$total.'</td></tr>';
-		echo '<tr><td></td><td colspan="6" class="td_num g">MISC CHARGES</td><td class="td_num">'.$service.'</td></tr>';
-		echo '<tr><td></td><td colspan="6" class="td_num g">LATE PAYMENT FEE</td><td class="td_num">'.$late_fee.'</td></tr>';
-		echo '<tr style="font-weight: 700;"><td></td><td colspan="6" class="td_num g">TOTAL BILL AMOUNT</td><td class="td_num">'.$grand.'</td></tr>';
+		echo '<tr><td></td><td colspan="7" class="td_num g">TOTAL ITEM AMOUNT</td><td class="td_num">'.$total.'</td></tr>';
+		echo '<tr><td></td><td colspan="7" class="td_num g">MISC CHARGES</td><td class="td_num">'.$service.'</td></tr>';
+		echo '<tr><td></td><td colspan="7" class="td_num g">LATE PAYMENT FEE</td><td class="td_num">'.$late_fee.'</td></tr>';
+		echo '<tr style="font-weight: 700;"><td></td><td colspan="7" class="td_num g">TOTAL BILL AMOUNT</td><td class="td_num">'.$grand.'</td></tr>';
 		echo '</table>';
 
 
