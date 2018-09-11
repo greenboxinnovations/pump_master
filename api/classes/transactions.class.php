@@ -616,7 +616,7 @@ class Transactions
 
 			$sql1 = "SELECT * FROM `transactions` WHERE `car_id` = '".$row['car_id']."' AND  `date` = '".$row['date']."' AND `amount` = '".$row['amount']."' ;";	
 			$this->_db->query($sql1);
-			$this->_db->execute();		
+			$this->_db->execute();
 
 			if($this->_db->rowCount() == 0){
 				$sql = "INSERT INTO `transactions`(`pump_id`, `cust_id`, `car_id`, `user_id`, `receipt_no`, `shift`, `fuel`, `amount`, `rate`, `liters`, `billed`, `date`, `last_updated`,`trans_string`) VALUES ('".$row['pump_id']."','".$row['cust_id']."','".$row['car_id']."','".$row['user_id']."','".$row['receipt_no']."','".$row['shift']."','".$row['fuel']."','".$row['amount']."','".$row['rate']."','".$row['liters']."','".$row['billed']."','".$row['date']."','".$row['last_updated']."','".$row['trans_string']."');";
@@ -628,8 +628,9 @@ class Transactions
 				//get cust type
 				$sql = "SELECT `cust_post_paid`,`cust_ph_no` FROM `customers` WHERE `cust_id` = '".$row['cust_id']."';";		
 				$this->_db->query($sql);
-				$r = $this->_db->execute();
+				$r = $this->_db->single();
 				$ph_no = $r['cust_ph_no'];
+				$post_paid =$r['cust_post_paid'];
 
 				if($r['cust_post_paid'] == "Y"){
 
