@@ -201,7 +201,7 @@ if(isset($_GET['cust_id'])){
 			echo '<th style="text-align:center;">Date</th>';
 			echo '<th style="text-align:center;">Vehicle No</th>';
 			echo '<th style="text-align:center;">Fuel Type</th>';				
-			echo '<th style="text-align:center;">Amount Litres</th>';
+			echo '<th style="text-align:center;">Litres</th>';
 			echo '<th style="text-align:center;">Fuel Rate</th>';
 			echo '<th style="text-align:center;">Amount Rs</th>';
 		echo '</tr>';
