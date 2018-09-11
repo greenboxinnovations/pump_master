@@ -1,7 +1,7 @@
 <?php
 
 require '../query/conn.php';
-
+$counter = 0;
 // $sql = "SELECT * FROM `transactions` WHERE 1";
 
 $sql = "SELECT a.*,b.cust_f_name,b.cust_company,b.cust_m_name,b.cust_l_name,c.car_no_plate
@@ -82,8 +82,15 @@ while($row = mysqli_fetch_assoc($exe)){
 		echo '<td class="c_date">'.$display_date.'</td>';
 
 	echo '</tr>';
-	
+
+	$counter++;
 }
+if ($counter == 0) {
+	echo '<tr >';
+		echo '<td class="c_id">No Transactions present</td>';
+	echo '</tr>';
+}
+
 echo '</tbody>';
 echo '</table>';
 ?>
