@@ -58,6 +58,7 @@ if (isset($_GET['cust_id'])) {
 		echo '<thead>';
 			echo '<tr style="border:1px solid rgb(207,216,220);">';
 				echo '<th>Receipt no</th>';		
+				echo '<th>Transaction ID</th>';	
 				echo '<th>Plate No</th>';
 				echo '<th class="th_num">Rate</th>';
 				echo '<th class="th_num">Liters</th>';
@@ -75,6 +76,7 @@ if (isset($_GET['cust_id'])) {
 		while($row = mysqli_fetch_assoc($exe)){
 			// transaction details
 			$trans_id	 	= $row["trans_id"];	
+			$trans_id_disp  = $trans_id + 100000;
 			$cust_id	 	= $row["cust_id"];
 			$car_id	 		= $row["car_id"];
 			$liters	 		= $row["liters"];
@@ -133,6 +135,7 @@ if (isset($_GET['cust_id'])) {
 			// for ($i=0; $i < 50; $i++) { 
 			echo '<tr >';
 				echo '<td>'.$row["receipt_no"].'</td>';
+				echo '<td>'.$trans_id_disp.'</td>';
 				echo '<td>'.$car_no_plate.'</td>';
 				echo '<td class="td_num">'.$rate.'</td>';
 				echo '<td class="td_num">'.$liters.'</td>';
