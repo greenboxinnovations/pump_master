@@ -110,7 +110,9 @@ require 'exe/lock.php';
 			.change_this{width: 200px;}
 		}
 
-		.red{color: red;}
+		.red{color: #ed1275;}
+
+		.right_num{text-align: right;}
 	</style>
 
 	<script type="text/javascript" src="js/jquery.js"></script>

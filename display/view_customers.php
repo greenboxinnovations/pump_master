@@ -4,17 +4,46 @@ if(!isset($_SESSION)) {
 }
 require '../query/conn.php';
 
-$sql = "SELECT * FROM `customers` WHERE 1 ORDER BY `cust_post_paid` ASC, `cust_id` ASC ";
-$exe = mysqli_query($conn, $sql);
 
-$payment = 0;
+function sortPostPre(&$post_paid_arr, &$pre_paid_arr){
+	global $conn;
+	// sort by cust_post_paid
+	$sql = "SELECT * FROM `customers` WHERE 1 ORDER BY `cust_post_paid` ASC, `cust_id` ASC ";
+	$exe = mysqli_query($conn, $sql);
+	$count = mysqli_num_rows($exe);
 
-echo "<h3>Prepaid Accounts</h3>";
-echo "<br/>";
+	if ($count > 0) {	
+		while($row = mysqli_fetch_assoc($exe)){
+			if($row["cust_post_paid"] == "Y"){
+				array_push($post_paid_arr, $row);
+			}
+			else{
+				array_push($pre_paid_arr, $row);
+			}
+		}
+	}	
+}
 
-$count = mysqli_num_rows($exe);
-if ($count > 0) { 
-	
+
+function sortDisplayName(&$array){
+	foreach ($array as $key => $value) {
+		$display_name = "";
+		if($value['cust_company'] == ""){
+			$display_name = $value['cust_f_name']." ".$value['cust_l_name'];
+		}
+		else{
+			$display_name = $value['cust_company'];
+		}		
+		$array[$key]['display_name'] = $display_name;		
+	}	
+}
+
+function sortByName($a, $b) {
+	return strcmp($a["display_name"], $b["display_name"]);
+}
+
+function renderTable($array) {
+	$i = 1;
 	echo '<table id="header-fixed"></table>';
 	echo '<table id="table-2">';
 
@@ -25,7 +54,7 @@ if ($count > 0) {
 			echo '<th>Phone</th>';
 			// echo '<th>Pump ID</th>';
 
-			echo '<th>Balance</th>';
+			echo '<th class="right_num">Outstanding</th>';
 			// echo '<th>Outstanding</th>';
 			echo '<th>Last Updated</th>';
 			if ($_SESSION['role'] == "admin") {
@@ -35,17 +64,16 @@ if ($count > 0) {
 	echo '</thead>';
 
 	echo '<tbody>';
-	$i=1;
-	while($row = mysqli_fetch_assoc($exe)){
+	foreach ($array as $key => $row) {
+		
+	
+
 		$limit = false;
 		$upper_limit = 0;
 		
 		$cust_id	 	= $row["cust_id"];
-		$cust_f_name	= $row["cust_f_name"];
-		$cust_m_name	= $row["cust_m_name"];
-		$cust_l_name	= $row["cust_l_name"];
-		$cust_ph_no	 	= $row["cust_ph_no"];
-		$cust_company 	= $row["cust_company"];
+		$cust_dis_name	= ucwords($row["display_name"]);
+		$cust_ph_no	 	= $row["cust_ph_no"];		
 
 
 		$cust_post_paid	= $row["cust_post_paid"];
@@ -58,21 +86,15 @@ if ($count > 0) {
 
 		if ($cust_credit_limit == 0) {
 			$cust_credit_limit = 1;
-		}
-
-		if($cust_company == ""){
-			$cust_name 		 = ucwords($cust_f_name.' '.$cust_m_name.' '.$cust_l_name);	
-		}
-		else{
-			$cust_name 		 = ucwords($cust_company);
-		}
+		}		
 
 		if ($cust_post_paid == "Y") {
 			$cust_post_paid = "Postpaid";
 			$upper_limit = round(($cust_outstanding/$cust_credit_limit)*100);
-			$payment++;
+			$payment = 1;
 		}
 		else{
+			$payment = 0;
 			$cust_post_paid = "Prepaid";
 
 			if ($cust_balance < 10000) {
@@ -81,42 +103,10 @@ if ($count > 0) {
 		}
 
 		if($upper_limit > 80){
-			$limit = true;			
+			$limit = true;
 		}
 
-		if ($payment == 1 ) {
 
-			echo '</tbody>';
-			echo '</table>';
-
-			echo "<br/>";
-			echo "<h3>Postpaid Accounts</h3>";
-			echo "<br/>";
-
-			echo '<table id="header-fixed"></table>';
-			echo '<table id="table-1">';
-
-			echo '<thead>';
-				echo '<tr style="border:1px solid rgb(207,216,220);">';
-					echo '<th>Sr No</th>';
-					echo '<th>Customer Name</th>';
-					echo '<th>Phone</th>';
-					// echo '<th>Pump ID</th>';
-					echo '<th>Outstanding</th>';
-					echo '<th>Last Updated</th>';
-					if ($_SESSION['role'] == "admin") {
-							echo '<th></th>';
-					}
-					if ($_SESSION['role'] == "office") {
-						echo '<td custid='.$cust_id.' class="disable" >Disable</td>';
-					}
-				echo '</tr>';
-			echo '</thead>';
-
-			echo '<tbody>';
-		}
-
-		// for ($i=0; $i < 30; $i++) { 
 		if($limit){
 			echo '<tr custid="'.$cust_id.'" class="highlight red">';
 		}else{
@@ -124,14 +114,14 @@ if ($count > 0) {
 		}
 
 				echo '<td>'.$i.'</td>';
-				echo '<td>'.$cust_name.'</td>';
+				echo '<td>'.$cust_dis_name.'</td>';
 				echo '<td>'.$cust_ph_no.'</td>';
 				// echo '<td>'.$cust_pump_id.'</td>';
 				// echo '<td>'.$cust_post_paid	.'</td>';
 				if ($payment == 0) {
-					echo '<td>'.$cust_balance.'</td>';
+					echo '<td class="right_num">'.$cust_balance.'</td>';
 				}else{
-					echo '<td>'.$cust_outstanding.'</td>';
+					echo '<td class="right_num">'.$cust_outstanding.'</td>';
 				}
 				
 				echo '<td>'.$cust_last_updated.'</td>';
@@ -139,12 +129,72 @@ if ($count > 0) {
 					echo '<td custid='.$cust_id.' class="edit" >Edit</td>';
 				}
 				
-			echo '</tr>';
-		// }
+		echo '</tr>';		
 		$i++;
 	}
+	// echo '<pre>';
+	// foreach ($array as $key => $row) {
+	// 	print_r($row);
+	// }
+	// echo '</pre>';
 
 	echo '</tbody>';
 	echo '</table>';
 }
+
+
+// postpaid array
+$post_paid_arr = array();
+// prepaid array
+$pre_paid_arr = array();
+
+// sort array
+sortPostPre($post_paid_arr, $pre_paid_arr);
+
+// Notify if no customers
+if((sizeof($post_paid_arr) == 0) && (sizeof($pre_paid_arr) == 0)){
+	echo '<h3>No Customers Added</h3>';
+}
+// customers exist
+else{
+
+	// prepaid first
+	sortDisplayName($pre_paid_arr);
+	usort($pre_paid_arr, "sortByName");	
+	
+	if(sizeof($pre_paid_arr) > 0) {
+
+		echo "<h3>Prepaid Accounts</h3>";
+		echo "<br/>";
+
+		renderTable($pre_paid_arr);
+	}
+	else{
+		echo "<h3>No Prepaid Accounts Added</h3>";
+		echo "<br/>";
+	}
+
+
+	// postpaid first
+	sortDisplayName($post_paid_arr);
+	usort($post_paid_arr, "sortByName");	
+	
+	if(sizeof($post_paid_arr) > 0) {
+
+		echo "<br/>";
+		echo "<h3>Postpaid Accounts</h3>";
+		echo "<br/>";
+
+		renderTable($post_paid_arr);
+	}
+	else{
+		echo "<h3>No Postpaid Accounts Added</h3>";
+		echo "<br/>";
+	}
+
+
+
+}
+
+
 ?>
