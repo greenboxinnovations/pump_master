@@ -1,14 +1,14 @@
 <?php
 
 require '../query/conn.php';
-
+$counter = 0;
 // $sql = "SELECT * FROM `transactions` WHERE 1";
 
 $sql = "SELECT a.*,b.cust_f_name,b.cust_company,b.cust_m_name,b.cust_l_name,c.car_no_plate
 		FROM `transactions` a 
 		JOIN `customers` b ON a.cust_id = b.cust_id
 		JOIN `cars` c ON c.car_id = a.car_id
-		WHERE a.billed = 'N' ORDER BY a.receipt_no ASC";
+		WHERE a.billed = 'N' ORDER BY a.trans_id ASC";
 
 $exe = mysqli_query($conn, $sql); 
 
@@ -19,6 +19,7 @@ echo '<thead>';
 	echo '<tr>';
 		echo '<th class="c_id">ID</th>';
 		echo '<th class="c_receipt">R-No</th>';
+		echo '<th class="c_receipt">Trans ID</th>';
 		echo '<th class="c_name">Cust Name</th>';
 		echo '<th class="c_cno">Car No</th>';
 		echo '<th class="c_amount">Amount</th>';
@@ -32,6 +33,7 @@ while($row = mysqli_fetch_assoc($exe)){
 
 	// transaction details
 	$trans_id	 	= $row["trans_id"];	
+	$trans_id_disp	= $trans_id + 100000;
 	$cust_id	 	= $row["cust_id"];
 	$car_id	 		= $row["car_id"];
 	$amount	 		= $row["amount"];
@@ -70,6 +72,7 @@ while($row = mysqli_fetch_assoc($exe)){
 	echo '<tr >';
 		echo '<td class="c_id">'.$trans_id.'</td>';
 		echo '<td class="c_receipt" style="text-align:right;">'.$row['receipt_no'].'</td>';
+		echo '<td class="c_date" style="text-align:left;">'.$trans_id_disp.'</td>';
 		echo '<td class="c_name">'.$cust_name.'</td>';
 		// echo '<td>'.$cust_id.'</td>';
 		// echo '<td>'.$car_id.'</td>';
@@ -79,8 +82,15 @@ while($row = mysqli_fetch_assoc($exe)){
 		echo '<td class="c_date">'.$display_date.'</td>';
 
 	echo '</tr>';
-	
+
+	$counter++;
 }
+if ($counter == 0) {
+	echo '<tr >';
+		echo '<td class="c_id">No Transactions present</td>';
+	echo '</tr>';
+}
+
 echo '</tbody>';
 echo '</table>';
 ?>
