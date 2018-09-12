@@ -7,8 +7,6 @@ if(!isset($_SESSION))
 	session_start();
 }
 
-
-
 function updateSyncTable($table_name, $id, $unix){
 	Global $conn;	
 	
