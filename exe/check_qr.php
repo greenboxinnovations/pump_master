@@ -1,6 +1,4 @@
 <?php
-
-
 date_default_timezone_set("Asia/Kolkata");
 require '../query/conn.php';
 
@@ -8,10 +6,6 @@ $json = file_get_contents('php://input');
 $obj = json_decode($json,true);
 
 $qr = addslashes($obj['qr']);
-
-// if(isset($_GET['j'])){
-// 	$qr = 1;
-// }
 
 $json = array();
 
@@ -46,8 +40,6 @@ if($qr != ""){
 		if($display_name == ""){
 			$display_name = ucwords($row['cust_f_name']." ".$row['cust_l_name']);
 		}
-
-
 		// encode results
 		$json['success'] 	= true;
 		$json['cust_id'] 	= $cust_id;
@@ -55,7 +47,6 @@ if($qr != ""){
 		$json['isPetrol'] 	= $isPetrol;
 		$json['car_no'] 	= $car_no;
 		$json['car_id'] 	= $car_id;
-
 	}
 	else{
 		// no matches in cars db
