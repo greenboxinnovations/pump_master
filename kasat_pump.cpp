@@ -85,7 +85,7 @@ string dateString() {
 	return str;
 }
 
-void writeDateSecondary(Mat& frame){
+cv::Mat writeDateSecondary(Mat frame){
 
 	string date = dateString();
 	// just some valid rectangle arguments
@@ -107,10 +107,11 @@ void writeDateSecondary(Mat& frame){
 		0.5,
 		CV_RGB(255, 255, 255), //font color
 		0.5);
+	return frame;
 }
 
 
-void writeDatePrimary(Mat& frame){
+cv::Mat writeDatePrimary(Mat frame){
 
 	string date = dateString();
 	// just some valid rectangle arguments
@@ -132,6 +133,8 @@ void writeDatePrimary(Mat& frame){
 		1.5,
 		CV_RGB(255, 255, 255), //font color
 		2.0);
+
+	return frame;
 }
 
 
@@ -204,14 +207,20 @@ void getCamStatus() {
 				// select camera
 				if (res->getString("cam_no") == "1")
 				{
-					writeDateSecondary(displayFrame1);
-					imwrite(file_name, displayFrame1 );
+					// writeDateSecondary(displayFrame1);
+					// imwrite(file_name, displayFrame1 );
+					Mat d = writeDateSecondary(displayFrame1);
+					imwrite(file_name, d );
 				}else{
-					writeDateSecondary(displayFrame2);
-					imwrite(file_name, displayFrame2 );
+					// writeDateSecondary(displayFrame2);
+					// imwrite(file_name, displayFrame2 );
+					Mat d = writeDateSecondary(displayFrame2);
+					imwrite(file_name, d );
 				}
-				writeDatePrimary(displayFrame3);
-				imwrite(file_name2, displayFrame3 );
+				// writeDatePrimary(displayFrame3);
+				// imwrite(file_name2, displayFrame3 );
+				Mat s = writeDatePrimary(displayFrame3);
+				imwrite(file_name2, s );
 
 
 				// reset status in cameras

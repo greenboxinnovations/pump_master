@@ -30,14 +30,14 @@
 	<script type="text/javascript">
 		$(document).ready(function(){
 
-			$('body').delegate('#view_all', 'click', function(e) {
-				e.stopPropagation(); 
-				var cust_id = $(this).attr('custid');
+			// $('body').delegate('#view_all', 'click', function(e) {
+			// 	e.stopPropagation(); 
+			// 	var cust_id = $(this).attr('custid');
 
-				//As an HTTP redirect (back button will not work )
-				// window.location.replace("http://www.google.com");
-				window.location.replace("http://fuelmaster.greenboxinnovations.in/c_list.php?cust_id="+cust_id+"");
-			});
+			// 	//As an HTTP redirect (back button will not work )
+			// 	// window.location.replace("http://www.google.com");
+			// 	window.location.replace("http://fuelmaster.greenboxinnovations.in/c_list.php?cust_id="+cust_id+"");
+			// });
 		});
 	</script>
 
@@ -79,6 +79,9 @@
 			width: 50%;
 			margin-top: 5px;
 		}
+
+		a{text-decoration: none;color: rgba(255,255,255,0.85);}
+
 		#button_div button{
 			/*background-color: green;padding: 0px 10px 0px 10px;*/
 			  position: relative;
@@ -192,8 +195,10 @@ if(isset($_GET['t'])){
 
 				echo '<div id="button_div">';
 
+				$url = 'http://fuelmaster.greenboxinnovations.in/c_list.php?cust_id='.$row['cust_id'];
+
 				if ($btn) {
-					echo '<button custid="'.$row['cust_id'].'" id="view_all" >VIEW ALL</button>';
+					echo '<button custid="'.$row['cust_id'].'" id="view_all" ><a href="'.$url.'">VIEW ALL</a></button>';
 				}
 				echo '</div>';				
 				echo '<div id="clear_both"></div>';
