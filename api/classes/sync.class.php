@@ -36,7 +36,7 @@ class Sync
 		$r = $this->_db->single();
 		$max = $r['max'];
 
-		$sql = "SELECT * FROM `sync` WHERE `pump_id` = '".$pump_id."'";
+		$sql = "SELECT * FROM `sync` WHERE `pump_id` = '".$pump_id."';";
 		$this->_db->query($sql);
 		$r = $this->_db->resultset();
 
@@ -45,9 +45,19 @@ class Sync
 		foreach($r as $row)
 		{
 			if ($row['table_name']=='transactions') {
-				$row['id'] = $max;
+				$t = array();
+				$t['id'] = $max;
+				$t['table_name'] = $row['table_name'];
+				$t['pump_id'] = $row['pump_id'];
+				$t['last_updated'] = $row['last_updated'];
+				$t['sync_id'] = $row['sync_id'];
+				
+				array_push($json, $t);
 			}
-			array_push($json, $row);
+			else{
+				array_push($json, $row);
+			}
+			
 		}
 
 		echo json_encode($json);
