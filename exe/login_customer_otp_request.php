@@ -1,19 +1,10 @@
 <?php
 date_default_timezone_set("Asia/Kolkata");
-
 require '../query/conn.php';
-
-$json = file_get_contents('php://input');
-$obj = json_decode($json,true);
-
-$request_otp = addslashes($obj['request_otp']);
-$mobile_no = addslashes($obj['mobile_no']);
-
-$json = array();
 
 function sendOTP($otp,$mobile_no){
 
-	$message = "Thanks for registration at Select Automobiles. OTP: ".$otp;
+	$message = "Your Login OTP for Select Automobiles account is: ".$otp;
     $encodedMessage = urlencode($message);
     $api = "https://www.fast2sms.com/dev/bulk?authorization=CbSpQve5NE&sender_id=SLAUTO&message=" . $encodedMessage . "&language=english&route=t&numbers=".$mobile_no."&flash=0";
 
@@ -34,48 +25,47 @@ function sendOTP($otp,$mobile_no){
 	curl_close($curl);
 }
 
-if($request_otp == true){
+if (isset($_POST['request_otp'])) {
+	$mobile_no	= addslashes($_POST['mobile_no']);
 
-
-	$six_digit_random_number = mt_rand(100000, 999999);
-
-	// get details from cars
-	$sql1 = "SELECT * FROM `otp` WHERE `mobile_no` = '".$mobile_no."';";
+	$sql1 = "SELECT * FROM `otp` WHERE  `mobile_no` = '".$mobile_no."';";
 	$exe1 = mysqli_query($conn ,$sql1);
+	$row = mysqli_fetch_assoc($exe1);
 
 	if(mysqli_num_rows($exe1) == 0){
 
 		$time = date("Y-m-d H:i:s");
-		
+		$six_digit_random_number = mt_rand(100000, 999999);
 		// details from CUSTOMERS
 		$sql = "INSERT INTO `otp` (`mobile_no`,`otp`,`timestamp`) VALUES ('".$mobile_no."','".$six_digit_random_number."','".$time."') ;";
 		$exe = mysqli_query($conn ,$sql);
-		
-		// encode results
-		$json['success'] 	= true;
-		$json['otp'] 	= $six_digit_random_number;
 
 		sendOTP($six_digit_random_number,$mobile_no);		
 	}
 	else{
-		
-		$sql1 = "SELECT `otp` FROM `otp` WHERE  `mobile_no` = '".$mobile_no."';";
-		$exe1 = mysqli_query($conn ,$sql1);
-		$row = mysqli_fetch_assoc($exe1);
 
+		$time = date("Y-m-d H:i:s");
 		$otp = $row['otp'];
-		sendOTP($otp,$mobile_no);	
-		
-		$json['success'] 	= true;
-		$json['msg'] = 'OTP already present,resent';
-	}		
-}
-else{
-	// request is empty
-	$json['success'] = false;
-	$json['msg'] = "OTP Request Error";
-}
+		$timestamp = $row['timestamp'];
 
-echo json_encode($json, JSON_NUMERIC_CHECK);
+		$diff = strtotime($timestamp) - strtotime($time);
+		
+		if ($diff < 300) {
+			sendOTP($otp,$mobile_no);
+		}else{
+
+			$sql1 = "DELETE FROM `otp` WHERE `mobile_no` = '".$mobile_no."';";
+			$exe1 = mysqli_query($conn ,$sql1);
+
+			$six_digit_random_number = mt_rand(100000, 999999);
+
+			$sql = "INSERT INTO `otp` (`mobile_no`,`otp`,`timestamp`) VALUES ('".$mobile_no."','".$six_digit_random_number."','".$time."') ;";
+			$exe = mysqli_query($conn ,$sql);
+
+			sendOTP($six_digit_random_number,$mobile_no);	
+
+		}
+	}			
+}
 
 ?>

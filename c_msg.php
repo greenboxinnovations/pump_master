@@ -1,8 +1,12 @@
+<?php
+
+require 'exe/mobile_lock.php';
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
 	<title>GreenBox Innovations</title>
-
 	<!-- favicons -->
 	<link rel="apple-touch-icon" sizes="57x57" href="css/favi/apple-icon-57x57.png">
 	<link rel="apple-touch-icon" sizes="60x60" href="css/favi/apple-icon-60x60.png">
@@ -30,14 +34,24 @@
 	<script type="text/javascript">
 		$(document).ready(function(){
 
-			// $('body').delegate('#view_all', 'click', function(e) {
+			$('body').delegate('#login', 'click', function(e) {
 			// 	e.stopPropagation(); 
-			// 	var cust_id = $(this).attr('custid');
 
-			// 	//As an HTTP redirect (back button will not work )
-			// 	// window.location.replace("http://www.google.com");
-			// 	window.location.replace("http://fuelmaster.greenboxinnovations.in/c_list.php?cust_id="+cust_id+"");
-			// });
+				var mobile_no = $(this).attr('mobile');
+
+				$.ajax({
+					url: 'exe/login_customer_otp_request.php',
+					type: 'POST',
+					data:{
+						mobile_no : mobile_no,
+						request_otp: true
+					},
+					success: function(response) {
+						console.log(response);
+					}
+				});
+			
+			});
 		});
 	</script>
 
@@ -86,59 +100,59 @@
 			/*background-color: green;padding: 0px 10px 0px 10px;*/
 			  position: relative;
 
-/*display: block;*/
-/*margin: 30px auto;*/
-padding: 10px;
+		/*display: block;*/
+		/*margin: 30px auto;*/
+		padding: 10px;
 
-overflow: hidden;
+		overflow: hidden;
 
-border-width: 0;
-outline: none;
-border-radius: 2px;
-box-shadow: 0 1px 4px rgba(0, 0, 0, .6);
-font-weight: 600;
-background-color: #2E66B1;
-color: #ecf0f1;
+		border-width: 0;
+		outline: none;
+		border-radius: 2px;
+		box-shadow: 0 1px 4px rgba(0, 0, 0, .6);
+		font-weight: 600;
+		background-color: #2E66B1;
+		color: #ecf0f1;
 
-transition: background-color .3s;
-		}
-		#clear_both{clear: both;}
-		img {
-			display: block;
-			vertical-align: bottom;
-		  height: auto;
-		  width: 100%;
-		  border-bottom-left-radius: 5px;
-		  border-bottom-right-radius: 5px;
-		  /*margin-left: auto;		  */
-		  /*margin-right: auto;*/
-		  /*margin: 20px;*/
-		}
+		transition: background-color .3s;
+				}
+				#clear_both{clear: both;}
+				img {
+					display: block;
+					vertical-align: bottom;
+				  height: auto;
+				  width: 100%;
+				  border-bottom-left-radius: 5px;
+				  border-bottom-right-radius: 5px;
+				  /*margin-left: auto;		  */
+				  /*margin-right: auto;*/
+				  /*margin: 20px;*/
+				}
 
-		.img_border{			
-			border: 1px solid rgb(180,180,180);margin-bottom: 20px;
-			border-radius: 5px;
-		}
-		.img_desc{
-			/*background-color: rgb(200,200,200);*/
-			background-color: #2E66B1;
-			color: rgba(255,255,255,0.9);
-			padding-left: 20px;
-			padding-top: 5px;
-			padding-bottom: 5px;
-			font-weight: 600;
-			border-top-left-radius: 5px;
-			border-top-right-radius: 5px;
-			/*margin-top: 25px;			*/
-		}
+				.img_border{			
+					border: 1px solid rgb(180,180,180);margin-bottom: 20px;
+					border-radius: 5px;
+				}
+				.img_desc{
+					/*background-color: rgb(200,200,200);*/
+					background-color: #2E66B1;
+					color: rgba(255,255,255,0.9);
+					padding-left: 20px;
+					padding-top: 5px;
+					padding-bottom: 5px;
+					font-weight: 600;
+					border-top-left-radius: 5px;
+					border-top-right-radius: 5px;
+					/*margin-top: 25px;			*/
+				}
 
-		.title{text-align: left;}
-		.val{
-			 
-		}
-		.inline{
-			display: inline-table;width: 50%;
-		}
+				.title{text-align: left;}
+				.val{
+					 
+				}
+				.inline{
+					display: inline-table;width: 50%;
+				}
 	</style>
 </head>
 <body>
@@ -148,12 +162,11 @@ transition: background-color .3s;
 </div>
 <div id="top_header_bar"></div>
 
-
 <div id="padding_div">
 
 <?php
-
 require 'query/conn.php';
+
 
 if(isset($_GET['t'])){
 	$trans_string = $_GET['t'];
@@ -165,7 +178,7 @@ if(isset($_GET['t'])){
 
 	// prepared statement
 	// $sql = "SELECT * FROM `transactions` WHERE `trans_string` = ?";
-	$sql = "SELECT a.*,b.car_no_plate, c.cust_company,c.cust_f_name,c.cust_l_name
+	$sql = "SELECT a.*,b.car_no_plate, c.cust_company,c.cust_f_name,c.cust_l_name,c.cust_ph_no
 			FROM `transactions` a
 			JOIN `cars` b
 			ON a.car_id = b.car_id
@@ -173,10 +186,8 @@ if(isset($_GET['t'])){
 			ON c.cust_id = a.cust_id
 			where a.trans_string = '".$trans_string."'";
 	
-
 	$exe = mysqli_query($conn, $sql);
 	if(mysqli_num_rows($exe) > 0){
-
 		while($row = mysqli_fetch_assoc($exe)) {
 
 			//--------------------------------//
@@ -195,11 +206,20 @@ if(isset($_GET['t'])){
 
 				echo '<div id="button_div">';
 
-				$url = 'http://fuelmaster.greenboxinnovations.in/c_list.php?cust_id='.$row['cust_id'];
+				$url  = 'http://fuelmaster.greenboxinnovations.in/c_list.php?cust_id='.$row['cust_id'];
+				$url1 = 'http://fuelmaster.greenboxinnovations.in/customer_login.php?cust_id='.$row['cust_id'];
 
-				if ($btn) {
+				// if ($btn) {
+				// 	echo '<button custid="'.$row['cust_id'].'" id="view_all" ><a href="'.$url.'">VIEW ALL</a></button>';
+				// }
+
+				//check if customer has logged in ans the cookie is set and is valid if yes proceed to list page else login
+				if ($login_check == 1) {
 					echo '<button custid="'.$row['cust_id'].'" id="view_all" ><a href="'.$url.'">VIEW ALL</a></button>';
+				}else{
+					echo '<button custid="'.$row['cust_id'].'" id="login" mobile="'.$row['cust_ph_no'].'"  ><a href="'.$url1.'">LOGIN</a></button>';
 				}
+
 				echo '</div>';				
 				echo '<div id="clear_both"></div>';
 
@@ -264,12 +284,7 @@ if(isset($_GET['t'])){
 		}	
 	}
 }
-
-
-
 ?>
-
 </div><!-- padding div -->
-
 </body>
 </html>
