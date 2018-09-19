@@ -31,10 +31,21 @@
 			$(document).ready(function(){
 
 				$('body').delegate('tr', 'click', function() {
-					  
-					var trans_string = $(this).attr('t');
-					window.location.href = "http://fuelmaster.greenboxinnovations.in/c_msg.php?t="+trans_string;
-					
+
+
+					// window.open('exe/report.php?cust_id='+cust_id+'&date1='+from+'&date2='+to+'&type='+type+'&date_invoice='+date_invoice+'&invoice_no='+invoice_no, '_blank');				  
+
+					if($('#table_holder_trans').is(':visible')){
+
+						var trans_string = $(this).attr('t');
+						window.location.href = "http://fuelmaster.greenboxinnovations.in/c_msg.php?t="+trans_string;						
+					}
+					else{
+						var invoice_no = $(this).attr('t');
+
+						window.open('exe/report.php?cust_id=old&date1=old&date2=old&type=old&date_invoice=t&invoice_no='+invoice_no, '_blank');	
+						// window.open('exe/report.php?cust_id=old&date1=old&date2=old&type=old&date_invoice=t&invoice_no='+invoice_no);	
+					}					
 				});
 
 
@@ -46,12 +57,16 @@
 							$('#main_container').css("border-top-left-radius","0px");
 							$('#left_top').hide();
 							$('#right_top').show();
+							$('#table_holder_invoices').hide();
+							$('#table_holder_trans').show();
 						}
 						else{
 							$('#main_container').css("border-top-right-radius","0px");
 							$('#main_container').css("border-top-left-radius","7px");
 							$('#left_top').show();
 							$('#right_top').hide();
+							$('#table_holder_invoices').show();
+							$('#table_holder_trans').hide();
 						}
 
 						$('.pager_single').removeClass('pager_active');
@@ -100,7 +115,11 @@
 				font-size: 14px;
 				font-weight: 700;line-height: 50px;color: rgb(157,157,171);			
 			}
-			.pager_single{flex: 1;text-align: center;}
+			.pager_single{flex: 1;text-align: center;
+
+				border:1px solid transparent;
+				border-bottom: none;
+			}
 			.pager_active{background-color: #fff;color:rgb(112,157,224);border-top-right-radius: 7px;border-top-left-radius: 7px;
 				border:1px solid rgb(220,220,220);
 				border-bottom: none;
@@ -146,6 +165,9 @@ width: calc(50% - 3px);
 				padding-bottom: 5px;
 				font-size: 12px;
 			}
+
+			#table_holder_invoices{display: none;}
+
 			.right_text{text-align: right;}		
 			.amount{
 				width:50px;
@@ -154,6 +176,7 @@ width: calc(50% - 3px);
 			}
 			.fuel{
 				width: 20px;
+				padding-right: 5px;
 				text-align: right;
 				color: rgb(180,180,180);			
 				/*background-color: green;*/
@@ -168,6 +191,10 @@ width: calc(50% - 3px);
 				color: rgb(180,180,180);
 				/*background-color: green;*/
 			}
+
+			.in_amount{padding-right: 10px;width:50px;}
+			.issued{width: 50px;padding-right: 10px;color: rgb(180,180,180);}
+			.from,.to{width: 50px;padding-right: 10px;}
 		</style>
 
 	</head>
@@ -232,7 +259,7 @@ width: calc(50% - 3px);
 						echo '<div id="cust_display_name">'.$display_name.'</div>';
 						echo'<br/>';
 
-						echo '<div id="table_holder">';
+						echo '<div id="table_holder_trans">';
 						echo '<table>';
 						echo'<tr class="header">';
 							echo '<th class="sr">#</th>';
@@ -267,9 +294,53 @@ width: calc(50% - 3px);
 				// 	echo '<td>Total</td>';
 				// 	echo '<td class="right_text">'.$total.'</td>';
 				// echo '</tr>';
+				echo '</table>';
+				echo '</div>'; // id="table_holder_trans"
+			}else{
+				echo '<div><h2>No Transactions</h2></div>';
 			}
-			echo '</table>';
-			echo '</div>'; // id="table_holder"
+
+
+
+			$sql = "SELECT * FROM `invoices` WHERE `cust_id` = '".$cust_id."' ORDER BY `in_id` DESC;";
+			$exe = mysqli_query($conn, $sql);
+			if(mysqli_num_rows($exe) > 0){
+				$i=0;
+				while($row = mysqli_fetch_assoc($exe)) {
+
+					if ($i == 0) {
+						$display_name 	= ucwords($display_name);
+												
+						echo '<div id="table_holder_invoices">';
+						echo '<table>';
+						echo'<tr class="header">';
+							echo '<th class="sr">#</th>';
+							echo '<th class="from">FROM</th>';
+							echo '<th class="to">TO</th>';
+							echo '<th class="issued">ISSUED</th>';
+							echo '<th class="right_text in_amount">AMOUNT</th>';
+						echo '</tr>';
+					}
+					$i++;					
+
+			
+					echo'<tr t="'.$row['invoice_no'].'">';
+						echo '<td class="sr">'.$i.'</td>';  
+						echo '<td>'.date('M j',strtotime($row['from'])).'</td>';
+						echo '<td class="">'.date('M j',strtotime($row['to'])).'</td>';  
+						
+						// echo '<td>'.date('d-m-Y',strtotime($row['date'])).'</td>'; 
+						echo '<td class="issued">'.date('M j',strtotime($row['date'])).'</td>';
+						echo '<td class="right_text in_amount">'.$row['amount'].'</td>';
+
+					echo '</tr>';
+				}
+				echo '</table>';
+				echo '</div>'; // id="table_holder_invoices"
+			}else{
+				echo '<div><h2>No Invoices</h2></div>';
+			}
+			
 		}
 		?>
 	</div>
