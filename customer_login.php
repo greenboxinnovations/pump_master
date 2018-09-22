@@ -26,25 +26,33 @@
 	<link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
+
+	<script type="text/javascript" src="js/user_agent.js"></script>
 	<script type="text/javascript" src="js/jquery.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function(){
+			
+			var storage = "";
+			var user_agent = "";
+			storage = jscd.os +' '+ jscd.osVersion +' '+ jscd.browser +' '+jscd.mobile;
+			user_agent = navigator.userAgent;
 
-			 function setCookie(key, value, days) {
-	            var expires = new Date();
-	            if (days) {
-	                expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
-	                document.cookie = key + '=' + value + ';expires=' + expires.toUTCString();
-	            } else {
-	                document.cookie = key + '=' + value + ';expires=Fri, 30 Dec 9999 23:59:59 GMT;';
-	            }
-	        }
+
+			function setCookie(key, value, days) {
+				var expires = new Date();
+				if (days) {
+					expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
+					document.cookie = key + '=' + value + ';expires=' + expires.toUTCString();
+				} else {
+					document.cookie = key + '=' + value + ';expires=Fri, 30 Dec 9999 23:59:59 GMT;';
+				}
+			}
 
 			$('body').delegate('#login', 'click', function() {
 				  
 				var mobile_no 	= $('#mobile').text();
 				var otp    		= $('#otp').val();
-				var cust_id 	= $(this).attr('custid'); 
+				var cust_id 	= $(this).attr('custid');				
 
 				var url = 'exe/login_customer_otp_verify.php';
 				var method = 'post';
@@ -56,6 +64,8 @@
 						mobile_no : mobile_no,
 						cust_id : cust_id,
 						otp : otp,
+						storage : storage,
+						user_agent : user_agent,
 						verify_otp : true
 					},						
 					success: function(response) {

@@ -1,8 +1,3 @@
-<?php
-
-require 'exe/mobile_lock.php';
-?>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -30,9 +25,46 @@ require 'exe/mobile_lock.php';
 	<link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
+	<script type="text/javascript" src="js/user_agent.js"></script>
 	<script type="text/javascript" src="js/jquery.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function(){
+
+
+			var storage = "";
+			var user_agent = "";
+			storage = jscd.os +' '+ jscd.osVersion +' '+ jscd.browser +' '+jscd.mobile;
+			user_agent = navigator.userAgent;
+			console.log(storage,user_agent);
+			check(storage,user_agent);
+
+			function check($storage,$user_agent){
+				$.ajax({
+					url: 'exe/mobile_lock.php',
+					type: 'POST',
+					data:{
+						storage : $storage,
+						user_agent: $user_agent
+					},
+					success: function(response) {
+						console.log(response);
+						var data = JSON.parse(response);
+						if(data.success){
+							console.log("asd");
+							$('#view_all').show();
+							$('#login').hide();
+						}
+						else{
+							console.log("fail");
+							$('#view_all').hide();
+							$('#login').show();
+						}
+					}
+				});
+			}
+
+
+
 
 			$('body').delegate('#login', 'click', function(e) {
 			// 	e.stopPropagation(); 
@@ -129,7 +161,7 @@ require 'exe/mobile_lock.php';
 				  /*margin: 20px;*/
 				}
 
-				.img_border{			
+				.img_border{
 					border: 1px solid rgb(180,180,180);margin-bottom: 20px;
 					border-radius: 5px;
 				}
@@ -214,11 +246,18 @@ if(isset($_GET['t'])){
 				// }
 
 				//check if customer has logged in ans the cookie is set and is valid if yes proceed to list page else login
-				if ($login_check == 1) {
-					echo '<button custid="'.$row['cust_id'].'" id="view_all" ><a href="'.$url.'">VIEW ALL</a></button>';
-				}else{
-					echo '<button custid="'.$row['cust_id'].'" id="login" mobile="'.$row['cust_ph_no'].'"  ><a href="'.$url1.'">LOGIN</a></button>';
-				}
+				// if ($login_check == 1) {
+				// 	echo '<button custid="'.$row['cust_id'].'" id="view_all" ><a href="'.$url.'">VIEW ALL</a></button>';
+				// }else{
+				// 	echo '<button custid="'.$row['cust_id'].'" id="login" mobile="'.$row['cust_ph_no'].'"  ><a href="'.$url1.'">LOGIN</a></button>';
+				// }
+
+
+				echo '<button custid="'.$row['cust_id'].'" style="display:none;" id="view_all" ><a href="'.$url.'">VIEW ALL</a></button>';
+			
+				echo '<button custid="'.$row['cust_id'].'" style="display:none;" id="login" mobile="'.$row['cust_ph_no'].'"  ><a href="'.$url1.'">LOGIN</a></button>';
+				
+
 
 				echo '</div>';				
 				echo '<div id="clear_both"></div>';

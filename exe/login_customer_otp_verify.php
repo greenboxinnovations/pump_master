@@ -11,8 +11,10 @@ if (isset($_POST['verify_otp'])) {
 	$json['success'] = false;
 
 	$mobile_no	= addslashes($_POST['mobile_no']);
-	$otp	= addslashes($_POST['otp']);
+	$otp		= addslashes($_POST['otp']);
 	$cust_id	= addslashes($_POST['cust_id']);
+	$storage	= addslashes($_POST['storage']);
+	$user_agent	= addslashes($_POST['user_agent']);
 
 	$sql1 = "SELECT * FROM `otp` WHERE `mobile_no` = '".$mobile_no."';";
 	$exe1 = mysqli_query($conn ,$sql1);
@@ -37,12 +39,19 @@ if (isset($_POST['verify_otp'])) {
 
 			$token = substr(strtr(base64_encode(openssl_random_pseudo_bytes(22)), '+', '.'), 0, 22);
 
-			$sql1 = "UPDATE `customers` SET `token`= '".$token."' ,`cust_last_updated` = '".$time."' WHERE `cust_id` = '".$cust_id."' ;";
-			$exe1 = mysqli_query($conn ,$sql1);
+			// $sql1 = "UPDATE `customers` SET `token`= '".$token."' ,`cust_last_updated` = '".$time."' WHERE `cust_id` = '".$cust_id."' ;";
+			// $exe1 = mysqli_query($conn ,$sql1);
+
+			
+
+
+			$sql2 = "INSERT INTO `tokens`(`cust_id`,`token`, `last_updated`, `user_agent`, `storage_details`) VALUES ('".$cust_id."','".$token."','".$time."','".$user_agent."','".$storage."');";
+			$exe2 = mysqli_query($conn ,$sql2);
 
 			$json['token'] = $token;
 
 			setcookie("fuelmaster_user", $token, (30 * 24 * 60 * 60 * 1000),"/");
+
 
 		}else{
 			$json['msg'] = 'Retry sending otp';

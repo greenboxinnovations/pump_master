@@ -26,12 +26,60 @@
 		<link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
+		<script type="text/javascript" src="js/user_agent.js"></script>
 		<script type="text/javascript" src="js/jquery.js"></script>
 		<script type="text/javascript">
 			$(document).ready(function(){
 
-				$('body').delegate('tr', 'click', function() {
+				var storage = "";
+				var user_agent = "";
+				storage = jscd.os +' '+ jscd.osVersion +' '+ jscd.browser +' '+jscd.mobile;
+				user_agent = navigator.userAgent;
+				console.log(storage,user_agent);
+				check(storage,user_agent);
 
+				function check($storage,$user_agent){
+					$.ajax({
+						url: 'exe/mobile_lock.php',
+						type: 'POST',
+						data:{
+							storage : $storage,
+							user_agent: $user_agent
+						},
+						success: function(response) {
+							console.log(response);
+							var data = JSON.parse(response);
+							if(data.success){
+								console.log("success");								
+							}
+							else{
+								console.log("fail");
+								var cust_id = getUrlParameter('cust_id');
+								window.location = 'http://fuelmaster.greenboxinnovations.in/customer_login.php?cust_id='+cust_id;
+							}
+						}
+					});
+				}
+
+
+				var getUrlParameter = function getUrlParameter(sParam) {
+			    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+			        sURLVariables = sPageURL.split('&'),
+			        sParameterName,
+			        i;
+
+			    for (i = 0; i < sURLVariables.length; i++) {
+			        sParameterName = sURLVariables[i].split('=');
+
+			        if (sParameterName[0] === sParam) {
+			            return sParameterName[1] === undefined ? true : sParameterName[1];
+			        }
+			    }
+			};
+
+
+
+				$('body').delegate('tr', 'click', function() {
 
 					// window.open('exe/report.php?cust_id='+cust_id+'&date1='+from+'&date2='+to+'&type='+type+'&date_invoice='+date_invoice+'&invoice_no='+invoice_no, '_blank');				  
 
