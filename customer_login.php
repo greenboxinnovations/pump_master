@@ -91,8 +91,62 @@
 						// 	// });
 						// }
 				    }	
-				});
+				});				
+			});
+
+
+			$('body').delegate('#login_send', 'click', function(){
+				var mobile_no 	= $('#ph_no').val();								
+				alert(mobile_no);
+				// var url = 'exe/login_customer_otp_verify.php';
+				var method = 'post';
 				
+				$.ajax({
+					url: url,
+					type: method,
+					data:{
+						mobile_no : mobile_no,
+						cust_id : cust_id,
+						otp : otp,
+						storage : storage,
+						user_agent : user_agent,
+						verify_otp : true
+					},						
+					success: function(response) {
+						console.log(response);
+						window.location.href = 'http://fuelmaster.greenboxinnovations.in/c_list.php?cust_id='+cust_id;
+					}
+				});
+			});
+
+
+			$('body').delegate('#login_get_otp', 'click', function(){
+				var mobile_no 	= $('#ph_no').val();								
+				// alert(mobile_no);
+				// var url = 'exe/login_customer_otp_verify.php';
+				var method = 'post';
+
+				if(mobile_no.length != 10){
+					// alert(mobile_no.length);
+					alert("Invalid Phone Number");
+				}
+				
+				// $.ajax({
+				// 	url: url,
+				// 	type: method,
+				// 	data:{
+				// 		mobile_no : mobile_no,
+				// 		cust_id : cust_id,
+				// 		otp : otp,
+				// 		storage : storage,
+				// 		user_agent : user_agent,
+				// 		verify_otp : true
+				// 	},						
+				// 	success: function(response) {
+				// 		console.log(response);
+				// 		window.location.href = 'http://fuelmaster.greenboxinnovations.in/c_list.php?cust_id='+cust_id;
+				// 	}
+				// });
 			});
 
 		});
@@ -260,6 +314,8 @@
 	<?php
 	require 'query/conn.php';
 
+
+	// COMING FROM MESSAGE
 	if(isset($_GET['cust_id'])){
 
 		$cust_id = $_GET['cust_id'];
@@ -281,12 +337,47 @@
 				echo '</tr>';
 				echo '</table>';
 
+
+				echo'<div style="text-align:center;margin-bottom:10px;">';
+					echo'<button class="mat_btn" id="" custid="'.$cust_id.'">Resend OTP</button>';
+				echo'</div>';
+
 				echo'<div style="text-align:center;margin-bottom:10px;">';
 					echo'<button class="mat_btn" id="login" custid="'.$cust_id.'">LOGIN</button>';
 				echo'</div>';
 				
 			}
 		}
+		
+	}
+	// COMING FROM DESKTOP
+	else{
+
+		echo '<table>';
+		echo'<tr class="header">';
+			echo '<th class="car">Mobile No</th>';
+			echo '<th class="car">OTP</th>';
+		echo '</tr>';
+
+		echo'<tr>';
+			echo '<td id="mobile"><input type="number" id="ph_no"></input></td>';			
+			echo '<td class="fuel"><input type="number" id="otp"  value=""></input></td>';
+		echo '</tr>';
+		echo '</table>';
+
+
+		echo'<div style="text-align:center;margin-bottom:10px;">';
+			echo'<button class="mat_btn" id="" >Resend OTP</button>';
+		echo'</div>';
+
+		echo'<div style="text-align:center;margin-bottom:10px;">';
+			echo'<button class="mat_btn" id="login_get_otp">SEND OTP</button>';
+		echo'</div>';
+
+
+		echo'<div id="login_desktop" style="text-align:center;margin-bottom:10px;">';
+			echo'<button class="mat_btn" id="login_desktop">LOGIN</button>';
+		echo'</div>';
 	}
 
 	?>
