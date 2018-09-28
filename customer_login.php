@@ -148,33 +148,33 @@
 			}); 
 
 
+
+			
+
+
 			$('body').delegate('#login_get_otp', 'click', function(){
-				var mobile_no 	= $('#ph_no').val();								
-				// alert(mobile_no);
-				// var url = 'exe/login_customer_otp_verify.php';
-				var method = 'post';
+				var mobile_no 	= $('#mobile').text();							
 
 				if(mobile_no.length != 10){
 					// alert(mobile_no.length);
 					alert("Invalid Phone Number");
+				}else{
+					$.ajax({
+						url: 'exe/login_customer_otp_request.php',
+						type: 'POST',
+						data:{
+							mobile_no : mobile_no,
+							request_otp: true
+						},
+						success: function(response) {
+							var json = $.parseJSON(response);
+							console.log(json);
+							
+						}
+					});
 				}
 				
-				// $.ajax({
-				// 	url: url,
-				// 	type: method,
-				// 	data:{
-				// 		mobile_no : mobile_no,
-				// 		cust_id : cust_id,
-				// 		otp : otp,
-				// 		storage : storage,
-				// 		user_agent : user_agent,
-				// 		verify_otp : true
-				// 	},						
-				// 	success: function(response) {
-				// 		console.log(response);
-				// 		window.location.href = 'http://fuelmaster.greenboxinnovations.in/c_list.php?cust_id='+cust_id;
-				// 	}
-				// });
+			
 			});
 
 		});
@@ -367,7 +367,7 @@
 
 
 				echo'<div style="text-align:center;margin-bottom:10px;">';
-					echo'<button class="mat_btn" id="" custid="'.$cust_id.'">Resend OTP</button>';
+					echo'<button class="mat_btn" id="resend_otp" custid="'.$cust_id.'">Resend OTP</button>';
 				echo'</div>';
 
 				echo'<div style="text-align:center;margin-bottom:10px;">';
@@ -389,7 +389,6 @@
 
 		echo'<tr>';
 			echo '<td id="mobile"><input type="number" id="ph_no"></input></td>';			
-			echo '<td class="fuel"><input type="number" id="otp"  value=""></input></td>';
 		echo '</tr>';
 		echo '</table>';
 

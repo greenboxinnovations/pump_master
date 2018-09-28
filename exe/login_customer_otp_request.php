@@ -31,7 +31,7 @@ if (isset($_POST['request_otp'])) {
 
 	$sql   = "SELECT * FROM `customers` WHERE  `cust_ph_no` = '".$mobile_no."';";
 	$exe   = mysqli_query($conn ,$sql);
-	$count = mysqli_num_rows($sql);
+	$count = mysqli_num_rows($exe);
 
 	if ($count >0) {
 
@@ -86,6 +86,7 @@ if (isset($_POST['request_otp'])) {
 		$output['msg'] = 'Mobile number not registered';
 	}
 
+	echo json_encode($output, JSON_NUMERIC_CHECK);
 		
 }
 
