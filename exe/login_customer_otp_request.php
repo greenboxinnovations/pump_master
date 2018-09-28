@@ -2,12 +2,13 @@
 date_default_timezone_set("Asia/Kolkata");
 require '../query/conn.php';
 
+$output=array();
 function sendOTP($otp,$mobile_no){
 
 	$message = "Your Login OTP for Select Automobiles account is: ".$otp;
     $encodedMessage = urlencode($message);
     $api = "https://www.fast2sms.com/dev/bulk?authorization=CbSpQve5NE&sender_id=SLAUTO&message=" . $encodedMessage . "&language=english&route=t&numbers=".$mobile_no."&flash=0";
-
+ 
     // Get cURL resource
 	$curl = curl_init();
 	// Set some options - we are passing in a useragent too here
@@ -28,44 +29,64 @@ function sendOTP($otp,$mobile_no){
 if (isset($_POST['request_otp'])) {
 	$mobile_no	= addslashes($_POST['mobile_no']);
 
-	$sql1 = "SELECT * FROM `otp` WHERE  `mobile_no` = '".$mobile_no."';";
-	$exe1 = mysqli_query($conn ,$sql1);
-	$row = mysqli_fetch_assoc($exe1);
+	$sql   = "SELECT * FROM `customers` WHERE  `cust_ph_no` = '".$mobile_no."';";
+	$exe   = mysqli_query($conn ,$sql);
+	$count = mysqli_num_rows($sql);
 
-	if(mysqli_num_rows($exe1) == 0){
+	if ($count >0) {
 
-		$time = date("Y-m-d H:i:s");
-		$six_digit_random_number = mt_rand(100000, 999999);
-		// details from CUSTOMERS
-		$sql = "INSERT INTO `otp` (`mobile_no`,`otp`,`timestamp`) VALUES ('".$mobile_no."','".$six_digit_random_number."','".$time."') ;";
-		$exe = mysqli_query($conn ,$sql);
+		$row = mysqli_fetch_assoc($exe);
+		$cust_id = $row['cust_id'];
 
-		sendOTP($six_digit_random_number,$mobile_no);		
-	}
-	else{
 
-		$time = date("Y-m-d H:i:s");
-		$otp = $row['otp'];
-		$timestamp = $row['timestamp'];
+		$sql1 = "SELECT * FROM `otp` WHERE  `mobile_no` = '".$mobile_no."';";
+		$exe1 = mysqli_query($conn ,$sql1);
+		$row = mysqli_fetch_assoc($exe1);
 
-		$diff = strtotime($timestamp) - strtotime($time);
-		
-		if ($diff < 300) {
-			sendOTP($otp,$mobile_no);
-		}else{
+		if(mysqli_num_rows($exe1) == 0){
 
-			$sql1 = "DELETE FROM `otp` WHERE `mobile_no` = '".$mobile_no."';";
-			$exe1 = mysqli_query($conn ,$sql1);
-
+			$time = date("Y-m-d H:i:s");
 			$six_digit_random_number = mt_rand(100000, 999999);
-
+			// details from CUSTOMERS
 			$sql = "INSERT INTO `otp` (`mobile_no`,`otp`,`timestamp`) VALUES ('".$mobile_no."','".$six_digit_random_number."','".$time."') ;";
 			$exe = mysqli_query($conn ,$sql);
 
 			sendOTP($six_digit_random_number,$mobile_no);	
 
 		}
-	}			
+		else{
+
+			$time = date("Y-m-d H:i:s");
+			$otp = $row['otp'];
+			$timestamp = $row['timestamp'];
+
+			$diff = strtotime($timestamp) - strtotime($time);
+			
+			if ($diff < 300) {
+				sendOTP($otp,$mobile_no);
+			}else{
+
+				$sql1 = "DELETE FROM `otp` WHERE `mobile_no` = '".$mobile_no."';";
+				$exe1 = mysqli_query($conn ,$sql1);
+
+				$six_digit_random_number = mt_rand(100000, 999999);
+
+				$sql = "INSERT INTO `otp` (`mobile_no`,`otp`,`timestamp`) VALUES ('".$mobile_no."','".$six_digit_random_number."','".$time."') ;";
+				$exe = mysqli_query($conn ,$sql);
+
+				sendOTP($six_digit_random_number,$mobile_no);	
+
+			}
+		}	
+
+		$output['success'] = true;
+		$output['cust_id'] =  $cust_id;		
+	}else{
+		$output['success'] = false;
+		$output['msg'] = 'Mobile number not registered';
+	}
+
+		
 }
 
 ?>

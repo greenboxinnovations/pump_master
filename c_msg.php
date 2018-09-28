@@ -62,10 +62,7 @@
 					}
 				});
 			}
-
-
-
-
+			
 			$('body').delegate('#login', 'click', function(e) {
 			// 	e.stopPropagation(); 
 
@@ -80,9 +77,10 @@
 					},
 					success: function(response) {
 						console.log(response);
+						$url1 = 'http://fuelmaster.greenboxinnovations.in/customer_login.php?cust_id='.$row['cust_id'];
 					}
 				});
-			
+			 
 			});
 		});
 	</script>
@@ -255,7 +253,7 @@ if(isset($_GET['t'])){
 
 				echo '<button custid="'.$row['cust_id'].'" style="display:none;" id="view_all" ><a href="'.$url.'">VIEW ALL</a></button>';
 			
-				echo '<button custid="'.$row['cust_id'].'" style="display:none;" id="login" mobile="'.$row['cust_ph_no'].'"  ><a href="'.$url1.'">LOGIN</a></button>';
+				echo '<button custid="'.$row['cust_id'].'" style="display:none;" id="login" mobile="'.$row['cust_ph_no'].'" ><a href="">LOGIN</a></button>';
 				
 
 
