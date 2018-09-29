@@ -139,31 +139,6 @@
 				
 			}); 
 
-			$('body').delegate('#request_otp', 'click', function(){
-				var mobile_no 	= $('#mobile').text();							
-
-				if(mobile_no.length != 10){
-					// alert(mobile_no.length);
-					alert("Invalid Phone Number");
-				}else{
-					$.ajax({
-						url: 'exe/login_customer_otp_request.php',
-						type: 'POST',
-						data:{
-							mobile_no : mobile_no,
-							request_otp: true
-						},
-						success: function(response) {
-							var json = $.parseJSON(response);
-							console.log(json);
-							
-						}
-					});
-				}
-				
-			
-			});
-
 		});
 	</script>
 
