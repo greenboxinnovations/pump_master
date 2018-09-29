@@ -39,18 +39,18 @@ class Window(Frame):
         # creating a button instance
         # quitButton = Button(self, text="Exit",command=self.client_exit)
         # startButton = Button(self, text="Exit",command=self.start_client)
-        quitButton = Button(self, text="Exit",command=self.client_exit)
+        # quitButton = Button(self, text="Exit",command=self.client_exit)
         stopButton = Button(self, text="Stop",command=self.kill_program)
 
         # placing the button on my window
-        quitButton.place(x=0, y=0)
+        # quitButton.place(x=0, y=0)
         stopButton.place(x=100, y=100)
 
 
        
 
-    def client_exit(self):
-        exit()
+    # def client_exit(self):
+    #     exit()
 
     def kill_program(self):
         result = subprocess.run('/opt/lampp/htdocs/pump_master/program.sh kill',shell=True, stdout=subprocess.PIPE)
