@@ -112,7 +112,7 @@
 			}); 
 
 			$('body').delegate('#request_otp', 'click', function(){
-				var mobile_no 	= $('#ph_no').val();								
+				var mobile_no 	= $('#mobile').text();
 
 				if(mobile_no.length != 10){
 					// alert(mobile_no.length);
@@ -135,8 +135,7 @@
 							}							
 						}
 					});
-				}
-				
+				}				
 			}); 
 
 		});
@@ -336,7 +335,7 @@
 
 
 				echo'<div style="text-align:center;margin-bottom:10px;">';
-					echo'<button class="mat_btn" id="resend_otp" custid="'.$cust_id.'">Resend OTP</button>';
+					echo'<button class="mat_btn" id="request_otp" custid="'.$cust_id.'">Resend OTP</button>';
 				echo'</div>';
 
 				echo'<div style="text-align:center;margin-bottom:10px;">';

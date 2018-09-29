@@ -147,15 +147,32 @@
 			.issued{width: 50px;padding-right: 10px;color: rgb(180,180,180);}
 			.from,.to{width: 50px;padding-right: 10px;}
 
+			.show_headers{font-family: 'Open Sans';display: none;font-weight: 700;margin-left: 6px;color: rgba(0,0,0,0.84);margin-bottom: 20px;}
+
 			@media only screen and (min-width:600px){
+
+				#left_top{display: none;}
+				#right_top{display: none;}
+
+
 				#top_header{padding-top: 5px;}
 				#top_header img{height: 60px;width: auto;}
 				#top_header_bar{height: 18px;}
 
-				#view_pager{display: none;}
-				#table_holder_invoices{display: inline-block;width: 400px;margin-right: -4px;}
-				#table_holder_transactions{display: inline-block;width: 400px;margin-right: -4px;}
-				table{width: 20%;}
+				#view_pager{display: none;}				
+				#table_holder_invoices,#table_holder_trans{				
+					display: inline-block;
+					width: calc(50% - 40px);
+					margin-right: -4px;vertical-align: top;								
+					overflow: hidden;
+					padding: 20px;
+				}
+				#main_container{border-radius: 5px;width: 1000px;margin-right: auto;margin-left: auto;border-top: 1px solid rgb(220,220,220);}
+				tr:nth-child(even):not(.header):hover,tr:hover:not(.header){
+					background-color: rgb(204,236,244);
+					cursor: pointer;
+				}
+				.show_headers{display: block;font-family: }
 			}
 		</style>
 
@@ -175,7 +192,7 @@
 				function getWidth(){
 					var v = $(window).width();
 					console.log(v);
-					if(v > 800){
+					if(v > 600){
 						$('#table_holder_invoices').show();
 					}
 					else{
@@ -224,17 +241,21 @@
 				};
 
 
+				$(window).resize(getWidth());
+
 
 				$('body').delegate('tr', 'click', function() {
 
-					// window.open('exe/report.php?cust_id='+cust_id+'&date1='+from+'&date2='+to+'&type='+type+'&date_invoice='+date_invoice+'&invoice_no='+invoice_no, '_blank');				  
+					// window.open('exe/report.php?cust_id='+cust_id+'&date1='+from+'&date2='+to+'&type='+type+'&date_invoice='+date_invoice+'&invoice_no='+invoice_no, '_blank');		
+					var type = $(this).attr('redirect');
+					console.log(type);
 
-					if($('#table_holder_trans').is(':visible')){
+					if(type=="trans"){
 
 						var trans_string = $(this).attr('t');
 						window.location.href = "http://fuelmaster.greenboxinnovations.in/c_msg.php?t="+trans_string;						
 					}
-					else{
+					else if(type=="invoice"){
 						var invoice_no = $(this).attr('t');
 
 						window.open('exe/report.php?cust_id=old&date1=old&date2=old&type=old&date_invoice=t&invoice_no='+invoice_no, '_blank');	
@@ -243,7 +264,7 @@
 				});
 
 
-				$('.pager_single').on('click', function(){					
+				$('.pager_single').on('click', function(){
 					if(!$(this).hasClass('pager_active')){
 
 						if($(this).text() == "TRANSACTIONS"){
@@ -290,6 +311,7 @@
 	<div id="main_container">
 		<div id="left_top"></div>
 		<div id="right_top"></div>
+
 		<?php
 		require 'query/conn.php';
 
@@ -336,6 +358,7 @@
 						// echo'<br/>';
 
 						echo '<div id="table_holder_trans">';
+						echo '<div class="show_headers">TRANSACTIONS</div>';
 						echo '<table>';
 						echo'<tr class="header">';
 							echo '<th class="sr">#</th>';
@@ -350,7 +373,7 @@
 					$fuel = ($row['fuel'] == 'petrol') ? "P" : "D";
 
 			
-					echo'<tr t="'.$row['trans_string'].'">';
+					echo'<tr redirect=trans t="'.$row['trans_string'].'">';
 						echo '<td class="sr">'.$i.'</td>';  
 						echo '<td>'.strtoupper($row['car_no_plate']).'</td>';
 						echo '<td class="date_col">'.date('M j',strtotime($row['date'])).'</td>';  
@@ -388,6 +411,7 @@
 						$display_name 	= ucwords($display_name);
 												
 						echo '<div id="table_holder_invoices">';
+						echo '<div class="show_headers">INVOICES</div>';
 						echo '<table>';
 						echo'<tr class="header">';
 							echo '<th class="sr">#</th>';
@@ -400,7 +424,7 @@
 					$i++;					
 
 			
-					echo'<tr t="'.$row['invoice_no'].'">';
+					echo'<tr redirect=invoice t="'.$row['invoice_no'].'">';
 						echo '<td class="sr">'.$i.'</td>';  
 						echo '<td>'.date('M j',strtotime($row['from'])).'</td>';
 						echo '<td class="">'.date('M j',strtotime($row['to'])).'</td>';  
