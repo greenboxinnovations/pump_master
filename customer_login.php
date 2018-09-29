@@ -147,7 +147,7 @@
 				
 			}); 
 
-			$('body').delegate('#login_get_otp', 'click', function(){
+			$('body').delegate('#request_otp', 'click', function(){
 				var mobile_no 	= $('#mobile').text();							
 
 				if(mobile_no.length != 10){
