@@ -147,11 +147,6 @@
 				
 			}); 
 
-
-
-			
-
-
 			$('body').delegate('#login_get_otp', 'click', function(){
 				var mobile_no 	= $('#mobile').text();							
 
