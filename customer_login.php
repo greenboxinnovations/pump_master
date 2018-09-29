@@ -56,42 +56,34 @@
 
 				var url = 'exe/login_customer_otp_verify.php';
 				var method = 'post';
-				
-				$.ajax({
-					url: url,
-					type: method,
-					data:{
-						mobile_no : mobile_no,
-						cust_id : cust_id,
-						otp : otp,
-						storage : storage,
-						user_agent : user_agent,
-						verify_otp : true
-					},						
-					success: function(response) {
-						console.log(response);
-						// var json = $.parseJSON(response);
 
-						// if (json.success == true) {
-						// 	setCookie("fuelmaster_user",json.token,30,"/");							
-							window.location.href = 'http://fuelmaster.greenboxinnovations.in/c_list.php?cust_id='+cust_id;
-						// }else{
-						// 	alert('Sending new OTP, Please Retry');
-						// 	$('#otp').val("");
-						// 	// $.ajax({
-						// 	// 	url: 'exe/login_customer_otp_request.php',
-						// 	// 	type: 'POST',
-						// 	// 	data:{
-						// 	// 		mobile_no : mobile_no,
-						// 	// 		request_otp: true
-						// 	// 	},
-						// 	// 	success: function(response) {
-						// 	// 		console.log(response);
-						// 	// 	}
-						// 	// });
-						// }
-				    }	
-				});				
+				if (otp != ("")) {
+					$.ajax({
+						url: url,
+						type: method,
+						data:{
+							mobile_no : mobile_no,
+							cust_id : cust_id,
+							otp : otp,
+							storage : storage,
+							user_agent : user_agent,
+							verify_otp : true
+						},						
+						success: function(response) {
+							console.log(response);
+							var json = $.parseJSON(response);
+
+							if (json.success == true) {					
+								window.location.href = 'http://fuelmaster.greenboxinnovations.in/c_list.php?cust_id='+cust_id;
+							}else{
+								alert('Retry Sending OTP');
+							}
+					    }	
+					});
+				}else{
+					alert("Please enter OTP");
+				}
+												
 			});
 
 

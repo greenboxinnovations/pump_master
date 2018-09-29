@@ -1,8 +1,6 @@
 <?php
 date_default_timezone_set("Asia/Kolkata");
 
-
-
 if (isset($_POST['verify_otp'])) {
 
 	require '../query/conn.php';
@@ -41,9 +39,6 @@ if (isset($_POST['verify_otp'])) {
 
 			// $sql1 = "UPDATE `customers` SET `token`= '".$token."' ,`cust_last_updated` = '".$time."' WHERE `cust_id` = '".$cust_id."' ;";
 			// $exe1 = mysqli_query($conn ,$sql1);
-
-			
-
 
 			$sql2 = "INSERT INTO `tokens`(`cust_id`,`token`, `last_updated`, `user_agent`, `storage_details`) VALUES ('".$cust_id."','".$token."','".$time."','".$user_agent."','".$storage."');";
 			$exe2 = mysqli_query($conn ,$sql2);
