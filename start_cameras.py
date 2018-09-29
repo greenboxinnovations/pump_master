@@ -146,7 +146,7 @@ def disable_event():
 # you can later have windows within windows.
 root = Tk()
 
-root.geometry("400x300")
+root.geometry("400x300+300+300")
 
 #creation of an instance
 app = Window(root)
