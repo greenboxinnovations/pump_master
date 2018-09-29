@@ -26,104 +26,6 @@
 		<link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-		<script type="text/javascript" src="js/user_agent.js"></script>
-		<script type="text/javascript" src="js/jquery.js"></script>
-		<script type="text/javascript">
-			$(document).ready(function(){
-
-				var storage = "";
-				var user_agent = "";
-				storage = jscd.os +' '+ jscd.osVersion +' '+ jscd.browser +' '+jscd.mobile;
-				user_agent = navigator.userAgent;
-				console.log(storage,user_agent);
-				check(storage,user_agent);
-
-				function check($storage,$user_agent){
-					$.ajax({
-						url: 'exe/mobile_lock.php',
-						type: 'POST',
-						data:{
-							storage : $storage,
-							user_agent: $user_agent
-						},
-						success: function(response) {
-							console.log(response);
-							var data = JSON.parse(response);
-							if(data.success){
-								console.log("success");								
-							}
-							else{
-								console.log("fail");
-								var cust_id = getUrlParameter('cust_id');
-								window.location = 'http://fuelmaster.greenboxinnovations.in/customer_login.php?cust_id='+cust_id;
-							}
-						}
-					});
-				}
-
-
-				var getUrlParameter = function getUrlParameter(sParam) {
-			    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
-			        sURLVariables = sPageURL.split('&'),
-			        sParameterName,
-			        i;
-
-			    for (i = 0; i < sURLVariables.length; i++) {
-			        sParameterName = sURLVariables[i].split('=');
-
-			        if (sParameterName[0] === sParam) {
-			            return sParameterName[1] === undefined ? true : sParameterName[1];
-			        }
-			    }
-			};
-
-
-
-				$('body').delegate('tr', 'click', function() {
-
-					// window.open('exe/report.php?cust_id='+cust_id+'&date1='+from+'&date2='+to+'&type='+type+'&date_invoice='+date_invoice+'&invoice_no='+invoice_no, '_blank');				  
-
-					if($('#table_holder_trans').is(':visible')){
-
-						var trans_string = $(this).attr('t');
-						window.location.href = "http://fuelmaster.greenboxinnovations.in/c_msg.php?t="+trans_string;						
-					}
-					else{
-						var invoice_no = $(this).attr('t');
-
-						window.open('exe/report.php?cust_id=old&date1=old&date2=old&type=old&date_invoice=t&invoice_no='+invoice_no, '_blank');	
-						// window.open('exe/report.php?cust_id=old&date1=old&date2=old&type=old&date_invoice=t&invoice_no='+invoice_no);	
-					}					
-				});
-
-
-				$('.pager_single').on('click', function(){
-					if(!$(this).hasClass('pager_active')){
-
-						if($(this).text() == "TRANSACTIONS"){
-							$('#main_container').css("border-top-right-radius","7px");
-							$('#main_container').css("border-top-left-radius","0px");
-							$('#left_top').hide();
-							$('#right_top').show();
-							$('#table_holder_invoices').hide();
-							$('#table_holder_trans').show();
-						}
-						else{
-							$('#main_container').css("border-top-right-radius","0px");
-							$('#main_container').css("border-top-left-radius","7px");
-							$('#left_top').show();
-							$('#right_top').hide();
-							$('#table_holder_invoices').show();
-							$('#table_holder_trans').hide();
-						}
-
-						$('.pager_single').removeClass('pager_active');
-						$(this).addClass('pager_active');
-					}
-				})
-
-			});
-		</script>
 
 		<style type="text/css">
 			*{padding: 0;margin: 0;}
@@ -144,6 +46,7 @@
 				/*background-color: green;*/
 				padding-left: 20px;
 				padding-top: 20px;
+				margin-bottom: 20px;
 			}
 			img {
 				display: block;
@@ -179,24 +82,24 @@
 				border-top: none;
 				position: relative;
 			}
-#left_top {
-margin-left: 3px;
-content: '';
-position: absolute;
-top: 0;
-border-top: 1px solid rgb(220,220,220);
-width: calc(50% - 3px);
-display: none;
-}
-#right_top {
-margin-right: 3px;
-content: '';
-position: absolute;
-top: 0;
-right: 0;
-border-top: 1px solid rgb(220,220,220);
-width: calc(50% - 3px);
-}
+			#left_top {
+				margin-left: 3px;
+				content: '';
+				position: absolute;
+				top: 0;
+				border-top: 1px solid rgb(220,220,220);
+				width: calc(50% - 3px);
+				display: none;
+			}
+			#right_top {
+				margin-right: 3px;
+				content: '';
+				position: absolute;
+				top: 0;
+				right: 0;
+				border-top: 1px solid rgb(220,220,220);
+				width: calc(50% - 3px);
+			}
 
 			/*#table_holder{padding: 10px;}*/
 			table{width: 100%;border-collapse: collapse;}
@@ -214,7 +117,7 @@ width: calc(50% - 3px);
 				font-size: 12px;
 			}
 
-			#table_holder_invoices{display: none;}
+			/*#table_holder_invoices{display: none;}*/
 
 			.right_text{text-align: right;}		
 			.amount{
@@ -243,7 +146,132 @@ width: calc(50% - 3px);
 			.in_amount{padding-right: 10px;width:50px;}
 			.issued{width: 50px;padding-right: 10px;color: rgb(180,180,180);}
 			.from,.to{width: 50px;padding-right: 10px;}
+
+			@media only screen and (min-width:600px){
+				#top_header{padding-top: 5px;}
+				#top_header img{height: 60px;width: auto;}
+				#top_header_bar{height: 18px;}
+
+				#view_pager{display: none;}
+				#table_holder_invoices{display: inline-block;width: 400px;margin-right: -4px;}
+				#table_holder_transactions{display: inline-block;width: 400px;margin-right: -4px;}
+				table{width: 20%;}
+			}
 		</style>
+
+		<script type="text/javascript" src="js/user_agent.js"></script>
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript">
+			$(document).ready(function(){
+
+				var storage = "";
+				var user_agent = "";
+				storage = jscd.os +' '+ jscd.osVersion +' '+ jscd.browser +' '+jscd.mobile;
+				user_agent = navigator.userAgent;
+				console.log(storage,user_agent);
+				check(storage,user_agent);
+
+
+				function getWidth(){
+					var v = $(window).width();
+					console.log(v);
+					if(v > 800){
+						$('#table_holder_invoices').show();
+					}
+					else{
+						$('#table_holder_invoices').hide();
+					}
+				}
+				getWidth();
+
+				function check($storage,$user_agent){
+					$.ajax({
+						url: 'exe/mobile_lock.php',
+						type: 'POST',
+						data:{
+							storage : $storage,
+							user_agent: $user_agent
+						},
+						success: function(response) {
+							console.log(response);
+							var data = JSON.parse(response);
+							if(data.success){
+								console.log("success");								
+							}
+							else{
+								console.log("fail");
+								var cust_id = getUrlParameter('cust_id');
+								window.location = 'http://fuelmaster.greenboxinnovations.in/customer_login.php?cust_id='+cust_id;
+							}
+						}
+					});
+				}
+
+
+				var getUrlParameter = function getUrlParameter(sParam) {
+					var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+					sURLVariables = sPageURL.split('&'),
+					sParameterName,
+					i;
+
+					for (i = 0; i < sURLVariables.length; i++) {
+						sParameterName = sURLVariables[i].split('=');
+
+						if (sParameterName[0] === sParam) {
+							return sParameterName[1] === undefined ? true : sParameterName[1];
+						}
+					}
+				};
+
+
+
+				$('body').delegate('tr', 'click', function() {
+
+					// window.open('exe/report.php?cust_id='+cust_id+'&date1='+from+'&date2='+to+'&type='+type+'&date_invoice='+date_invoice+'&invoice_no='+invoice_no, '_blank');				  
+
+					if($('#table_holder_trans').is(':visible')){
+
+						var trans_string = $(this).attr('t');
+						window.location.href = "http://fuelmaster.greenboxinnovations.in/c_msg.php?t="+trans_string;						
+					}
+					else{
+						var invoice_no = $(this).attr('t');
+
+						window.open('exe/report.php?cust_id=old&date1=old&date2=old&type=old&date_invoice=t&invoice_no='+invoice_no, '_blank');	
+						// window.open('exe/report.php?cust_id=old&date1=old&date2=old&type=old&date_invoice=t&invoice_no='+invoice_no);	
+					}					
+				});
+
+
+				$('.pager_single').on('click', function(){					
+					if(!$(this).hasClass('pager_active')){
+
+						if($(this).text() == "TRANSACTIONS"){
+							$('#main_container').css("border-top-right-radius","7px");
+							$('#main_container').css("border-top-left-radius","0px");
+							$('#left_top').hide();
+							$('#right_top').show();
+							$('#table_holder_invoices').hide();
+							$('#table_holder_trans').show();
+						}
+						else{
+							$('#main_container').css("border-top-right-radius","0px");
+							$('#main_container').css("border-top-left-radius","7px");
+							$('#left_top').show();
+							$('#right_top').hide();
+							$('#table_holder_invoices').show();
+							$('#table_holder_trans').hide();
+						}
+
+						$('.pager_single').removeClass('pager_active');
+						$(this).addClass('pager_active');
+					}
+				})
+
+			});
+		</script>
+
+
 
 	</head>
 	<body>
@@ -305,7 +333,7 @@ width: calc(50% - 3px);
 						$display_name 	= ucwords($display_name);
 						
 						echo '<div id="cust_display_name">'.$display_name.'</div>';
-						echo'<br/>';
+						// echo'<br/>';
 
 						echo '<div id="table_holder_trans">';
 						echo '<table>';
