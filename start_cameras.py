@@ -138,6 +138,10 @@ def sync_check():
     print(result.stdout.decode('utf-8'))
     root.after(3000, sync_check)  
 
+
+def disable_event():
+    pass
+
 # root window created. Here, that would be the only window, but
 # you can later have windows within windows.
 root = Tk()
@@ -156,7 +160,7 @@ root.after(3000, check_program_status)
 root.after(5000, send_photos)
 root.after(3000, sync_check)
 
-
+root.protocol("WM_DELETE_WINDOW", disable_event)
 
 
 
