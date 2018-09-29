@@ -38,6 +38,7 @@
 			console.log(storage,user_agent);
 			check(storage,user_agent);
 
+
 			function check($storage,$user_agent){
 				$.ajax({
 					url: 'exe/mobile_lock.php',
@@ -151,7 +152,7 @@
 
 		transition: background-color .3s;
 				}
-				#clear_both{clear: both;}
+				.clear_both{clear: both;}
 				img {
 					display: block;
 					vertical-align: bottom;
@@ -187,6 +188,21 @@
 				}
 				.inline{
 					display: inline-table;width: 50%;
+				}
+
+
+				@media only screen and (min-width:600px){
+					#top_header{padding-top: 5px;}
+					#top_header img{height: 60px;width: auto;}
+					#top_header_bar{height: 18px;margin-bottom: 30px;}
+					/*.img_border{display: inline-block;width: 400px;}*/
+					.fluid_containers{
+						display: inline-block;
+						width: calc(50% - 60px);margin-right: -4px;vertical-align: top;
+						padding-left: 30px;
+						padding-right: 30px;
+					}
+					/*.fluid_containers img{height: 320px;width: auto;}*/
 				}
 	</style>
 </head>
@@ -233,7 +249,7 @@ if(isset($_GET['t'])){
 			}
 
 
-
+			echo '<div class="fluid_containers">';
 			echo '<div id="cust_details">';
 				$display_name 	= ucwords($display_name);
 				
@@ -263,7 +279,7 @@ if(isset($_GET['t'])){
 
 
 				echo '</div>';				
-				echo '<div id="clear_both"></div>';
+				echo '<div class="clear_both"></div>';
 
 				echo '<div class="title inline">'.$row['car_no_plate'] .'</div>'; 
 				// if ($btn) {
@@ -294,6 +310,8 @@ if(isset($_GET['t'])){
 				echo '</div>';
 
 			echo '</div>';
+			echo '</div>';
+			echo '<div class="clear_both"></div>';
 		
 
 			//--------------------------------//
@@ -309,9 +327,11 @@ if(isset($_GET['t'])){
 				$file_path = $upload_dir."/".$date_dir."/".$trans_string.$extention;
 
 				if(file_exists($file_path)) {
+					echo '<div class="fluid_containers">';
 					echo '<div class="img_border">';
 					echo '<div class="img_desc">'.strtoupper($description[$i]).'</div>';
 					echo '<img src="'.$file_path.'">';
+					echo '</div>';
 					echo '</div>';
 					// echo '<br>';
 				}else{
@@ -328,5 +348,12 @@ if(isset($_GET['t'])){
 }
 ?>
 </div><!-- padding div -->
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('.fluid_containers img').each(function(){
+			console.log($(this).attr('src')+" "+$(this).height());
+		});
+	});
+</script>
 </body>
 </html>
