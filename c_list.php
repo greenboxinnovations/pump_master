@@ -49,16 +49,10 @@
 				margin-bottom: 20px;
 			}
 			img {
-				display: block;
-				vertical-align: bottom;
-				height: auto;
-				width: 100%;
-				border-bottom-left-radius: 5px;
-				border-bottom-right-radius: 5px;
-				/*margin-left: auto;		  */
-				/*margin-right: auto;*/
-				/*margin: 20px;*/
-			}
+				width: 12px;
+				height: 12px;
+				margin-left: 5px;
+			}			
 
 			/*viewpager*/
 			#view_pager{
@@ -109,7 +103,7 @@
 				padding-bottom: 5px;
 				color: rgba(0,0,0,0.8);
 			}
-
+			tr{cursor: pointer;}
 			tr:nth-child(even):not(.header){background-color: rgb(248,248,248);}
 			th{
 				text-align: left;padding-top: 5px;
@@ -147,7 +141,7 @@
 			.issued{width: 50px;padding-right: 10px;color: rgb(180,180,180);}
 			.from,.to{width: 50px;padding-right: 10px;}
 
-			.show_headers{font-family: 'Open Sans';display: none;font-weight: 700;margin-left: 6px;color: rgba(0,0,0,0.84);margin-bottom: 20px;}
+			.show_headers{font-family: 'Open Sans';display: none;font-weight: 700;margin-left: 6px;color: rgba(0,0,0,0.84);margin-bottom: 12px;}
 
 			@media only screen and (min-width:600px){
 
@@ -372,10 +366,16 @@
 
 					$fuel = ($row['fuel'] == 'petrol') ? "P" : "D";
 
-			
-					echo'<tr redirect=trans t="'.$row['trans_string'].'">';
-						echo '<td class="sr">'.$i.'</td>';  
-						echo '<td>'.strtoupper($row['car_no_plate']).'</td>';
+						if($row['trans_string'] == ""){
+							echo'<tr redirect=none t="none">';
+							echo '<td class="sr">'.$i.'</td>';  
+							echo '<td>'.strtoupper($row['car_no_plate']).'<img src="css/icons/no_msg.png"></td>';
+						}
+						else{
+							echo'<tr redirect=trans t="'.$row['trans_string'].'">';
+							echo '<td class="sr">'.$i.'</td>';  
+							echo '<td>'.strtoupper($row['car_no_plate']).'</td>';
+						}						
 						echo '<td class="date_col">'.date('M j',strtotime($row['date'])).'</td>';  
 						
 						// echo '<td>'.date('d-m-Y',strtotime($row['date'])).'</td>'; 
