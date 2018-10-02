@@ -48,7 +48,17 @@
 				padding-top: 20px;
 				margin-bottom: 20px;
 			}
-			img {
+			#top_header img {
+				display: block;
+				vertical-align: bottom;
+				height: auto;
+				width: 100%;
+				border-bottom-left-radius: 5px;
+				border-bottom-right-radius: 5px;				
+			}
+			td img {					
+				display: inline-block;
+				/*vertical-align: middle;*/
 				width: 12px;
 				height: 12px;
 				margin-left: 5px;
@@ -127,7 +137,7 @@
 				/*background-color: green;*/
 			}
 			.date_col{
-				width:60px;
+				width:50px;
 				/*color: rgb(80,100,100);*/
 			}
 			.sr{
