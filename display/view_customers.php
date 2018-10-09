@@ -39,7 +39,7 @@ function sortDisplayName(&$array){
 }
 
 function sortByName($a, $b) {
-	return strcmp($a["display_name"], $b["display_name"]);
+	return strcmp(strtolower($a["display_name"]), strtolower($b["display_name"]));
 }
 
 function renderTable($array) {
