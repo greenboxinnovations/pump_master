@@ -145,6 +145,19 @@ $post_paid_arr = array();
 // prepaid array
 $pre_paid_arr = array();
 
+try {
+	$sql = "SELECT * FROM `cars` WHERE `car_qr_code` = 'balWjo9uIc'";
+	$exe = mysqli_query($conn, $sql);
+	$count = mysqli_num_rows($exe);
+	$row = mysqli_fetch_assoc($exe);
+	$car_no_plate = $row['car_no_plate'];
+	$car_no_plate = strtoupper(str_replace(' ','',$car_no_plate));
+	echo $car_no_plate;
+} catch (Exception $e) {
+	print_r($e);
+}
+
+
 // sort array
 sortPostPre($post_paid_arr, $pre_paid_arr);
 

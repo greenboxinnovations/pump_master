@@ -68,7 +68,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST"){
 
 		if ($count == 1) {
 			
-			$sql = "SELECT 1 FROM `cars` WHERE `car_qr_code` = '".$qr_code."' ;";
+			$sql = "SELECT * FROM `cars` WHERE `car_qr_code` = '".$qr_code."' ;";
 			$exe = mysqli_query($conn, $sql);
 			$count = mysqli_num_rows($exe);
 
@@ -83,13 +83,44 @@ if($_SERVER['REQUEST_METHOD'] == "POST"){
 
 				$json['success'] 	= true;
 
-				$json['msg']  = "QR Added Succesfully";
-				sendMSG($car_id, 8411815106);
+				try {
 
+					$sql3 = "SELECT * FROM `cars` a 
+							JOIN `customers` b
+							ON a.car_cust_id = b.cust_id
+							WHERE a.car_id = '".$car_id."';";
+					$exe3 = mysqli_query($conn, $sql3);
+					while($row3 = mysqli_fetch_assoc($exe3)){
+
+						$cust_f_name	 = $row3["cust_f_name"];
+						$cust_m_name	 = $row3["cust_m_name"];
+						$cust_l_name	 = $row3["cust_l_name"];
+						$cust_company	 = $row3['cust_company'];
+						$car_no_plate	 = $row3['car_no_plate'];
+
+						if($cust_company == ""){
+							$cust_name 		 = ucwords($cust_f_name.' '.$cust_m_name.' '.$cust_l_name);
+						}
+						else{
+							$cust_name 		 = ucwords($cust_company);
+						}
+					}
+					$car_no_plate = str_replace(' ','',$car_no_plate);
+					$msg_string = $car_no_plate." ".$cust_name;
+					$json['msg']  = "QR Added Succesfully";
+					sendMSG($msg_string, 8411815106);
+
+				} catch (Exception $e) {
+					$json['msg']  = "QR Added Succesfully";
+					sendMSG($car_id, 8411815106);	
+				}
+				
 				updateSyncTable("users", "user_id", $unix);
 			}else{
-
-				$json['msg']  = "Duplicate Code";
+				$row = mysqli_fetch_assoc($exe);
+				$car_no_plate = $row['car_no_plate'];
+				$car_no_plate = strtoupper(str_replace(' ','',$car_no_plate));
+				$json['msg']  = "Duplicate Code ".$car_no_plate;
 			}
 			
 
