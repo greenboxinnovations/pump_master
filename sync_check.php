@@ -58,8 +58,10 @@ function queryServer(){
 				}
 			}
 			else if($table_name == 'transactions'){
-				echo $sql = "UPDATE `sync` SET `id` = '".$id."' WHERE `table_name` = 'transactions';";
-				$exe = mysqli_query($conn, $sql);	
+				if($row['id'] != $id){
+					echo $sql = "UPDATE `sync` SET `id` = '".$id."' WHERE `table_name` = 'transactions';";
+					$exe = mysqli_query($conn, $sql);	
+				}
 			}
 			else{
 				if($row['last_updated'] != $last_updated){
