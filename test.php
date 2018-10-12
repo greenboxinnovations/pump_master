@@ -40,6 +40,10 @@ function sortByName($a, $b) {
 }
 
 function renderTable($array) {
+	if(!isset($_SESSION))
+	{
+	    session_start();
+	}
 	$i = 1;
 	echo '<table id="header-fixed"></table>';
 	echo '<table id="table-2">';
