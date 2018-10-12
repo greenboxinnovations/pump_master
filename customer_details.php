@@ -1049,6 +1049,10 @@ require 'exe/lock.php';
 
 
 <?php 
+	if(!isset($_SESSION))
+	{
+	    session_start();
+	}
 	if ($_SESSION['role'] != 'manager' ) {
 		// <!-- fab -->
 		echo'<div id="fab"><span class="tooltiptext">ADD CAR</span></div>';
