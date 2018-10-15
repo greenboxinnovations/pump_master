@@ -24,7 +24,7 @@ if (password_verify($pass, $hash)) {
 	
 
 	// rates
-	$sql2 = "SELECT * FROM `rates` WHERE `pump_id` = '1' AND `date` = '".$date."';";
+	$sql2 = "SELECT * FROM `rates` WHERE `pump_id` = '1' AND `date` = '".$date."' ORDER BY `rate_id` DESC LIMIT 1;";
 	$exe2 = mysqli_query($conn, $sql2);
 	$row2 = mysqli_fetch_assoc($exe2);
 	if(mysqli_num_rows($exe2) < 1){

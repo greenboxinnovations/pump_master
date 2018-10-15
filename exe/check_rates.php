@@ -30,7 +30,7 @@ if(isset($_GET['date'])){
 
     $output = array();
 
-	$sql = "SELECT * FROM `rates` WHERE `pump_id` = '".$pump_id."' AND `date` = '".$date."';";
+	$sql = "SELECT * FROM `rates` WHERE `pump_id` = '".$pump_id."' AND `date` = '".$date."'  ORDER BY `rate_id` DESC LIMIT 1;";
 	$exe = mysqli_query($conn, $sql);
 	$row = mysqli_fetch_assoc($exe);
 	if(mysqli_num_rows($exe) < 1){

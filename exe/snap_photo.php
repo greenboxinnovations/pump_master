@@ -26,15 +26,17 @@ function generateRand(){
         $trans_string .= $characters[rand(0, $charactersLength - 1)];
     }
 
-    $sql = "SELECT 1 FROM `transactions` WHERE `trans_string` = '".$trans_string."' ;";
+    $sql = "SELECT 1 FROM `trans_string` WHERE `trans_string` = '".$trans_string."' ;";
     $exe = mysqli_query($conn ,$sql);
 
     if(mysqli_num_rows($exe) > 0){
         generateRand();
     }
     else{
-     return $trans_string;
-    }       
+        $sql1 = "INSERT INTO `trans_string`(`trans_string`) VALUES ('".$trans_string."') ;";
+        $exe1 = mysqli_query($conn, $sql1);
+        return $trans_string;
+    }           
 }
 
 if ($photo_type == 'stop') {
