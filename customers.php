@@ -103,7 +103,7 @@ require 'exe/lock.php';
 		    visibility: visible;
 		}
 
-		 .change_this{width:300px;}
+		.change_this{width:300px;}
 
 		/*change_this*/
 		@media only screen and (max-width: 1360px) {			
@@ -113,6 +113,7 @@ require 'exe/lock.php';
 		.red{color: #ed1275;}
 
 		.right_num{text-align: right;}
+		.input_error{background-color: rgb(252,201,202);}
 	</style>
 
 	<script type="text/javascript" src="js/jquery.js"></script>
@@ -152,8 +153,9 @@ require 'exe/lock.php';
 				$('input[type="text"]:visible:not(#in_cust_gst):not(#in_cust_m_name)').each(function(){
 					if($(this).val() == ""){
 						console.log($(this).attr('id'));
+						$(this).addClass('input_error');
 						returnVal = false;
-						return false;
+						// return false;
 					}
 				});
 				
@@ -162,7 +164,8 @@ require 'exe/lock.php';
 						console.log($(this).attr('id'));
 						console.log('asd');
 						returnVal = false;
-						return false;
+						$(this).addClass('input_error');
+						// return false;
 					}
 				});
 
@@ -188,12 +191,11 @@ require 'exe/lock.php';
 			$(window).bind("scroll", windowScroll);
 
 
-						// edit cust 
+			// edit cust 
 			$('body').delegate('.edit', 'click', function(e) {
-				  e.stopPropagation(); 
+				e.stopPropagation(); 
 				var cust_id = $(this).attr('custid');
-				$('#display').load('forms/add_customer.php?cust_id='+cust_id);
-			
+				$('#display').load('forms/add_customer.php?cust_id='+cust_id);			
 			});
 			
 
@@ -220,11 +222,7 @@ require 'exe/lock.php';
 				// 		$('#result').html(response);
 				// 	}
 				// });
-
-
-
 				$('#display').load('forms/add_customer.php');
-
 				$(this).hide();
 			});
 
@@ -242,8 +240,7 @@ require 'exe/lock.php';
 				var cust_f_name	 	= $('#in_cust_f_name').val();
 				var cust_m_name	 	= $('#in_cust_m_name').val();
 				var cust_l_name	 	= $('#in_cust_l_name').val();
-				var cust_ph_no	 	= $('#in_cust_ph_no').val();
-				var cust_ph_no	 	= $('#in_cust_ph_no').val();
+				// var cust_ph_no	 	= $('#in_cust_ph_no').val();
 				var cust_service	= $('#in_cust_service').val();
 				var cust_address 	= $('#in_cust_address').val();
 				var cust_post_paid	= $('#select_is_postpaid').find(":selected").val();
@@ -262,12 +259,43 @@ require 'exe/lock.php';
 				}
 
 				// ph_no validation
-				if(cust_ph_no.length != 10){
-					showSnackBar('Invalid Phone Number');
-				}
-				else{ 
+				var ph_bool = false;
+				var address_bool = false;
+				var cust_ph_no = "";
+				var ph_count = 1;
+				$('.in_cust_ph_no').each(function(){
 
-					if(validateInputs() && (cust_address != "")){
+					var ph_val = $(this).val();
+					// check if all numbers are 10 digits
+					if(ph_val.length != 10){
+						$(this).addClass('input_error');
+						showSnackBar('Invalid Phone Number');
+					}
+					else{
+						// if first number assign to string
+						if(ph_count == 1){
+							cust_ph_no = ph_val;
+						}
+						else{
+							cust_ph_no += "|"+ph_val;
+						}
+						ph_bool = true;
+					}
+					ph_count++;
+				});
+
+				if(cust_address == ""){
+					$('#in_cust_address').addClass('input_error');
+					showSnackBar('Empty Address');
+				}
+				else{
+					address_bool = true;
+				}
+
+
+				if(ph_bool && address_bool){
+
+					if(validateInputs()){
 						console.log('inputs are valid');
 
 						var myObject = {};
@@ -312,7 +340,8 @@ require 'exe/lock.php';
 								if(json.success){
 									if (type == 'update') {
 										showSnackBar("Customer Updated!");
-									}else{
+									}
+									else{
 										showSnackBar("New Customer Added!");
 									}
 									
@@ -328,8 +357,8 @@ require 'exe/lock.php';
 					else{
 						showSnackBar('Empty Input Values!');
 						console.log('inputs are invalid');
-					}	
-				}				
+					}
+				}
 			});
 
 
@@ -346,12 +375,12 @@ require 'exe/lock.php';
 				event.preventDefault();
 			});
 
-			$('body').delegate('#in_cust_ph_no', 'keydown', function(e){
-				// console.log(e.keyCode);
-		        if((e.keyCode == 46)||(e.keyCode == 190)){
-		        	e.preventDefault();
-		        }
-			});
+			// $('body').delegate('#in_cust_ph_no', 'keydown', function(e){
+			// 	// console.log(e.keyCode);
+			// 	if((e.keyCode == 46)||(e.keyCode == 190)){
+			// 		e.preventDefault();
+			// 	}
+			// });
 
 
 			// payment type change
@@ -374,7 +403,7 @@ require 'exe/lock.php';
 				}
 			});
 
-			$('body').delegate('#in_cust_ph_no', 'keyup change input paste',function(e){
+			$('body').delegate('#in_cust_ph_no', 'keyup change input paste', function(e){
 				// console.log("working");
 			    var $this = $(this);
 			    var val = $this.val();
@@ -386,7 +415,45 @@ require 'exe/lock.php';
 			}); 
 
 
+			// add phone numbers
+			$('body').delegate('#add_ph_no', 'click', function(){
+				// $(this).parent().append('<button id="del_ph_no">Delete</button>');
+				// $(this).parent().before('<div><input type="number" id="in_cust_ph_no" placeholder="Phone Number" maxlength="10"></div>');
+				var no = $('.div_ph_no').length;
+				if(no == 1){
+					$(this).parent().append('<button id="del_ph_no">Delete</button>');
+					$(this).parent().before('<div class="div_ph_no"><input type="number" class="in_cust_ph_no" placeholder="Phone Number" maxlength="10"></div>');
+				}
+				else{
+					$(this).parent().before('<div class="div_ph_no"><input type="number" class="in_cust_ph_no" placeholder="Phone Number" maxlength="10"></div>');
+				}
+			});
 
+			// delete phone number
+			$('body').delegate('#del_ph_no', 'click', function(){
+				var no = ($('.div_ph_no').length - 1);
+				var c = 0;
+
+				$('.div_ph_no').each(function(){
+					c++;
+
+					if(no == 1){
+						$('#del_ph_no').remove();
+					}
+
+					if(c == no){
+						// $(this).css('background-color','black');
+						$(this).remove();
+					}
+				});				
+			});
+			
+
+			$('body').delegate('textarea,input', 'focus', function(){
+				if($(this).hasClass('input_error')){
+					$(this).removeClass('input_error');
+				}
+			});
 		});
 	</script>
 </head>

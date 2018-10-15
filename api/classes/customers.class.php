@@ -38,7 +38,8 @@ class Customers
 		}
 		elseif ($this->_method == 'POST')
 		{
-			$this->addCustomer($this->_postParams);
+			// $this->addCustomer($this->_postParams);
+			$this->testF($this->_postParams);
 		}
 	}
 
@@ -302,6 +303,36 @@ class Customers
 		$this->_db->query($sql);
 		$this->_db->execute();
 		
+	}
+
+	private function testF($postParams){
+
+		$db_array = array();
+
+		$cust_string	 	 = $postParams['cust_ph_no'];
+		$ph_array = explode("|", $cust_string);
+
+
+		$sql = "SELECT `cust_ph_no` FROM `customers` WHERE 1";
+		$this->_db->query($sql);
+		$this->_db->execute();
+		$r = $this->_db->resultset();
+		foreach($r as $row) {
+			$p = explode("|", $row['cust_ph_no']);
+			foreach ($p as $v) {
+
+				foreach ($ph_array as $_ph) {
+					if($_ph == $v){
+						// SUCCESS FAIL
+						break;
+					}
+				}
+
+				array_push($db_array, $v);
+			}
+		}
+
+		echo json_encode($db_array);
 	}
 }
 ?>

@@ -63,12 +63,14 @@ if (isset($_GET['cust_id'])) {
 
 	<div style="margin-top: 25px;"></div>
 
-	<div><input type="number" id="in_cust_ph_no" placeholder="Phone Number" maxlength="10" value=<?php echo $cust_ph_no;?>></div>
+	<!-- <div><input type="number" id="in_cust_ph_no" placeholder="Phone Number" maxlength="10" value=<?php echo $cust_ph_no;?>></div> -->
+	<!-- <div><input type="number" id="in_cust_ph_no" placeholder="Phone Number" maxlength="10" value=<?php echo $cust_ph_no;?>><button id="add_ph_no">Add Phone Number</button><button id="del_ph_no">Delete</button></div> -->
+	<div class="div_ph_no"><input type="number" class="in_cust_ph_no" placeholder="Phone Number" maxlength="10" value=<?php echo $cust_ph_no;?>><button id="add_ph_no">Add Phone Number</button></div>
 
 	<div><input type="number" id="in_cust_service" placeholder="Service Percentage" class="single_decimal" value=<?php echo $cust_service;?> ></div>
 
 	<div style="margin-top: 25px;"></div>
-	<div> 
+	<div>
 		<?php
 			echo'<select id="select_is_postpaid">';
 			echo'<option value="-1"  disabled>Payment Type</option>';
@@ -101,11 +103,10 @@ if (isset($_GET['cust_id'])) {
 	<?php
 	if ($cust_id != null) {
 		echo'<div><div class="mat_btn" id="btn_cancel_cust">CANCEL</div><div class="mat_btn" style="background-color: #0087C1;" id="btn_new_cust" type="update" custid="'.$cust_id.'">UPDATE</div></div>';
-	}else{
+	}
+	else{
 		echo'<div><div class="mat_btn" id="btn_cancel_cust">CANCEL</div><div class="mat_btn" style="background-color: #0087C1;" id="btn_new_cust" type="new">CREATE</div></div>';
 	}
-
-
 	?>
 
 	

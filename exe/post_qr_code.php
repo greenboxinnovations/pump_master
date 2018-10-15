@@ -122,8 +122,6 @@ if($_SERVER['REQUEST_METHOD'] == "POST"){
 				$car_no_plate = strtoupper(str_replace(' ','',$car_no_plate));
 				$json['msg']  = "Duplicate Code ".$car_no_plate;
 			}
-			
-
 		}else{
 			$json['msg']  = "Invalid Code";
 		}	
