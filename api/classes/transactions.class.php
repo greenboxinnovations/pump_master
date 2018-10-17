@@ -381,7 +381,7 @@ class Transactions
 			$trans_id = $r['trans_id'];
 
 			$this->printReceipt($trans_id);
-
+			$this->printReceipt($trans_id);
 			$this->updateSyncTable($table_name,$id,$unix);
 
 

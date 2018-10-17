@@ -80,8 +80,6 @@ if ((isset($_GET['trans_id']))&&($p)) {
 	$connector = new NetworkPrintConnector("192.168.0.101", 9100);
 	$printer = new Escpos($connector);
 
-
-
 	/* Print top logo */
 	$printer -> setJustification(Escpos::JUSTIFY_CENTER);
 	$printer -> graphics($logo);
@@ -98,7 +96,6 @@ if ((isset($_GET['trans_id']))&&($p)) {
 	$printer -> text("Ph No: +91 8329347297");
 	$printer -> feed();		
 	$printer -> setJustification(Escpos::JUSTIFY_LEFT);
-
 
 
 	$sql0 = "SELECT a.*,b.car_no_plate,c.id as max FROM  `transactions` a JOIN  `cars` b ON a.car_id=b.car_id JOIN `sync` c   WHERE a.trans_id = '".$trans_id."' AND c.table_name = 'transactions';";
@@ -120,8 +117,6 @@ if ((isset($_GET['trans_id']))&&($p)) {
 	$printer -> text("T-ID: ".$t_id."\n");
 	$printer -> text("--------------------------------------------\n");
 
-
-
 	//header
 	$printer -> setJustification(Escpos::JUSTIFY_LEFT);
 
@@ -138,7 +133,6 @@ if ((isset($_GET['trans_id']))&&($p)) {
 	$printer -> text("--------------------------------------------\n");
 	$printer -> setEmphasis(false);
 		
-
 	/* Footer */
 	$printer -> selectPrintMode();
 	$printer -> feed();

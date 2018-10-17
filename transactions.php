@@ -924,8 +924,6 @@ require 'exe/lock.php';
 
 <?php 
 
-	require 'exe/lock.php';
-
 	if ($_SESSION['role'] != 'manager' ) {
 		// <!-- fab -->
 		echo'<div id="fab"></div>';
