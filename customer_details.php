@@ -212,6 +212,7 @@ require 'exe/lock.php';
 					}
 				});
 
+				// rbook is not compulsory
 				if( $('#rbook_input').val() == ''){
 					return true;
 				}
@@ -665,10 +666,6 @@ require 'exe/lock.php';
 			
 
 			// ----------------- TRANSACTIONS ---------------------//
-
-
-
-
 			$('body').delegate('.edit', 'click', function(e) {
 				e.stopPropagation(); 
 				var trans_id = $(this).attr('id');
@@ -711,6 +708,9 @@ require 'exe/lock.php';
 						// 		$('#rs').val(new_val.toFixed(2));
 						// 	}
 						// 	break;
+						case 'rate':
+							$('#rs').val('');
+							break;
 					}
 				}
 			});

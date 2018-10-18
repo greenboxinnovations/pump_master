@@ -11,4 +11,22 @@ require 'query/conn.php';
 		$exe1 = mysqli_query($conn, $sql1);
 	
 	}
+
+
+// USEFUL QUERIES
+// SELECT `cust_id`,count(*) as total FROM `transactions` WHERE `trans_string` != "" GROUP BY `cust_id`
+
+
+// SELECT * FROM `transactions` WHERE `trans_string` != "" GROUP BY `cust_id`
+
+// SELECT a.cust_id,b.cust_company FROM `transactions` a 
+// JOIN `customers` b
+// ON a.cust_id = b.cust_id
+// WHERE `trans_string` != "" GROUP BY `cust_id`
+
+
+// SELECT b.cust_company, count(a.cust_id) as total, a.cust_id FROM `transactions` a
+// JOIN `customers` b
+// ON a.cust_id = b.cust_id
+// WHERE `trans_string` != "" GROUP BY a.cust_id
 ?>

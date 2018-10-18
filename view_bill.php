@@ -273,7 +273,8 @@ if(isset($_GET['cust_id'])){
 			}
 
 			echo '<tr>';
-				echo '<td class="td_num delete" id="'.$row['trans_id'].'"></td>';	
+				// echo '<td class="td_num delete" id="'.$row['trans_id'].'"></td>';
+				echo '<td></td>';
 				echo '<td>'.$row["receipt_no"].'</td>';
 				echo '<td>'.$trans_id_disp.'</td>';
 				echo '<td>'.$date.'</td>';

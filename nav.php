@@ -1,5 +1,5 @@
 <?php
-$nav_array = ['index','transactions','customers','rbooks','logout'];
+$nav_array = ['index','activity','transactions','customers','rbooks','logout'];
 // $nav_array = ['index','customers','payments','logout'];
 
 echo'<div id="side_nav">';
