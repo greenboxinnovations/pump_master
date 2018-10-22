@@ -1,9 +1,13 @@
 <?php
-
+if(!isset($_SESSION))
+{
+	session_start();
+}
 if(isset($_GET['cust_id'])){
 	require '../query/conn.php';
 	$cust_id = $_GET['cust_id'];
 	date_default_timezone_set("Asia/Kolkata");
+	$e_id = $_SESSION['user_id'];
 
 	$car_id_o    = null;
 	$fuel_type	 = null;
@@ -13,6 +17,7 @@ if(isset($_GET['cust_id'])){
 	$lit 		 = null;
 	$receipt_no  = null;
 	$trans_id    = null;
+	$user_id_o   = null;
 
 	if (isset($_GET['trans_id'])) {
 		$trans_id = $_GET['trans_id'];
@@ -27,7 +32,8 @@ if(isset($_GET['cust_id'])){
 				$rs	 		 = $row["amount"];
 				$rate  		 = $row["rate"];
 				$lit  		 = $row["liters"];
-				$date  		 = $row["date"];				
+				$date  		 = $row["date"];
+				$user_id_o 	 = $row['user_id'];				
 		}		
 	}
  
@@ -85,6 +91,27 @@ if(isset($_GET['cust_id'])){
 
 		echo '<div style="margin-top: 20px;"></div>	';
 		echo '<div><div class="mat_btn" id="btn_clear_all">CLEAR ALL</div></div>';
+
+
+		$sql = "SELECT `name`,`user_id` FROM `users` WHERE role = 'operator' AND `user_pump_id` IN (SELECT `user_pump_id` FROM `users` WHERE user_id = '".$e_id."') ";
+		$exe = mysqli_query($conn, $sql);
+
+
+		echo '<select id="user_id" style="margin-bottom:6px;">';
+			echo '<option value="-1" selected disabled>Select User</option>';
+
+			while($row = mysqli_fetch_assoc($exe)){
+				$user_id	 = $row["user_id"];
+				$name	 	 = $row["name"];
+
+				if ($user_id_o == $user_id) {
+					echo '<option value="'.$user_id.'" selected>'.ucfirst($name).'</option>';
+				}else{
+					echo '<option value="'.$user_id.'">'.ucfirst($name).'</option>';
+				}
+				
+			}
+		echo '</select>';
 
 		echo '<div style="margin-top:20px;font-style:italic;font-size:14px;">Optional</div>';
 		if ($receipt_no != null) {

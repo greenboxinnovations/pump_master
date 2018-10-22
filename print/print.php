@@ -98,7 +98,8 @@ if ((isset($_GET['trans_id']))&&($p)) {
 	$printer -> setJustification(Escpos::JUSTIFY_LEFT);
 
 
-	$sql0 = "SELECT a.*,b.car_no_plate,c.id as max FROM  `transactions` a JOIN  `cars` b ON a.car_id=b.car_id JOIN `sync` c   WHERE a.trans_id = '".$trans_id."' AND c.table_name = 'transactions';";
+	$sql0 = "SELECT a.*,b.car_no_plate,c.id,d.cust_company,d.cust_f_name,d.cust_l_name as max FROM `transactions` a JOIN  `cars` b ON a.car_id=b.car_id JOIN `sync` c JOIN `customers` d ON b.car_cust_id = d.cust_id  WHERE a.trans_id =  '".$trans_id."' AND c.table_name = 'transactions';";
+
 	$result0 = mysqli_query($conn,$sql0);
 	$line = "";
 
@@ -109,12 +110,16 @@ if ((isset($_GET['trans_id']))&&($p)) {
 		$ltr 	= $row['liters'];
 		$rate 	= $row['rate'];
 		$amount = $row['amount'];
+		$d_name = $row['cust_company'];
+		if ($d_name == "") {
+			$d_name = $row['cust_f_name'].' '.$row['cust_l_name'];
+		}
 
 		$line = new item(" ".$vh_no,$fuel,$rate,$ltr,$amount);
 	}
 
 
-	$printer -> text("T-ID: ".$t_id."\n");
+	$printer -> text("T-ID: ".$t_id." ".$d_name."\n");
 	$printer -> text("--------------------------------------------\n");
 
 	//header

@@ -240,7 +240,7 @@ class Transactions
 				$last_updated = date("Y-m-d H:i:s");
 
 
-				$sql = "UPDATE `transactions` SET `amount`= :field1,`rate`= :field2, `shift` = :field4, `liters`= :field3,`date` = :field5, `last_updated`= :field6 WHERE `trans_id` = :field7 ;";
+				$sql = "UPDATE `transactions` SET `amount`= :field1,`rate`= :field2, `shift` = :field4, `liters`= :field3,`date` = :field5, `last_updated`= :field6, `user_id` = :field8 WHERE `trans_id` = :field7 ;";
 
 				$this->_db->query($sql);
 
@@ -251,6 +251,7 @@ class Transactions
 				$this->_db->bind(':field5', $date);
 				$this->_db->bind(':field6', $last_updated);
 				$this->_db->bind(':field7', $trans_id);
+				$this->_db->bind(':field8', $user_id);
 				$this->_db->execute();
 
 

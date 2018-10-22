@@ -1,7 +1,7 @@
 <?php
 require 'exe/lock.php';
 ?>
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html>
 <head>
 	<title>Title</title>
@@ -740,6 +740,7 @@ require 'exe/lock.php';
 					var liters 		= $('#lit').val();
 					var rate 		= $('#rate').val();
 					var shift 		= $('#shift').find(":selected").val();
+					var user_id		= $('#user_id').find(":selected").val();
 					// var date 		= $('#trans_date').val();
 					var date 		= $("#trans_date").datepicker("option", "dateFormat", "yy-mm-dd" ).val();
 					$("#trans_date").datepicker("option", "dateFormat", "dd-mm-yy" );		
@@ -756,7 +757,7 @@ require 'exe/lock.php';
 					myObject["pump_id"] = pump_id;
 					myObject["cust_id"] = cust_id;
 					myObject["car_id"] 	= car_id;
-					myObject["user_id"] = -2;
+					myObject["user_id"] = user_id;
 					myObject["is_postpaid"] = is_postpaid;
 					myObject["amount"] 	= amount;
 					myObject["liters"] 	= liters;

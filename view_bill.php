@@ -261,6 +261,8 @@ if(isset($_GET['cust_id'])){
 			$car_no	 = strtoupper($row["car_no_plate"]);
 			$fuel	 = ucwords($row["car_fuel_type"]);
 
+			$trans_string = $row["trans_string"];
+
 			$trans_id_disp = $row["trans_id"] + 100000;
 
 			if($fuel == 'Diesel'){
@@ -273,8 +275,12 @@ if(isset($_GET['cust_id'])){
 			}
 
 			echo '<tr>';
-				// echo '<td class="td_num delete" id="'.$row['trans_id'].'"></td>';
-				echo '<td></td>';
+
+				if ($trans_string == NULL) {
+					echo '<td class="td_num delete" id="'.$row['trans_id'].'"></td>';
+				}else{
+					echo '<td></td>';
+				}				
 				echo '<td>'.$row["receipt_no"].'</td>';
 				echo '<td>'.$trans_id_disp.'</td>';
 				echo '<td>'.$date.'</td>';
