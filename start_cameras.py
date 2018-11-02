@@ -122,7 +122,7 @@ def ping_camera():
     else:
         print("Network Error")        
         isCamUp = 0
-        # kill_program_from_out()    
+        # kill_program_from_out()
     root.after(5000, ping_camera)
 
 

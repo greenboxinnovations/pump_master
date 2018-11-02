@@ -615,7 +615,7 @@ class Transactions
 		$d = false;
 		foreach ($postParams as $row) {	
 
-			$sql1 = "SELECT * FROM `transactions` WHERE `car_id` = '".$row['car_id']."' AND  `date` = '".$row['date']."' AND `amount` = '".$row['amount']."' ;";	
+			$sql1 = "SELECT * FROM `transactions` WHERE `car_id` = '".$row['car_id']."' AND  date(`date`) = '".$row['date']."' AND `amount` = '".$row['amount']."' ;";	
 			$this->_db->query($sql1);
 			$this->_db->execute();
 
