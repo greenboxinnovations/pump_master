@@ -15,7 +15,7 @@ function myErrorHandler( $errType, $errStr, $errFile, $errLine, $errContext ) {
 }
 
 ini_set('log_errors', 1);
-ini_set('error_log', 'send_photos.log');
+ini_set('error_log', '/opt/lampp/htdocs/pump_master/send_photos.log');
 error_reporting(E_ALL);
 
 set_error_handler('myErrorHandler');
@@ -74,7 +74,7 @@ else{
 	curl_close ($ch);
 
 	if($response != 200){
-		trigger_error('Test'.$response);
+		trigger_error('Response'.$response);
 	}
 	else{
 		try {

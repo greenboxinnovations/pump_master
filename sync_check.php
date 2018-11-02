@@ -17,7 +17,7 @@ function myErrorHandler( $errType, $errStr, $errFile, $errLine, $errContext ) {
 }
 
 ini_set('log_errors', 1);
-ini_set('error_log', 'sync_check.log');
+ini_set('error_log', '/opt/lampp/htdocs/pump_master/sync_check.log');
 error_reporting(E_ALL);
 set_error_handler('myErrorHandler');
 
@@ -56,7 +56,7 @@ function queryServer(){
 	curl_close ($ch);
 
 	if($response != 200){
-		trigger_error('Test'.$response);
+		trigger_error('response'.$response);
 	}
 
 
