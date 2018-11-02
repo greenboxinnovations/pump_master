@@ -16,6 +16,7 @@ function myErrorHandler( $errType, $errStr, $errFile, $errLine, $errContext ) {
 
 ini_set('log_errors', 1);
 ini_set('error_log', 'send_photos.log');
+error_reporting(E_ALL);
 
 set_error_handler('myErrorHandler');
 // trigger_error('Test');

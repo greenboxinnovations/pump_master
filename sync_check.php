@@ -18,7 +18,9 @@ function myErrorHandler( $errType, $errStr, $errFile, $errLine, $errContext ) {
 
 ini_set('log_errors', 1);
 ini_set('error_log', 'sync_check.log');
+error_reporting(E_ALL);
 set_error_handler('myErrorHandler');
+
 
 
 

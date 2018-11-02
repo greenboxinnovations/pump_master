@@ -51,7 +51,17 @@ if($qr != ""){
 	else{
 		// no matches in cars db
 		$json['success'] = false;
-		$json['msg'] = 'Invalid QR-Code';
+
+		$sql_c = "SELECT 1 FROM `codes` WHERE `qr_code` = '".$qr_code."' ;";
+		$exe_c = mysqli_query($conn, $sql_c);
+		$count = mysqli_num_rows($exe_c);
+
+		if($count == 0){
+			$json['msg'] = 'Invalid QR-Code';
+		}
+		else{
+			$json['msg'] = 'Unassigned QR-Code';
+		}		
 	}		
 }
 else{
