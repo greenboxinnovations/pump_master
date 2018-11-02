@@ -56,12 +56,33 @@ require 'exe/lock.php';
 			$('#total_trans').load('display/activity/total_app_trans.php');
 			$('#daily_trans').load('display/activity/day_app_trans.php');
 
-			$('#app_date').on('change', function(){
-				var date = $(this).val();
-				if(date != ""){
-					$('#daily_trans').load('display/activity/day_app_trans.php?date='+date);
+			// $('#app_date').on('change', function(){
+			// 	var date = $(this).val();
+			// 	if(date != ""){
+			// 		$('#daily_trans').load('display/activity/day_app_trans.php?date='+date);
+			// 	}
+			// });
+
+
+			$('#btn_app_date').on('click', function(){
+				var date1 = $('#app_date').val();
+				var date2 = $('#app_date2').val();
+
+				if((date1 == "")&&(date2 == "")){
+					console.log("Invalid dates");
 				}
+				else{
+					console.log(date1+" "+date2);
+					$('#daily_trans').load('display/activity/day_app_trans.php?date1='+date1+'&date2='+date2);
+				}
+
+				// 
+				// // if(date != ""){
+				// // 	$('#daily_trans').load('display/activity/day_app_trans.php?date='+date);
+				// // }
 			});
+
+
 		});
 	</script>
 </head>
@@ -83,7 +104,11 @@ require 'exe/lock.php';
 <!-- wrapper -->
 <div id="wrapper">
 	<div id="main_padding">
-		<div id="date_div"><input id="app_date" type="date" value="<?php echo date('Y-m-d')?>"></div>
+		<div id="date_div">
+			<input id="app_date" type="date" value="<?php echo date('Y-m-d')?>">
+			<input id="app_date2" type="date" value="<?php echo date('Y-m-d')?>">
+			<button id="btn_app_date">Go</button>
+		</div>
 		<div id="flex_div">
 			<div id="daily_trans" class="inline"></div>
 			<div id="total_trans" class="inline"></div>			
