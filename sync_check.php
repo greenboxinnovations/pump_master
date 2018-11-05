@@ -332,7 +332,7 @@ function downloadTable($table_name, $last_updated){
 
 function sendLocalTransactions(){
 	Global $conn;
-	$sql = "SELECT * FROM `transactions` WHERE 1;";
+	$sql = "SELECT * FROM `transactions` WHERE `trans_time` IS NOT NULL;";
 	$exe = mysqli_query($conn, $sql);
 
 	if(mysqli_num_rows($exe) > 0){

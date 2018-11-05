@@ -626,7 +626,7 @@ class Transactions
 			if($this->_db->rowCount() == 0){
 
 
-				$sql111 = "INSERT INTO `transactions`(`pump_id`, `cust_id`, `car_id`, `user_id`, `receipt_no`, `shift`, `fuel`, `amount`, `rate`, `liters`, `billed`, `date`, `last_updated`,`trans_string`) VALUES ('".$row['pump_id']."','".$row['cust_id']."','".$row['car_id']."','".$row['user_id']."','".$row['receipt_no']."','".$row['shift']."','".$row['fuel']."','".$row['amount']."','".$row['rate']."','".$row['liters']."','".$row['billed']."','".$row['date']."','".$row['last_updated']."','".$row['trans_string']."');";
+				$sql111 = "INSERT INTO `transactions`(`pump_id`, `cust_id`, `car_id`, `user_id`, `receipt_no`, `shift`, `fuel`, `amount`, `rate`, `liters`, `billed`, `date`, `last_updated`,`trans_string`,`trans_time`) VALUES ('".$row['pump_id']."','".$row['cust_id']."','".$row['car_id']."','".$row['user_id']."','".$row['receipt_no']."','".$row['shift']."','".$row['fuel']."','".$row['amount']."','".$row['rate']."','".$row['liters']."','".$row['billed']."','".$row['date']."','".$row['last_updated']."','".$row['trans_string']."','".$row['trans_time']."');";
 		
 				$this->_db->query($sql111);
 				$this->_db->execute();

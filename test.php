@@ -1,32 +1,58 @@
 <?php
 date_default_timezone_set("Asia/Kolkata");
-function myErrorHandler( $errType, $errStr, $errFile, $errLine, $errContext )
-{
-    $displayErrors = ini_get( 'display_errors' );
-    $logErrors     = ini_get( 'log_errors' );
-    $errorLog      = ini_get( 'error_log' );
+// function myErrorHandler( $errType, $errStr, $errFile, $errLine, $errContext )
+// {
+//     $displayErrors = ini_get( 'display_errors' );
+//     $logErrors     = ini_get( 'log_errors' );
+//     $errorLog      = ini_get( 'error_log' );
 
-    // if( $displayErrors ) echo $errStr.PHP_EOL;
+//     // if( $displayErrors ) echo $errStr.PHP_EOL;
 
-    if( $logErrors )
-    {
-        $message = sprintf('[%s] - (%s, %s) - %s ', date('Y-m-d H:i:s'), $errFile, $errLine ,$errStr);
-        file_put_contents( $errorLog, $message.PHP_EOL, FILE_APPEND );
-    }
+//     if( $logErrors )
+//     {
+//         $message = sprintf('[%s] - (%s, %s) - %s ', date('Y-m-d H:i:s'), $errFile, $errLine ,$errStr);
+//         file_put_contents( $errorLog, $message.PHP_EOL, FILE_APPEND );
+//     }
+// }
+
+// ini_set('log_errors', 1);
+// ini_set('error_log', 'php-error.log');
+
+// set_error_handler('myErrorHandler');
+// trigger_error('Test');
+
+
+// 	try {
+// 		$i = 5/0;
+// 	} catch (Exception $e) {
+// 		trigger_error('Test');
+// 	}
+
+
+$file1 = '/opt/lampp/htdocs/pump_master/uploads/2018-11-04/VYxmtOMiMu_start.jpeg';
+$file2 = '/opt/lampp/htdocs/pump_master/uploads/2018-11-04/VYxmtOMiMu_stop.jpeg';
+
+
+
+
+if (file_exists($file2)) {
+
+    $t1 = date("Y-m-d H:i:s",filemtime($file1));
+    $t2 = date("Y-m-d H:i:s",filemtime($file2));
+
+    $interval = (new DateTime($t1))->diff(new DateTime($t2));
+    $time_diff =  $interval->format('%H:%I:%S');
+    echo $time_diff;
+    echo '<br/>';
 }
 
-ini_set('log_errors', 1);
-ini_set('error_log', 'php-error.log');
 
-set_error_handler('myErrorHandler');
-trigger_error('Test');
+$file1 = str_replace('/opt/lampp/htdocs/pump_master/uploads/2018-11-04/', '', $file1);
+
+$data = explode("_", $file1);
+echo $data[0];
 
 
-	try {
-		$i = 5/0;
-	} catch (Exception $e) {
-		trigger_error('Test');
-	}
 
 
 
