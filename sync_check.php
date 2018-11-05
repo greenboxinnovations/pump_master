@@ -332,7 +332,7 @@ function downloadTable($table_name, $last_updated){
 
 function sendLocalTransactions(){
 	Global $conn;
-	$sql = "SELECT * FROM `transactions` WHERE `trans_time` IS NOT NULL;";
+	$sql = "SELECT * FROM `transactions` WHERE `trans_time` IS NOT NULL AND `uploaded` = 'N';";
 	$exe = mysqli_query($conn, $sql);
 
 	if(mysqli_num_rows($exe) > 0){
@@ -369,7 +369,7 @@ function sendLocalTransactions(){
 
 					print_r($json);
 					foreach ($json as $trans_id) {
-						$sql = "DELETE FROM `transactions` WHERE `trans_id` = '".$trans_id."' ;";
+						$sql = "UPDATE `transactions` SET `uploaded` = 'Y' WHERE `trans_id` = '".$trans_id."' ;";
 						$exe = mysqli_query($conn, $sql);
 					}
 
@@ -388,9 +388,20 @@ function sendLocalTransactions(){
 	}
 	else{
 		echo 'No transactions present';
+
+		$date = date("Y-m-d",strtotime("-1 days"));
+ 
+		$sql = "SELECT * FROM `transactions` WHERE date(`date`) = '".$date."' AND  `uploaded` = 'Y';";
+		$exe = mysqli_query($conn, $sql);
+		if(mysqli_num_rows($exe) > 0){
+			while ($row = mysqli_fetch_assoc($exe)) {			
+				$sql1 = "DELETE FROM `transactions` WHERE `trans_id` = '".$row['trans_id']."' ;";
+				$exe1 = mysqli_query($conn, $sql1);
+			}
+		}
+
 	}
 }
-
 
 
 queryServer();

@@ -312,6 +312,7 @@ class Transactions
 		$shift 			= ($pre_shift == "a") ? 1 : 2;
 
 		$date 			= date("Y-m-d H:i:s");
+		$ch_date 	= date('Y-m-d');
 		$last_updated	= $date;
 
 		$pump_code      = trim($postParams['pump_code']);	
@@ -345,10 +346,24 @@ class Transactions
 			// 20 seconds
 			if($diff > 20){
 				$valid = true;
+			}else{
+				$output['success'] 	= false;		
+				$output['msg'] 		= "something went wrong";
+
 			}			
 		}
 		else{
 			$valid = true;
+		}
+
+		$sql1 = "SELECT * FROM `transactions` WHERE `car_id` = '".$car_id."' AND  date(`date`) = '".$ch_date."' AND `amount` = '".$amount."' ;";	
+		$this->_db->query($sql1);
+		$this->_db->execute();
+
+		if($this->_db->rowCount() > 0){
+			$valid = false;
+			$output['success'] 	= false;		
+			$output['msg'] 		= "Duplicate Entry";
 		}
 
 		if($valid){
@@ -384,13 +399,11 @@ class Transactions
 			$this->printReceipt($trans_id);
 			$this->printReceipt($trans_id);
 			$this->updateSyncTable($table_name,$id,$unix);
-
-
 		}
-		else{
-			$output['success'] 	= false;		
-			$output['msg'] 		= "Something went wrong";		
-		}		
+		// else{
+		// 	$output['success'] 	= false;		
+		// 	$output['msg'] 		= "Something went wrong";		
+		// }		
 		echo json_encode($output);
 	}
 
@@ -449,11 +462,9 @@ class Transactions
 
 			$this->updateSyncTableRates($table_name,$id,$unix);
 
-
 			$output['success'] = true;
 			$output['msg'] = 'Rates updated successfully!';
 			$output['unix'] = $unix;
-			
 		}
 		else{
 			$output['success'] = false;
@@ -583,13 +594,11 @@ class Transactions
 			
 			exec("/usr/bin/mysqldump -u\"pump_master_user\" --password=\"pump_master_user123!@#\"  -t \"".$db_name."\" \"".$table_name."\" > ".$filename);
 		}
-		
 
 		$sql = "UPDATE `sync` SET `last_updated`= '".$unix."' WHERE `table_name` = '".$table_name."';";
 		
 		$this->_db->query($sql);
 		$this->_db->execute();
-
 		 
 	} 
 
@@ -601,7 +610,6 @@ class Transactions
 		
 		$this->_db->query($sql);
 		$this->_db->execute();
-
 		
 	}
 
@@ -615,7 +623,6 @@ class Transactions
 		$d = false;
 		foreach ($postParams as $row) {	
 
-
 			$ch_date = date('Y-m-d',strtotime($row['date']));
 			// $ch_date = $row['date'];
 
@@ -626,7 +633,7 @@ class Transactions
 			if($this->_db->rowCount() == 0){
 
 
-				$sql111 = "INSERT INTO `transactions`(`pump_id`, `cust_id`, `car_id`, `user_id`, `receipt_no`, `shift`, `fuel`, `amount`, `rate`, `liters`, `billed`, `date`, `last_updated`,`trans_string`,`trans_time`) VALUES ('".$row['pump_id']."','".$row['cust_id']."','".$row['car_id']."','".$row['user_id']."','".$row['receipt_no']."','".$row['shift']."','".$row['fuel']."','".$row['amount']."','".$row['rate']."','".$row['liters']."','".$row['billed']."','".$row['date']."','".$row['last_updated']."','".$row['trans_string']."','".$row['trans_time']."');";
+				$sql111 = "INSERT INTO `transactions`(`pump_id`, `cust_id`, `car_id`, `user_id`, `receipt_no`, `shift`, `fuel`, `amount`, `rate`, `liters`, `billed`, `date`, `last_updated`,`trans_string`,`trans_time`,`uploaded`) VALUES ('".$row['pump_id']."','".$row['cust_id']."','".$row['car_id']."','".$row['user_id']."','".$row['receipt_no']."','".$row['shift']."','".$row['fuel']."','".$row['amount']."','".$row['rate']."','".$row['liters']."','".$row['billed']."','".$row['date']."','".$row['last_updated']."','".$row['trans_string']."','".$row['trans_time']."','Y');";
 		
 				$this->_db->query($sql111);
 				$this->_db->execute();
@@ -678,9 +685,6 @@ class Transactions
 			
 			$this->updateSyncTable($table_name,$id,$unix);
 		}
-
-		
-
 	}
 
 	private function sendMSG($car_no_plate, $fuel, $amount, $url, $phone_no){
@@ -702,8 +706,6 @@ class Transactions
 		$resp = curl_exec($curl);
 		// Close request to clear up some resources
 		curl_close($curl);
-		
-		
 	}
 }
 ?>

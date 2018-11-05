@@ -65,7 +65,7 @@ foreach ($dirs as $key => $path) {
 				    $interval = (new DateTime($t1))->diff(new DateTime($t2));
 				    $time_diff =  $interval->format('%H:%I:%S');
 				    
-				    echo $time_diff;
+				    // echo $time_diff;
 
 				    $sql1 = "UPDATE `transactions` SET `trans_time` = '".$time_diff."'  WHERE `trans_string` = '".$data[0]."' ;";
 					$exe1 = mysqli_query($conn, $sql1);
@@ -85,7 +85,7 @@ if((sizeof($postData) == 0)||(!$send)){
 	echo 'No Photos Found';
 }
 else{
-	$target_url = $url_main.'/photos.php';
+	$target_url = $url_main.'/receive_photos.php';
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL,$target_url);
 	curl_setopt($ch, CURLOPT_POST,1);
