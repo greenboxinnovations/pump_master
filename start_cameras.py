@@ -88,6 +88,7 @@ def check_program_status():
             print("start program")
             if(isStarting == 0):
                 start_program()
+                # pass
         else:            
             print("Please Check the cameras")            
 
