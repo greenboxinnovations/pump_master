@@ -113,7 +113,7 @@ require 'exe/lock.php';
 		.red{color: #ed1275;}
 
 		.right_num{text-align: right;}
-		.input_error{background-color: rgb(252,201,202);}
+		.input_error{background-color: rgb(252,201,202);}		
 	</style>
 
 	<script type="text/javascript" src="js/jquery.js"></script>
@@ -265,11 +265,14 @@ require 'exe/lock.php';
 				var ph_count = 1;
 				$('.in_cust_ph_no').each(function(){
 
+
 					var ph_val = $(this).val();
 					// check if all numbers are 10 digits
 					if(ph_val.length != 10){
 						$(this).addClass('input_error');
 						showSnackBar('Invalid Phone Number');
+						ph_bool = false;
+						return false;
 					}
 					else{
 						// if first number assign to string
@@ -292,7 +295,7 @@ require 'exe/lock.php';
 					address_bool = true;
 				}
 
-
+				console.log(ph_bool+" "+ph_count);
 				if(ph_bool && address_bool){
 
 					if(validateInputs()){
@@ -416,36 +419,19 @@ require 'exe/lock.php';
 
 
 			// add phone numbers
-			$('body').delegate('#add_ph_no', 'click', function(){
-				// $(this).parent().append('<button id="del_ph_no">Delete</button>');
-				// $(this).parent().before('<div><input type="number" id="in_cust_ph_no" placeholder="Phone Number" maxlength="10"></div>');
-				var no = $('.div_ph_no').length;
-				if(no == 1){
-					$(this).parent().append('<button id="del_ph_no">Delete</button>');
-					$(this).parent().before('<div class="div_ph_no"><input type="number" class="in_cust_ph_no" placeholder="Phone Number" maxlength="10"></div>');
-				}
-				else{
-					$(this).parent().before('<div class="div_ph_no"><input type="number" class="in_cust_ph_no" placeholder="Phone Number" maxlength="10"></div>');
-				}
+			$('body').delegate('.add_ph_no', 'click', function(){				
+				$(this).parent().before('<div class="div_ph_no"><input type="number" class="in_cust_ph_no" placeholder="Phone Number" maxlength="10"><button class="add_ph_no">Add Phone Number</button><button class="del_ph_no">Delete</button></div>');
 			});
 
 			// delete phone number
-			$('body').delegate('#del_ph_no', 'click', function(){
-				var no = ($('.div_ph_no').length - 1);
-				var c = 0;
+			$('body').delegate('.del_ph_no', 'click', function(){
+				var num = $(this).parent().find('.in_cust_ph_no').val();
+				console.log(num);
 
-				$('.div_ph_no').each(function(){
-					c++;
-
-					if(no == 1){
-						$('#del_ph_no').remove();
-					}
-
-					if(c == no){
-						// $(this).css('background-color','black');
-						$(this).remove();
-					}
-				});				
+				var l = $('.del_ph_no').length;
+				if(l > 1){
+					$(this).parent().remove();
+				}
 			});
 			
 

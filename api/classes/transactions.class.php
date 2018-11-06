@@ -665,6 +665,9 @@ class Transactions
 
 				$url = "http://fuelmaster.greenboxinnovations.in/c_msg.php?t=".$row['trans_string'];
 
+
+
+				$ph_no = str_replace("|", ",", $ph_no);
 				$this->sendMSG($car_no_plate, $row['fuel'], $row['amount'], $url, $ph_no);
 
 				$d = true;

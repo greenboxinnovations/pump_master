@@ -22,6 +22,7 @@ class Customers
 			switch ($size) {
 				case 0:
 					// $this->getAllCustomers();
+				$this->testF2();
 					break;
 				case 1:
 					$this->getAllCustomers($this->_getParams[0]);
@@ -38,8 +39,7 @@ class Customers
 		}
 		elseif ($this->_method == 'POST')
 		{
-			// $this->addCustomer($this->_postParams);
-			$this->testF($this->_postParams);
+			$this->addCustomer($this->_postParams);			
 		}
 	}
 
@@ -87,20 +87,11 @@ class Customers
 		// check is first digit is not 0, 
 		// check if numeric
 		// check if 10 digits
-		if (preg_match("/^[1-9][0-9]{0,9}$/", $cust_ph_no, $match)){
-			// less than 10 digits pass
-			// check if exactly 10
-			if (!preg_match('/^\d{10}$/', $cust_ph_no)) {
-				// less or greater than 10
-				$valid = false;
-				$output['msg'] = 'Invalid Phone Number';
-			}			
-		}
-		else{
+		if(!$this->checkNumber($cust_ph_no)){
 			$valid = false;
 			$output['msg'] = 'Invalid Phone Number';
 		}
-				
+
 				
 		$cust_pump_id	 = 1;
 		
@@ -305,34 +296,31 @@ class Customers
 		
 	}
 
-	private function testF($postParams){
-
-		$db_array = array();
-
-		$cust_string	 	 = $postParams['cust_ph_no'];
+	private function checkNumber($cust_string){
+		$success = true;				 	
 		$ph_array = explode("|", $cust_string);
 
 
-		$sql = "SELECT `cust_ph_no` FROM `customers` WHERE 1";
-		$this->_db->query($sql);
-		$this->_db->execute();
-		$r = $this->_db->resultset();
-		foreach($r as $row) {
-			$p = explode("|", $row['cust_ph_no']);
-			foreach ($p as $v) {
-
-				foreach ($ph_array as $_ph) {
-					if($_ph == $v){
-						// SUCCESS FAIL
-						break;
-					}
-				}
-
-				array_push($db_array, $v);
+		// return valid digits if == 10, and not starting with 0
+		foreach ($ph_array as $no) {
+			// check is first digit is not 0, 
+			// check if numeric
+			// check if 10 digits
+			if (preg_match("/^[1-9][0-9]{0,9}$/", $no, $match)){
+				// less than 10 digits pass
+				// check if exactly 10
+				if (!preg_match('/^\d{10}$/', $no)) {
+					// less or greater than 10					
+					$success = false;					
+				}			
+			}
+			else{				
+				$success = false;				
 			}
 		}
 
-		echo json_encode($db_array);
+		return $success;
 	}
+
 }
 ?>

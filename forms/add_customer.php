@@ -49,6 +49,7 @@ if (isset($_GET['cust_id'])) {
 }
 
 
+
 ?>
 
 <div style="background-color: rgb(249,250,251);width: 500px;padding: 20px;border: 1px solid rgb(222,227,231);border-radius: 3px;">
@@ -65,7 +66,27 @@ if (isset($_GET['cust_id'])) {
 
 	<!-- <div><input type="number" id="in_cust_ph_no" placeholder="Phone Number" maxlength="10" value=<?php echo $cust_ph_no;?>></div> -->
 	<!-- <div><input type="number" id="in_cust_ph_no" placeholder="Phone Number" maxlength="10" value=<?php echo $cust_ph_no;?>><button id="add_ph_no">Add Phone Number</button><button id="del_ph_no">Delete</button></div> -->
-	<div class="div_ph_no"><input type="number" class="in_cust_ph_no" placeholder="Phone Number" maxlength="10" value=<?php echo $cust_ph_no;?>><button id="add_ph_no">Add Phone Number</button></div>
+
+	<?php
+
+	if($cust_ph_no != null){
+		$ph_array = explode("|", $cust_ph_no);
+		if(sizeof($ph_array) > 1){
+			foreach ($ph_array as $no) {
+				echo '<div class="div_ph_no"><input type="number" class="in_cust_ph_no" placeholder="Phone Number" maxlength="10" value="'.$no.'"><button class="add_ph_no">Add Phone Number</button><button class="del_ph_no">Delete</button></div>';
+				
+			}			
+		}
+		else{
+			echo '<div class="div_ph_no"><input type="number" class="in_cust_ph_no" placeholder="Phone Number" maxlength="10" value="'.$cust_ph_no.'"><button class="add_ph_no">Add Phone Number</button><button class="del_ph_no">Delete</button></div>';
+		}
+	}
+	else{
+		echo '<div class="div_ph_no"><input type="number" class="in_cust_ph_no" placeholder="Phone Number" maxlength="10" value=""><button class="add_ph_no">Add Phone Number</button><button class="del_ph_no">Delete</button></div>';
+	}
+	?>
+
+	
 
 	<div><input type="number" id="in_cust_service" placeholder="Service Percentage" class="single_decimal" value=<?php echo $cust_service;?> ></div>
 
