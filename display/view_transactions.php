@@ -19,12 +19,12 @@ echo '<thead>';
 	echo '<tr>';
 		echo '<th class="c_id">ID</th>';
 		echo '<th class="c_receipt">R-No</th>';
-		echo '<th class="c_receipt">Trans ID</th>';
+		echo '<th class="c_trans_id">Trans ID</th>';
 		echo '<th class="c_name">Cust Name</th>';
 		echo '<th class="c_cno">Car No</th>';
 		echo '<th class="c_amount">Amount</th>';
 		echo '<th class="c_date">Date</th>';
-		
+		echo '<th class="c_duration">Duration</th>';
 	echo '</tr>';
 echo '</thead>';
 
@@ -38,6 +38,10 @@ while($row = mysqli_fetch_assoc($exe)){
 	$car_id	 		= $row["car_id"];
 	$amount	 		= $row["amount"];
 	$date	 		= $row["date"];	
+	$duration 		= $row['trans_time'];
+	if ($duration == "") {
+		$duration = '00:00';
+	}
 
 	$cust_company	 = $row["cust_company"];
 
@@ -72,7 +76,7 @@ while($row = mysqli_fetch_assoc($exe)){
 	echo '<tr >';
 		echo '<td class="c_id">'.$trans_id.'</td>';
 		echo '<td class="c_receipt" style="text-align:right;">'.$row['receipt_no'].'</td>';
-		echo '<td class="c_date" style="text-align:left;">'.$trans_id_disp.'</td>';
+		echo '<td class="c_trans_id" style="text-align:left;">'.$trans_id_disp.'</td>';
 		echo '<td class="c_name">'.$cust_name.'</td>';
 		// echo '<td>'.$cust_id.'</td>';
 		// echo '<td>'.$car_id.'</td>';
@@ -80,7 +84,7 @@ while($row = mysqli_fetch_assoc($exe)){
 		echo '<td class="c_amount">'.$amount.'</td>';
 		// echo '<td>'.$date.'</td>';
 		echo '<td class="c_date">'.$display_date.'</td>';
-
+		echo '<td class="c_duration">'.$duration.'</td>';
 	echo '</tr>';
 
 	$counter++;

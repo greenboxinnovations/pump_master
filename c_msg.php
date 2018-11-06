@@ -309,6 +309,17 @@ if(isset($_GET['t'])){
 					echo '<div class="title inline">Fuel Rate</div>';  echo '<div class="val inline" >'.$row['rate'].'</div>';
 				echo '</div>';
 
+				$duration = $row['trans_time'];
+
+				if ($duration == "") {
+					$duration = '00:00';
+				}
+
+				echo'<div class="container" >';
+					echo '<div class="title inline">Duration</div>';  echo '<div class="val inline" >'.$duration.'</div>';
+				echo '</div>';
+
+
 			echo '</div>';
 			echo '</div>';
 			echo '<div class="clear_both"></div>';

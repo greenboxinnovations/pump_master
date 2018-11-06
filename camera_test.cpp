@@ -1,77 +1,25 @@
+#include "VlcCap.h"
+
+#include <unistd.h> // for usleep
+#include <iostream>
+
+
 #include <opencv2/opencv.hpp>
-#include <opencv2/aruco.hpp>
 
 #include <thread>
 #include <atomic>
-#include <mutex>
-#include <time.h>     
-
-#include <chrono>
-
-#include <string>
-#include <iostream>
-#include <fstream>
-
-// for date string
-#include <iomanip>
-#include <ctime>
-#include <sstream>
-
-// Vlc player
-#include "VlcCap.h"
-
-
-// database includes 
-#include "mysql_connection.h"
-#include <cppconn/driver.h>
-#include <cppconn/exception.h>
-#include <cppconn/resultset.h>
-#include <cppconn/statement.h>
-
-#include <boost/shared_ptr.hpp>
-#include <boost/scoped_ptr.hpp>
 
 using namespace std;
-using namespace cv;
-
-cv::Mat displayFrame1;
-cv::Mat displayFrame2;
-cv::Mat displayFrame3;
-
-std::atomic<bool> first1(0);
-std::atomic<bool> first2(0);
-std::atomic<bool> first3(0);
-std::atomic<bool> vid_thread_kill(0);
 
 
-
-const string CAM1_IP = "rtsp://192.168.0.129:554/Streaming/Channels/2/?transportmode=unicast";
-const string CAM2_IP = "rtsp://192.168.0.128:554/Streaming/Channels/2/?transportmode=unicast";
-const string CAM3_IP = "rtsp://192.168.0.127:554/Streaming/Channels/1/?transportmode=unicast";
-
-
-const string C1WINDOW = "cam-ONE";
-const string C2WINDOW = "cam-TWO";
-const string C3WINDOW = "cam-THREE";
-
-sql::Driver *driver;
-const string HOST = "tcp://127.0.0.1:3306";
-const string USER = "root";
-const string PASSWORD = "toor";
-const string DB = "pump_master";
-
-// system calls
-#include <stdlib.h>
-
+#include "opencv2/imgproc/imgproc_c.h"
+#include "opencv2/imgproc/imgproc.hpp"
 
 // date string stuff
 time_t rawtime;
 struct tm * timeinfo;
 char buffer [80];
 
-
-// test stuff
-const int intervalMillis = 1000 * 5 * 60;
 
 
 string dateString() {
@@ -82,35 +30,9 @@ string dateString() {
 	oss << std::put_time(&tm, "%d-%m-%Y %H:%M:%S");
 	string str = oss.str();
 
-	std::cout << str << std::endl;
+	// std::cout << str << std::endl;
 	return str;
 }
-
-cv::Mat writeDateSecondary(Mat frame){
-
-	string date = dateString();
-	// just some valid rectangle arguments
-	int x = 0;
-	int y = 0;
-	int width = 200;
-	int height = 33;
-	// our rectangle...
-	cv::Rect rect(x, y, width, height);			
-	// essentially do the same thing
-	cv::rectangle(frame, rect, cv::Scalar(0, 0, 0), CV_FILLED);
-
-
-	cv::putText(frame, //target image
-		date, //text
-		//cv::Point(10, clickedFrame.rows / 2), //top-left position
-		cv::Point(5, 20), //top-left position
-		cv::FONT_HERSHEY_DUPLEX,
-		0.5,
-		CV_RGB(255, 255, 255), //font color
-		0.5);
-	return frame;
-}
-
 
 cv::Mat writeDatePrimary(Mat frame){
 
@@ -139,318 +61,73 @@ cv::Mat writeDatePrimary(Mat frame){
 }
 
 
-
-void setCamStatus(string cam_no) {
-
-	try {
-		// housekeeping
-		driver = get_driver_instance();
-		unique_ptr<sql::Connection> con(driver->connect(HOST.c_str(), USER.c_str(), PASSWORD.c_str()));
-		con->setSchema(DB.c_str());
-		unique_ptr<sql::Statement> stmt(con->createStatement());
-
-		string update_query = "UPDATE `cameras` SET `status`= 0 WHERE `cam_no` = " + cam_no;
-		stmt->executeUpdate(update_query.c_str());
-	}
-	catch (sql::SQLException &e) {
-		cout << "# ERR: SQLException in " << __FILE__;
-		cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << endl;
-		cout << "# ERR: " << e.what();
-		cout << " (MySQL error code: " << e.getErrorCode();
-		cout << ", SQLState: " << e.getSQLState() << " )" << endl;
-	}
-}
-
-
-
-void getCamStatus() {	
-
-	try {
-		// housekeeping
-		driver = get_driver_instance();
-		unique_ptr<sql::Connection> con(driver->connect(HOST.c_str(), USER.c_str(), PASSWORD.c_str()));
-		con->setSchema(DB.c_str());
-		unique_ptr<sql::Statement> stmt(con->createStatement());
-
-		string query = "SELECT * FROM `cameras` WHERE `status` = 1";
-		unique_ptr<sql::ResultSet> res(stmt->executeQuery(query.c_str()));
-		
-
-		if (res->rowsCount() != 0) {
-			while (res->next()) {
-
-				// cout << res->getString("cam_no") << endl;
-				// cout << res->getString("type") << endl;
-				// cout << res->getString("trans_string") << endl;
-
-				// make a date string
-				time (&rawtime);
-				timeinfo = localtime (&rawtime);
-				strftime(buffer,80,"%Y-%m-%d",timeinfo);
-				std::string date(buffer);				
-
-
-				// make directory if not exists
-				// string cmd = "mkdir -m 777 ./uploads/"+date;
-				string cmd = "mkdir -m 777 /opt/lampp/htdocs/pump_master/uploads/"+date;
-				
-				system("clear");
-				system(cmd.c_str());
-
-
-				// make file names
-				// string file_name = "uploads/"+date+"/"+res->getString("trans_string") + "_" +res->getString("type")+".jpeg";
-				// string file_name2 = "uploads/"+date+"/"+res->getString("trans_string") + "_" + res->getString("type")+"_top.jpeg";
-				string file_name = "/opt/lampp/htdocs/pump_master/uploads/"+date+"/"+res->getString("trans_string") + "_" +res->getString("type")+".jpeg";
-				string file_name2 = "/opt/lampp/htdocs/pump_master/uploads/"+date+"/"+res->getString("trans_string") + "_" + res->getString("type")+"_top.jpeg";
-
-
-				// select camera
-				if (res->getString("cam_no") == "1")
-				{
-					// writeDateSecondary(displayFrame1);
-					// imwrite(file_name, displayFrame1 );
-					Mat d = writeDateSecondary(displayFrame1);
-					imwrite(file_name, d );
-				}else{
-					// writeDateSecondary(displayFrame2);
-					// imwrite(file_name, displayFrame2 );
-					Mat d = writeDateSecondary(displayFrame2);
-					imwrite(file_name, d );
-				}
-				// writeDatePrimary(displayFrame3);
-				// imwrite(file_name2, displayFrame3 );
-				Mat s = writeDatePrimary(displayFrame3);
-				imwrite(file_name2, s );
-
-
-				// reset status in cameras
-				setCamStatus(res->getString("cam_no"));
-			}
-		}
-	}
-	catch (sql::SQLException &e) {
-		cout << "# ERR: SQLException in " << __FILE__;
-		cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << endl;
-		cout << "# ERR: " << e.what();
-		cout << " (MySQL error code: " << e.getErrorCode();
-		cout << ", SQLState: " << e.getSQLState() << " )" << endl;
-	}
-
-
-}
-
-
-void camThread(const string IP) {
+int main(){
 
 	Mat frame;
+	Mat frame2;
+	Mat s;
 	VlcCap cap;
-	cap.open(IP.c_str());
-	// VideoCapture video(IP);
+	VlcCap cap2;
+	Size S = Size(1920, 1090);
 
-	// open and check video	
-	if (!cap.isOpened()) {
-		cout << "Error acquiring video" << endl;
-		return;
-	}
-	while (1) {
-
-
-		// read frame
-		cap.read(frame);
-		if (!frame.empty()) {			
-
-			if(IP == CAM1_IP){
-				frame.copyTo(displayFrame1);
-				first1 = true;
-			}
-			else if(IP == CAM2_IP){
-				frame.copyTo(displayFrame2);
-					first2 = true;
-			}
-			else{
-				frame.copyTo(displayFrame3);
-				first3 = true;
-			}
-		}
-	}
-}
-
-void systemThread() {
-
-	// system("python3.5 /opt/lampp/htdocs/pump_master/start_cameras.py");
-
-}
-
-
-// void videoThread(const string IP) {
-void vid_thread() {
-
-
-	// Setup output video
-	VideoWriter video("out.avi", CV_FOURCC('M','J','P','G'), 15, Size(1920, 1080), false);
-
-
-	while(!vid_thread_kill){
-		// cout << "tthread runnung" << endl;
-		// try{
-			video.write(displayFrame3);
-		// }catch(const char* e){
-			// cout << e << endl;
-		// }
-		
-	}
-	video.release();
-	return;
-	// if(){
-	// 	cout ""
-	// }
-
-
-
-}
-
-
-void startVideoThread(){
-
-	thread v(vid_thread);
-	v.detach();
-
-	cout << "start thread" << endl;
-}
-
-
-
-
-int main(int argc, char** argv) {
-
-	cout << "ESC on window to exit" << endl;
-	namedWindow(C1WINDOW,WINDOW_NORMAL);
-	namedWindow(C2WINDOW,WINDOW_NORMAL);
-	namedWindow(C3WINDOW,WINDOW_NORMAL);
-
-	cv::resizeWindow(C1WINDOW, 640, 480);
-	cv::resizeWindow(C2WINDOW, 640, 480);
-	cv::resizeWindow(C3WINDOW, 640, 480);
-
-
-	int i = 0;
-
+	Size S2 = Size(640, 480);
 	
 
 
-	cout << "Main start" << endl;
+	cap.open("rtsp://192.168.0.123:554/Streaming/Channels/1/?transportmode=unicast");
+	cap2.open("rtsp://192.168.0.124:554/Streaming/Channels/2/?transportmode=unicast");
+	// cap.open("/home/velocity/Desktop/vlc_stuff/1.mkv");
 
-	thread t1(camThread, CAM1_IP);
-	t1.detach();
+	// VideoWriter writer = VideoWriter("out.avi", CV_FOURCC('M','J','P','G'), 20, S);
+	VideoWriter writer = VideoWriter("final.avi", VideoWriter::fourcc('H','2','6','4'), 10, S);
 
-	thread t2(camThread, CAM2_IP);
-	t2.detach();
+	const string WINDOW = "window";
 
+	namedWindow(WINDOW, WINDOW_NORMAL);
+	cv::resizeWindow(WINDOW, 640, 480);
+	usleep(1000);
+	if(cap.isOpened()){
 
-	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+		while(1){
+			cap.read(frame);
+			cap2.read(frame2);
 
+			frame2.copyTo(frame(cv::Rect(1280,0,640, 480)));
 
-	// time (&rawtime);
-	// timeinfo = localtime (&rawtime);
-	// strftime(buffer,80,"%Y-%m-%d",timeinfo);
-	// std::string date(buffer);	
+			s = writeDatePrimary(frame);
 
+			// cout << "Width : " << frame.size().width << endl;
+			// cout << "Height: " << frame.size().height << endl;
 
-	thread t3(camThread, CAM3_IP);
-	t3.detach();
+			// cv::aruco::detectMarkers(frame, dictionary, corners, ids);
 
-	// thread t4(systemThread);
-	// t4.detach();
-	VideoWriter video("out.avi", CV_FOURCC('M','J','P','G'), 15, Size(640, 480), true);
-
-
-	string checkExit;
-	while (1) {
-
-		if (first1 && first2 && first3) {
-		// if (first1 && first2) {
-
-			imshow(C1WINDOW, displayFrame1);
-			imshow(C2WINDOW, displayFrame2);
-			imshow(C3WINDOW, displayFrame3);
-
-			getCamStatus();
-
-
-			
-			// while(!vid_thread_kill){
-				// cout << "tthread runnung" << endl;
-				// try{
-					video.write(displayFrame1);
-				// }catch(const char* e){
-					// cout << e << endl;
-				// }
-				
+			// // if at least one marker detected 
+			// if (ids.size() > 0) {
+// 
+			// 	aruco::drawDetectedMarkers(frame, corners, ids);
+			// 	for (auto const& id : ids) {
+			// 		cout << id << endl;
+			// 	}								
 			// }
-			// video.release();
-
-			// std::chrono::steady_clock::time_point test = std::chrono::steady_clock::now();
-			// if (std::chrono::duration_cast<std::chrono::milliseconds>(test - start).count() > intervalMillis) {
-			// 	cout << (intervalMillis / 1000) << " seconds have passed" << endl;
-			// 	start = std::chrono::steady_clock::now();
+			writer.write(s);
 
 
-			// 	// unix timestamp-ISH
-			// 	// not sure
-			// 	auto dur = test.time_since_epoch();
-			// 	auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(dur).count();
-
-			// 	std::cout << "Timestamp: " << timestamp << std::endl;
-			// 	ostringstream out;
-			// 	out << timestamp;
-				//imwrite("/clicks/" + out.str() + ".JPG", frame);
-
-				// try{
-				// 	imwrite("/opt/lampp/htdocs/pump_master/uploads/left/" +date+ std::to_string(i) + ".jpeg", displayFrame1);
-				// 	imwrite("/opt/lampp/htdocs/pump_master/uploads/right/" +date+ std::to_string(i) + ".jpeg", displayFrame2);
-
-				// }catch  (const std::exception& e){
-				// 	 std::cout << e.what(); 
-				// }
-
-				// i++;			
-				
-			// }
-
-		}
-
-		char character = waitKey(10);
-		switch (character)
-		{
-		case 27:			
-		video.release();
-			destroyAllWindows();
-			return 0;
-			break;
-
-		// space
-		case 32:
-			vid_thread_kill = false;
-			startVideoThread();
-			break;
+			imshow(WINDOW, s);
 
 
-		// enter
-		case 13:
-			vid_thread_kill = true;
-			break;
 
+			char character = waitKey(10);
+			switch(character){
+				case 27:
+					writer.release();
+					destroyAllWindows();
+					return 0;
+					break;
+			}
 
-		default:
-			break;
 		}
 	}
 
+
 	return 0;
 }
-
-
-
-
-

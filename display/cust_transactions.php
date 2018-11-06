@@ -63,7 +63,8 @@ if (isset($_GET['cust_id'])) {
 					echo '<th class="th_num">Rate</th>';
 					echo '<th class="th_num">Liters</th>';
 					echo '<th class="th_num">Amount</th>';
-					echo '<th class="th_num">Date</th>';
+					echo '<th>Date</th>';
+					echo '<th class="th_num">Duration</th>';
 					if ($_SESSION['role'] == "admin") {
 						echo '<th class="th_num"></th>';
 					}
@@ -85,6 +86,10 @@ if (isset($_GET['cust_id'])) {
 				$date	 		= $row["date"];	
 				$cust_post_paid = $row["cust_post_paid"];
 				$status 		= $row["billed"];
+				$duration 		= $row['trans_time'];
+				if ($duration == "") {
+					$duration = '00:00';
+				}
 
 				$t_date 		= date("Y-m-d", strtotime($date));
 
@@ -140,7 +145,8 @@ if (isset($_GET['cust_id'])) {
 					echo '<td class="td_num">'.$rate.'</td>';
 					echo '<td class="td_num">'.$liters.'</td>';
 					echo '<td class="td_num">'.$amount.'</td>';
-					echo '<td class="td_num">'.$date.'</td>';	
+					echo '<td class="td_num">'.$date.'</td>';
+					echo '<td class="td_num">'.$duration.'</td>';	
 					if ($_SESSION['role'] == "admin") {
 						echo '<td class="td_num edit" id="'.$trans_id.'"></td>';	
 					}
