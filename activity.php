@@ -42,6 +42,7 @@ require 'exe/lock.php';
 
 		#flex_div{display: flex;}
 		.inline{flex: 1;}
+		.hide{display: none;}
 	}
 	</style>
 
@@ -54,7 +55,7 @@ require 'exe/lock.php';
 	<script type="text/javascript">
 		$(document).ready(function(){
 			$('#total_trans').load('display/activity/total_app_trans.php');
-			$('#daily_trans').load('display/activity/day_app_trans.php');
+			$('#daily_trans').load('display/activity/day_activity.php');
 
 			// $('#app_date').on('change', function(){
 			// 	var date = $(this).val();
@@ -73,7 +74,7 @@ require 'exe/lock.php';
 				}
 				else{
 					console.log(date1+" "+date2);
-					$('#daily_trans').load('display/activity/day_app_trans.php?date1='+date1+'&date2='+date2);
+					$('#daily_trans').load('display/activity/day_activity.php?date1='+date1+'&date2='+date2);
 				}
 
 				// 
@@ -82,7 +83,17 @@ require 'exe/lock.php';
 				// // }
 			});
 
-
+			$('body').delegate('.show_more', 'click', function(){
+				var custid = ".hide."+$(this).attr('custid');
+				console.log(custid);				
+				if($(custid).is(':visible')){
+					$('.hide').hide();
+				}
+				else{
+					$('.hide').hide();
+					$(custid).show();
+				}
+			});
 		});
 	</script>
 </head>
