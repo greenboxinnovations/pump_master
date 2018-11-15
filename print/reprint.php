@@ -32,8 +32,7 @@ require_once(dirname(__FILE__) . "/Escpos.php");
 require '../query/conn.php';
 
 date_default_timezone_set("Asia/Kolkata");
-$date = date('l jS F Y h:i:s A');
-$date1 = date('Y-m-d');
+
 $p =false;
 
 
@@ -104,7 +103,10 @@ if ((isset($_GET['trans_id']))&&($p)) {
 
 	$row = json_decode($d[1],true)[0];
 
-	$t_id 	= $row['max'] + 100000 +1;
+	$date = date('l jS F Y h:i:s A',strtotime($row['date']));
+	$date1 = date('Y-m-d',strtotime($row['date']));
+
+	$t_id 	= $row['trans_id'] + 100000;
 	$vh_no 	= str_replace(" ", "-",  $row['car_no_plate']);
 	$fuel 	= $row['fuel'];
 	$ltr 	= $row['liters'];
