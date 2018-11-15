@@ -1,3 +1,6 @@
+<?php
+header('Access-Control-Allow-Origin: *'); 
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -43,9 +46,7 @@
 				var url = 'api/transactions/delete';
 
 				var myObject = {};
-					
 				myObject.trans_id = id;
-
 				json_string = JSON.stringify(myObject);
 
 				if (confirm('Delete Transaction?')) {		
@@ -57,14 +58,28 @@
 						data:json_string,
 						success: function(response){
 							alert(response);
-
 							location.reload();
 						}
 					});
-				   
 				}
-
 			});
+
+			$('body').delegate('.print', 'click', function(){
+
+				var trans_id = $(this).attr("id");
+				var url = 'http://192.168.0.100/pump_master/print/reprint.php?trans_id='+trans_id;
+
+				if (confirm('Reprint Transaction?')) {		
+					$.ajax({
+						url: url,
+						type: 'GET',				
+						success: function(response){
+							console.log(response);
+						}
+					});
+				}
+			});
+
 		}); 
 
 		var click = false;
@@ -87,6 +102,12 @@
 		    	padding: 15px;
 		    }
 		.delete:hover{background-color: rgb(120,200,200);cursor: pointer;}
+
+		.print{
+		    	background: url('css/icons/ic_receipt_black.png') no-repeat center center;
+		    	padding: 15px;
+		    }
+		.print:hover{background-color: rgb(120,200,200);cursor: pointer;}
 
 		#wrapper{width: 800px;/*background-color: yellow;*/margin: 0 auto;}
 		#pump_name{text-align: center;font-weight: 700;font-size: 30px;margin-top: 20px;}
@@ -242,7 +263,7 @@ if(isset($_GET['cust_id'])){
 			echo '<th style="text-align:center;">Litres</th>';
 			echo '<th style="text-align:center;">Fuel Rate</th>';
 			echo '<th style="text-align:center;">Amount Rs</th>';
-			
+			echo '<th style="text-align:center;"></th>';
 		echo '</tr>';
 
 		$count 	= 1;
@@ -289,7 +310,7 @@ if(isset($_GET['cust_id'])){
 				echo '<td class="td_num">'.$liters.'</td>';
 				echo '<td class="td_num">'.$rate.'</td>';
 				echo '<td class="td_num">'.$amount.'</td>';		
-					
+				echo '<td class="td_num print" id="'.$row['trans_id'].'"></td>';
 			echo '</tr>';
 
 			$total += $amount;

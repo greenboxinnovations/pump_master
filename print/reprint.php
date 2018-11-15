@@ -1,5 +1,5 @@
 <?php
-
+header('Access-Control-Allow-Origin: *'); 
 class item {
 	private $vh_no;
 	private $fuel;
