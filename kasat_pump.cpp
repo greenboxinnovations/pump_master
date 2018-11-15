@@ -1,5 +1,4 @@
 #include <opencv2/opencv.hpp>
-#include <opencv2/aruco.hpp>
 
 #include <thread>
 #include <atomic>
@@ -7,6 +6,9 @@
 #include <time.h>     
 
 #include <chrono>
+
+#include <utility>
+#include <vector>
 
 #include <string>
 #include <iostream>
@@ -16,6 +18,8 @@
 #include <iomanip>
 #include <ctime>
 #include <sstream>
+
+
 
 // Vlc player
 #include "VlcCap.h"
@@ -30,6 +34,9 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
+
+// system calls
+#include <stdlib.h>
 
 using namespace std;
 using namespace cv;
@@ -59,8 +66,128 @@ const string USER = "root";
 const string PASSWORD = "toor";
 const string DB = "pump_master";
 
-// system calls
-#include <stdlib.h>
+
+
+struct vidHandle {
+	string trans_string;
+	int cam_no;
+	bool isRecording;
+};
+
+
+class ThreadSafeVector {
+private:
+	std::mutex mu_;
+	std::vector<vidHandle> myVector;
+
+public:
+	void add(const vidHandle vh) {
+		std::lock_guard<std::mutex> lock(mu_);
+		// std::cout << std::this_thread::get_id() << std::endl;
+		myVector.push_back(vh);
+	}
+
+	void remove(const string t_string) {
+		std::lock_guard<std::mutex> lock(mu_);
+		
+		std::vector<vidHandle>::iterator it;
+		for (it = myVector.begin(); it != myVector.end(); /*++it*/) {
+			// if(it->first == trans_string){
+			// 	myVector.erase(it);
+			// }
+
+			if(it->trans_string == t_string){
+				it = myVector.erase(it);	
+			}
+			else{
+				++it;	
+			}
+		}		
+	}
+
+
+	int size() {
+		std::lock_guard<std::mutex> lock(mu_);
+		// std::cout << std::this_thread::get_id() << std::endl;
+		return myVector.size();
+	}
+
+	// pass a trans_string
+	// receive isRecording boolean
+	bool read(const string t_string) {
+		std::lock_guard<std::mutex> lock(mu_);
+		// std::cout << std::this_thread::get_id() << std::endl;
+
+		std::vector<vidHandle>::iterator it;
+		for (it = myVector.begin(); it != myVector.end(); ++it) {
+			if(it->trans_string == t_string){
+				return it->isRecording;
+			}
+		}
+		return false;
+	}
+
+	// check if exists
+	// used for deleting video
+	bool exists(const string t_string) {
+		std::lock_guard<std::mutex> lock(mu_);
+		// std::cout << std::this_thread::get_id() << std::endl;
+
+		std::vector<vidHandle>::iterator it;
+		for (it = myVector.begin(); it != myVector.end(); ++it) {
+			if(it->trans_string == t_string){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	void change(const string t_string, const bool change) {
+		std::lock_guard<std::mutex> lock(mu_);
+		// std::cout << std::this_thread::get_id() << std::endl;
+
+		std::vector<vidHandle>::iterator it;
+		for (it = myVector.begin(); it != myVector.end(); ++it) {
+			if(it->trans_string == t_string){
+				it->isRecording = change;
+				return;
+			}
+		}
+		return;
+	}
+
+	// looks for entries with cam_no
+	// removes them if found
+	void removeCamNo(const int cam) {
+		std::lock_guard<std::mutex> lock(mu_);
+		// std::cout << std::this_thread::get_id() << std::endl;
+
+		std::vector<vidHandle>::iterator it;
+		for (it = myVector.begin(); it != myVector.end();/* ++it*/) {
+			// same as erase
+			// but cant use because of mutex
+			// no need for multiple mutexes
+			// instead copy code here
+			if(it->cam_no == cam){				
+				it = myVector.erase(it);							
+			}
+			else{
+				++it;	
+			}
+		}
+		return;
+	}
+
+	
+	void printVec() {
+		std::lock_guard<std::mutex> lock(mu_);
+		std::vector<vidHandle>::iterator it;
+		for (it = myVector.begin(); it != myVector.end(); ++it) {
+			cout << it->trans_string <<endl;			
+		}		
+	}
+};
+
 
 
 // date string stuff
@@ -73,6 +200,43 @@ char buffer [80];
 const int intervalMillis = 1000 * 5 * 60;
 
 
+std::string exec(const char* cmd) {
+    std::array<char, 128> buffer;
+    std::string result;
+    std::shared_ptr<FILE> pipe(popen(cmd, "r"), pclose);
+    if (!pipe) throw std::runtime_error("popen() failed!");
+    while (!feof(pipe.get())) {
+        if (fgets(buffer.data(), 128, pipe.get()) != nullptr)
+            result += buffer.data();
+    }
+    return result;
+}
+
+
+void videoClose(string file_name, string file_name_mp4){
+
+	string cmd_f = "ffmpeg -i "+file_name+" "+file_name_mp4;
+	// string cmd_f = "ffmpeg -i jiggy";
+
+	exec(cmd_f.c_str());
+	if( remove(file_name.c_str()) != 0 ){
+		perror( "Error deleting file" );
+	}
+	else{
+		cout << "File successfully deleted" << endl;				
+	}
+}
+
+void videoDelete(string file_name){
+	if( remove(file_name.c_str()) != 0 ){
+		perror( "Error deleting file" );
+	}
+	else{
+		cout << "File successfully deleted" << endl;
+	}
+}
+
+
 string dateString() {
 	auto t = std::time(nullptr);
 	auto tm = *std::localtime(&t);
@@ -81,7 +245,7 @@ string dateString() {
 	oss << std::put_time(&tm, "%d-%m-%Y %H:%M:%S");
 	string str = oss.str();
 
-	std::cout << str << std::endl;
+	// std::cout << str << std::endl;
 	return str;
 }
 
@@ -161,8 +325,83 @@ void setCamStatus(string cam_no) {
 }
 
 
+int videoThread(const int cam_no, const string trans_string, ThreadSafeVector &tsv){
+	
+	Mat big_frame;
+	Mat small_frame;
+	Mat date_frame;
+	Mat resized;	
+	Size S2 = Size(640, 480);	
+	int skip = 0;
 
-void getCamStatus() {	
+	// make a date string
+	time (&rawtime);
+	timeinfo = localtime (&rawtime);
+	strftime(buffer,80,"%Y-%m-%d",timeinfo);
+	std::string date(buffer);				
+	// make directory if not exists
+	// string cmd = "mkdir -m 777 ./uploads/"+date;
+	string cmd = "mkdir -p -m 777 /opt/lampp/htdocs/pump_master/videos/"+date;	
+	exec("clear");
+	exec(cmd.c_str());
+
+	// make file name
+	string file_name = "/opt/lampp/htdocs/pump_master/videos/"+date+"/"+trans_string+".avi";
+	string file_name_mp4 = "/opt/lampp/htdocs/pump_master/videos/"+date+"/"+trans_string+".mp4";
+
+	VideoWriter writer = VideoWriter(file_name, CV_FOURCC('H','2','6','4'), 25, S2);
+
+	// dont let video record more than 20 min
+	auto start = chrono::steady_clock::now();
+
+	while(tsv.read(trans_string)){
+
+		auto now = chrono::steady_clock::now();
+
+		if(chrono::duration_cast<chrono::seconds>(now - start).count() > 900) {
+			tsv.change(trans_string, false);
+		}
+
+
+		if(cam_no == 1){
+			displayFrame1.copyTo(small_frame);
+		}
+		else{
+			displayFrame2.copyTo(small_frame);
+		}
+		// make a copy		
+		displayFrame3.copyTo(big_frame);
+
+		small_frame.copyTo(big_frame(cv::Rect(1280,0,640,480)));
+		date_frame = writeDatePrimary(big_frame);
+
+		skip++;
+		if(skip == 9){
+			skip = 0;
+			cv::resize(date_frame, resized, S2);
+			writer.write(resized);
+		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(40));
+	}
+
+	writer.release();
+
+	// isRecording is false
+	if(tsv.exists(trans_string)){
+		// process video
+		videoClose(file_name,file_name_mp4);
+		tsv.remove(trans_string);
+	}
+	else{
+		// delete video
+		videoDelete(file_name);
+	}	
+	return 0;
+}
+
+
+
+void getCamStatus(ThreadSafeVector &tsv) {	
 
 	try {
 		// housekeeping
@@ -182,49 +421,74 @@ void getCamStatus() {
 				// cout << res->getString("type") << endl;
 				// cout << res->getString("trans_string") << endl;
 
-				// make a date string
-				time (&rawtime);
-				timeinfo = localtime (&rawtime);
-				strftime(buffer,80,"%Y-%m-%d",timeinfo);
-				std::string date(buffer);				
+
+				try{
+					// make a date string
+					time (&rawtime);
+					timeinfo = localtime (&rawtime);
+					strftime(buffer,80,"%Y-%m-%d",timeinfo);
+					std::string date(buffer);				
 
 
-				// make directory if not exists
-				// string cmd = "mkdir -m 777 ./uploads/"+date;
-				string cmd = "mkdir -m 777 /opt/lampp/htdocs/pump_master/uploads/"+date;
-				
-				system("clear");
-				system(cmd.c_str());
+					// make directory if not exists
+					// string cmd = "mkdir -m 777 ./uploads/"+date;
+					string cmd = "mkdir -p -m 777 /opt/lampp/htdocs/pump_master/uploads/"+date;
+					
+					system("clear");
+					system(cmd.c_str());
 
 
-				// make file names
-				// string file_name = "uploads/"+date+"/"+res->getString("trans_string") + "_" +res->getString("type")+".jpeg";
-				// string file_name2 = "uploads/"+date+"/"+res->getString("trans_string") + "_" + res->getString("type")+"_top.jpeg";
-				string file_name = "/opt/lampp/htdocs/pump_master/uploads/"+date+"/"+res->getString("trans_string") + "_" +res->getString("type")+".jpeg";
-				string file_name2 = "/opt/lampp/htdocs/pump_master/uploads/"+date+"/"+res->getString("trans_string") + "_" + res->getString("type")+"_top.jpeg";
+					// make file names
+					// string file_name = "uploads/"+date+"/"+res->getString("trans_string") + "_" +res->getString("type")+".jpeg";
+					// string file_name2 = "uploads/"+date+"/"+res->getString("trans_string") + "_" + res->getString("type")+"_top.jpeg";
+					string file_name = "/opt/lampp/htdocs/pump_master/uploads/"+date+"/"+res->getString("trans_string") + "_" +res->getString("type")+".jpeg";
+					string file_name2 = "/opt/lampp/htdocs/pump_master/uploads/"+date+"/"+res->getString("trans_string") + "_" + res->getString("type")+"_top.jpeg";
 
 
-				// select camera
-				if (res->getString("cam_no") == "1")
-				{
-					// writeDateSecondary(displayFrame1);
-					// imwrite(file_name, displayFrame1 );
-					Mat d = writeDateSecondary(displayFrame1);
-					imwrite(file_name, d );
-				}else{
-					// writeDateSecondary(displayFrame2);
-					// imwrite(file_name, displayFrame2 );
-					Mat d = writeDateSecondary(displayFrame2);
-					imwrite(file_name, d );
+					int cam_no = std::stoi(res->getString("cam_no"));				
+					string t_string = res->getString("trans_string");
+					string t_type = res->getString("type");
+
+					// select camera
+					if (res->getString("cam_no") == "1")
+					{
+						// writeDateSecondary(displayFrame1);
+						// imwrite(file_name, displayFrame1 );
+						Mat d = writeDateSecondary(displayFrame1);
+						imwrite(file_name, d );
+					}else{
+						// writeDateSecondary(displayFrame2);
+						// imwrite(file_name, displayFrame2 );
+						Mat d = writeDateSecondary(displayFrame2);
+						imwrite(file_name, d );
+					}
+					// writeDatePrimary(displayFrame3);
+					// imwrite(file_name2, displayFrame3 );
+					Mat s = writeDatePrimary(displayFrame3);
+					imwrite(file_name2, s );
+
+
+					// video routing
+					if(t_type == "start"){
+						tsv.removeCamNo(cam_no);
+						vidHandle vh = {t_string, cam_no, true};
+						tsv.add(vh);
+						thread vidT(videoThread, cam_no, t_string, std::ref(tsv));
+						vidT.detach();
+					}
+					else if(t_type == "stop"){
+						tsv.change(t_string, false);
+					}
+
+					// reset status in cameras
+					setCamStatus(res->getString("cam_no"));
+
 				}
-				// writeDatePrimary(displayFrame3);
-				// imwrite(file_name2, displayFrame3 );
-				Mat s = writeDatePrimary(displayFrame3);
-				imwrite(file_name2, s );
+				catch( const std::exception &e) {
+					std::cerr << e.what();
+				}
 
-
-				// reset status in cameras
-				setCamStatus(res->getString("cam_no"));
+	
 			}
 		}
 	}
@@ -235,9 +499,8 @@ void getCamStatus() {
 		cout << " (MySQL error code: " << e.getErrorCode();
 		cout << ", SQLState: " << e.getSQLState() << " )" << endl;
 	}
-
-
 }
+
 
 
 void camThread(const string IP) {
@@ -321,6 +584,10 @@ int main(int argc, char** argv) {
 	// thread t4(systemThread);
 	// t4.detach();
 
+
+	ThreadSafeVector tsv;
+
+
 	string checkExit;
 	while (1) {
 
@@ -331,7 +598,7 @@ int main(int argc, char** argv) {
 			imshow(C2WINDOW, displayFrame2);
 			// imshow(C3WINDOW, displayFrame3);
 
-			getCamStatus();
+			getCamStatus(std::ref(tsv));
 
 			// std::chrono::steady_clock::time_point test = std::chrono::steady_clock::now();
 			// if (std::chrono::duration_cast<std::chrono::milliseconds>(test - start).count() > intervalMillis) {
@@ -382,4 +649,3 @@ int main(int argc, char** argv) {
 
 	return 0;
 }
-

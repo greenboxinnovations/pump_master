@@ -45,7 +45,7 @@ if (password_verify($pass, $hash)) {
 	// }
 	// if (($row1['imei'] == $imei)&&($row1['role'] == 'operator')) {
 	if (
-		(($imei == "357120093538457") || ($imei == "358213083247251")) 
+		(($imei == "357120093538457") || ($imei == "358213083247251")|| ($imei == "353107095806820")) 
 		&&($row1['role'] == 'operator')) {		
 		$json['success'] 	= true;
 		$json['user_id'] 	= $row1['user_id'];
