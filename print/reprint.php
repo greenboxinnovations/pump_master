@@ -102,7 +102,7 @@ if ((isset($_GET['trans_id']))&&($p)) {
 
 	$d = httpGet("http://fuelmaster.greenboxinnovations.in/exe/get_trans_details.php?trans_id=".$trans_id);
 
-	$row = $d[1];
+	$row = json_decode($d[1],true)[0];
 
 	$t_id 	= $row['max'] + 100000 +1;
 	$vh_no 	= str_replace(" ", "-",  $row['car_no_plate']);

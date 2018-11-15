@@ -29,32 +29,32 @@ date_default_timezone_set("Asia/Kolkata");
 // 	}
 
 
-$file1 = '/opt/lampp/htdocs/pump_master/uploads/2018-11-04/VYxmtOMiMu_start.jpeg';
-$file2 = '/opt/lampp/htdocs/pump_master/uploads/2018-11-04/VYxmtOMiMu_stop.jpeg';
+function httpGet($url)
+{
 
+    $ch = curl_init();  
+ 
+    curl_setopt($ch, CURLOPT_URL,$url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_TIMEOUT,1);
+	$output = curl_exec($ch);
+	$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
 
+    return  array($httpcode, $output);
 
-
-if (file_exists($file2)) {
-
-    $t1 = date("Y-m-d H:i:s",filemtime($file1));
-    $t2 = date("Y-m-d H:i:s",filemtime($file2));
-
-    $interval = (new DateTime($t1))->diff(new DateTime($t2));
-    $time_diff =  $interval->format('%H:%I:%S');
-    echo $time_diff;
-    echo '<br/>';
 }
 
+$trans_id = 11068;
 
-$file1 = str_replace('/opt/lampp/htdocs/pump_master/uploads/2018-11-04/', '', $file1);
-
-$data = explode("_", $file1);
-echo $data[0];
+$d = httpGet("http://fuelmaster.greenboxinnovations.in/exe/get_trans_details.php?trans_id=".$trans_id);
 
 
 
+$res = json_decode($d[1],true)[0];
 
+
+echo $res['trans_id'];
 
 
 // $proceed = false;
