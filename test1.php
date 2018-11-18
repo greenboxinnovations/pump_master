@@ -27,6 +27,31 @@ function formatBytes($size, $precision = 2)
     return round(pow(1024, $base - floor($base)), $precision);
 }
 
+function sendVide($filename){
+
+$url_main = 'http://fuelmaster.greenboxinnovations.in';
+
+	$target_url = $url_main.'/receive_videos.php';
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL,$target_url);
+		curl_setopt($ch, CURLOPT_POST,1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $filename);
+		// curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
+		// curl_setopt($ch, CURLOPT_TIMEOUT, 9000);
+		// curl_setopt($ch, CURLOPT_BUFFERSIZE, 256); 	
+		// curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: multipart/form-data',
+		// 'Expect:' ));
+		// curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:'));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+
+		$result = curl_exec ($ch);
+		curl_close ($ch);
+		echo '<pre>';
+			print_r($result);
+		echo '</pre>';
+}
+
 
 $url_main = 'http://fuelmaster.greenboxinnovations.in';
 
@@ -66,7 +91,7 @@ if(mysqli_num_rows($exe_dir) > 0){
 				$total_file_size_mb += $total_file_size;
 
 				// if($index < 2){
-				if($total_file_size_mb < 30){
+				if($total_file_size_mb < 22){
 					$postData['file[' . $index . ']'] = curl_file_create(
 						realpath($path.'/'.$file),
 						mime_content_type($path.'/'.$file),
@@ -75,6 +100,8 @@ if(mysqli_num_rows($exe_dir) > 0){
 
 					$postData['path[' . $index . ']'] = $path;
 					$index++;
+
+					sendVide($postData);
 
 					$files_name[$i] = $file;
 				}

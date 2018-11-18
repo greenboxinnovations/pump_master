@@ -152,6 +152,8 @@ root.geometry("400x300+300+300")
 #creation of an instance
 app = Window(root)
 
+time.sleep(10)
+
 
 # loops here
 

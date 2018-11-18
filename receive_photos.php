@@ -7,8 +7,6 @@ if (isset($_POST) ){
 
 	for ($i=0; $i < sizeof($_FILES['file']['name']); $i++) { 
 
-
-
 		$dir = $_POST['path'][$i];
 
 		$dir = str_replace('/opt/lampp/htdocs/pump_master/', '', $dir);
