@@ -38,7 +38,7 @@ else if(($date1!="")&&($date2 != "")){
 		$date1 = $c;
 	}
 
-	$sql = "SELECT b.cust_company,b.cust_f_name,b.cust_l_name, a.cust_id,a.*,c.car_no_plate 
+	$sql = "SELECT b.cust_company,b.cust_f_name,b.cust_l_name,b.cust_post_paid, a.cust_id,a.*,c.car_no_plate 
 			FROM `transactions` a 
 			JOIN `customers` b ON a.cust_id = b.cust_id 
 			JOIN `cars` c ON c.car_id = a.car_id 
@@ -76,8 +76,10 @@ if(mysqli_num_rows($exe) > 0){
 		$date	 		= $row["date"];	
 		$cust_post_paid = $row["cust_post_paid"];
 		$status 		= $row["billed"];
-		$car_no_plate 		= $row["car_no_plate"];
-		$trans_time 		= $row["trans_time"];
+		$car_no_plate 	= $row["car_no_plate"];
+		$trans_time 	= $row["trans_time"];
+
+		$trans_string	= $row["trans_string"];	
 
 		if($company == ""){
 			$company = $cust_f_name." ".$cust_l_name;
@@ -93,8 +95,11 @@ if(mysqli_num_rows($exe) > 0){
 		}
 		
 
-
-		echo '<tr class="hide '.$cust_id.'">';
+		if($trans_time != null){
+			echo '<tr class="hide highlight '.$cust_id.'" transstring="'.$trans_string.'">';
+		}else{
+			echo '<tr class="hide '.$cust_id.'">';
+		}
 			echo '<td>'.$car_no_plate.'</td>';			
 			echo '<td class="right_num">'.$amount.'</td>';			
 			if($trans_time == null){

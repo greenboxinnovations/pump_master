@@ -4,7 +4,7 @@ require 'exe/lock.php';
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Daily Activity - Beta</title>
+	<title>Daily Activity</title>
 	<meta name=viewport content="width=device-width, initial-scale=1">
 	<meta http-equiv="cache-control" content="max-age=0" />
 	<meta http-equiv="cache-control" content="no-cache" />
@@ -34,6 +34,10 @@ require 'exe/lock.php';
 
 	<style type="text/css">
 		#wrapper{overflow: hidden;}
+
+	
+		.highlight:hover{background-color: rgb(29,182,167);cursor: pointer;}
+
 		#main_padding{;margin: 50px;}
 		table{border-collapse: collapse;}
 		.right_num{text-align: right;}
@@ -93,6 +97,11 @@ require 'exe/lock.php';
 					$('.hide').hide();
 					$(custid).show();
 				}
+			});
+
+			$('body').delegate('.highlight', 'click', function(){
+				var trans_string = $(this).attr('transstring');
+				window.open( 'http://fuelmaster.greenboxinnovations.in/c_msg.php?t='+trans_string, '_blank');	
 			});
 		});
 	</script>
