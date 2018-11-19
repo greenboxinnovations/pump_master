@@ -1,0 +1,8 @@
+[2018-11-19 18:46:00] - (/opt/lampp/htdocs/pump_master/sync_check.php, 59) - response0 
+[2018-11-19 18:46:46] - (/opt/lampp/htdocs/pump_master/sync_check.php, 59) - response0 
+[2018-11-19 18:49:20] - (/opt/lampp/htdocs/pump_master/sync_check.php, 59) - response0 
+[2018-11-19 19:53:46] - (/opt/lampp/htdocs/pump_master/sync_check.php, 59) - response503 
+[2018-11-19 19:53:46] - (/opt/lampp/htdocs/pump_master/sync_check.php, 70) - Invalid argument supplied for foreach() 
+[2018-11-19 20:50:40] - (/opt/lampp/htdocs/pump_master/sync_check.php, 59) - response500 
+[2018-11-19 20:50:43] - (/opt/lampp/htdocs/pump_master/sync_check.php, 59) - response500 
+[2018-11-19 20:50:46] - (/opt/lampp/htdocs/pump_master/sync_check.php, 59) - response500 

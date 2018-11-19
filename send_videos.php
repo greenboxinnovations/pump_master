@@ -32,16 +32,25 @@ $url_main = 'http://fuelmaster.greenboxinnovations.in';
 $index = 0;
 $postData = array();
 $trans_array = array();
+$videos_array = array();
 
 // $trans_array = array();
+$sql = "SELECT `trans_string` FROM `transactions` WHERE `video` = 'N' ;";
+$exe = mysqli_query($conn,$sql);
+while($row1 = mysqli_fetch_assoc($exe)){
+	array_push($videos_array, $row1['trans_string']);	
+}
+
+
 
 // get distinct dates from db
-$sql_dir = "SELECT distinct(date(`date`)) as 'dir_date',`trans_string` FROM `transactions` WHERE `video` = 'N';";
+$sql_dir = "SELECT distinct(date(`date`)) as 'dir_date' FROM `transactions` WHERE `video` = 'N';";
 $exe_dir = mysqli_query($conn,$sql_dir);
 
 if(mysqli_num_rows($exe_dir) > 0){
 	// foreach ($dirs as $key => $path) {
 	while ($row = mysqli_fetch_assoc($exe_dir)) {
+
 
 		try{
 
@@ -53,7 +62,8 @@ if(mysqli_num_rows($exe_dir) > 0){
 
 				$trans_string =  basename($file, ".mp4");
 
-				if ($trans_string == $row['trans_string']) {
+
+				if (in_array($trans_string, $videos_array)) {				
 					
 					array_push($trans_array, $trans_string);
 
