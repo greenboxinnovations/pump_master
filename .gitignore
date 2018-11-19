@@ -3,3 +3,10 @@
 *.pdf
 *.png
 *.mp4
+*.zip
+videos/*
+videos/
+mysql_dump/
+mysql_uploads/
+qr_codes/
+finished_codes/

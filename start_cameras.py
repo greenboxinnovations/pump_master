@@ -131,13 +131,18 @@ def ping_camera():
 def send_photos():
     result = subprocess.run('/opt/lampp/bin/php /opt/lampp/htdocs/pump_master/send_photos.php',shell=True,stdout=subprocess.PIPE)
     print(result.stdout.decode('utf-8'))
-    root.after(5000, send_photos)   
+    root.after(5000, send_photos)
 
 
 def sync_check():
     result = subprocess.run('/opt/lampp/bin/php /opt/lampp/htdocs/pump_master/sync_check.php',shell=True,stdout=subprocess.PIPE)
     print(result.stdout.decode('utf-8'))
-    root.after(3000, sync_check)  
+    root.after(3000, sync_check)
+
+def send_videos():
+    result = subprocess.run('/opt/lampp/bin/php /opt/lampp/htdocs/pump_master/send_videos.php',shell=True,stdout=subprocess.PIPE)
+    print(result.stdout.decode('utf-8'))
+    root.after(3000, sync_check)
 
 
 def disable_event():
@@ -160,13 +165,11 @@ time.sleep(10)
 root.after(3000, ping_camera)
 root.after(3000, check_program_status)
 
-root.after(5000, send_photos)
 root.after(3000, sync_check)
+root.after(5000, send_photos)
+root.after(3500, send_videos)
 
 root.protocol("WM_DELETE_WINDOW", disable_event)
-
-
-
 
 #mainloop 
 root.mainloop()

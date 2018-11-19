@@ -158,7 +158,4 @@ if(mysqli_num_rows($exe_dir) > 0){
 	}
 }
 
-
-	
-
 ?>
