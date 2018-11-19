@@ -190,6 +190,8 @@
 					display: inline-table;width: 50%;
 				}
 
+				video{width: 100%;}
+
 
 				@media only screen and (min-width:600px){
 					#top_header{padding-top: 5px;}
@@ -322,13 +324,31 @@ if(isset($_GET['t'])){
 
 			echo '</div>';
 			echo '</div>';
-			echo '<div class="clear_both"></div>';
+			// echo '<div class="clear_both"></div>';
 		
+			$date_dir 	= date('Y-m-d', strtotime($row['date']));
+			//--------------------------------//
+			// transaction videos
+			$video_dir = 'videos';
+			$vid_path = $video_dir."/".$date_dir."/".$trans_string.".mp4";
+
+
+			if(file_exists($vid_path)) {
+				echo '<div class="fluid_containers">';
+				echo '<div class="img_border">';
+				echo '<div class="img_desc">VIDEO</div>';
+				echo '<video controls>
+				<source src="'.$vid_path.'" type="video/mp4">
+				Your browser does not support the video tag.
+				</video>';
+				echo '</div>';
+				echo '</div>';
+				// echo '<br>';
+			}			
 
 			//--------------------------------//
 			// transaction photos
 			$upload_dir = 'uploads';
-			$date_dir 	= date('Y-m-d', strtotime($row['date']));
 
 			$check 			= ['_start.jpeg','_start_top.jpeg','_stop.jpeg','_stop_top.jpeg'];
 			$description 	= ['Zero Photo','Zero Overhead Photo','Completion Photo','Completed Overhead Photo'];
