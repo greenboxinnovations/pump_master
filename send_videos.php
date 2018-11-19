@@ -27,7 +27,7 @@ function formatBytes($size, $precision = 2)
     return round(pow(1024, $base - floor($base)), $precision);
 }
 
-$url_main = 'http://fuelmaster.greenboxinnovations.i';
+$url_main = 'http://fuelmaster.greenboxinnovations.in';
 
 $index = 0;
 $postData = array();
@@ -36,7 +36,7 @@ $trans_array = array();
 // $trans_array = array();
 
 // get distinct dates from db
-$sql_dir = "SELECT distinct(date(`date`)) as 'dir_date' FROM `transactions` WHERE `video` = 'N';";
+$sql_dir = "SELECT distinct(date(`date`)) as 'dir_date',`trans_string` FROM `transactions` WHERE `video` = 'N';";
 $exe_dir = mysqli_query($conn,$sql_dir);
 
 if(mysqli_num_rows($exe_dir) > 0){
@@ -52,16 +52,20 @@ if(mysqli_num_rows($exe_dir) > 0){
 			foreach ($files as $i => $file) {
 
 				$trans_string =  basename($file, ".mp4");
-				array_push($trans_array, $trans_string);
 
-				$postData['file[' . $index . ']'] = curl_file_create(
-							realpath($path.'/'.$file),
-							mime_content_type($path.'/'.$file),
-							basename($path.'/'.$file)
-						);
+				if ($trans_string == $row['trans_string']) {
+					
+					array_push($trans_array, $trans_string);
 
-				$postData['path[' . $index . ']'] = $path;
-				$index++;
+					$postData['file[' . $index . ']'] = curl_file_create(
+								realpath($path.'/'.$file),
+								mime_content_type($path.'/'.$file),
+								basename($path.'/'.$file)
+							);
+
+					$postData['path[' . $index . ']'] = $path;
+					$index++;
+				}
 			}
 
 		} catch (Exception $e) {

@@ -142,7 +142,7 @@ def sync_check():
 def send_videos():
     result = subprocess.run('/opt/lampp/bin/php /opt/lampp/htdocs/pump_master/send_videos.php',shell=True,stdout=subprocess.PIPE)
     print(result.stdout.decode('utf-8'))
-    root.after(3000, sync_check)
+    root.after(3000, send_videos)
 
 
 def disable_event():
