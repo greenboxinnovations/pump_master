@@ -25,6 +25,7 @@ if (isset($_POST) ){
 		
 	} catch (Exception $e) {
 		array_push($names, $e);
+		$output['success'] = true;
 	}
 
 	$output['names']= $names;

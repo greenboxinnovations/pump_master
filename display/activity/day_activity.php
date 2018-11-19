@@ -24,7 +24,7 @@ if(($date1=="")||($date2 == "")){
 	}
 
 
-	$sql = "SELECT b.cust_company,b.cust_f_name,b.cust_l_name, a.cust_id,a.*,c.car_no_plate 
+	$sql = "SELECT b.cust_company,b.cust_f_name,b.cust_l_name,b.cust_post_paid a.cust_id,a.*,c.car_no_plate 
 			FROM `transactions` a 
 			JOIN `customers` b ON a.cust_id = b.cust_id 
 			JOIN `cars` c ON c.car_id = a.car_id 
