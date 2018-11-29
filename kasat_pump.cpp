@@ -372,12 +372,13 @@ int videoThread(const int cam_no, const string trans_string, ThreadSafeVector &t
 		// make a copy		
 		displayFrame3.copyTo(big_frame);
 
-		small_frame.copyTo(big_frame(cv::Rect(1280,0,640,480)));
-		date_frame = writeDatePrimary(big_frame);
+		
 
 		skip++;
 		if(skip == 9){
 			skip = 0;
+			small_frame.copyTo(big_frame(cv::Rect(1280,0,640,480)));
+			date_frame = writeDatePrimary(big_frame);
 			cv::resize(date_frame, resized, S2);
 			writer.write(resized);
 		}
