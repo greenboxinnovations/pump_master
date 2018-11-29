@@ -358,7 +358,7 @@ int videoThread(const int cam_no, const string trans_string, ThreadSafeVector &t
 
 		auto now = chrono::steady_clock::now();
 
-		if(chrono::duration_cast<chrono::seconds>(now - start).count() > 900) {
+		if(chrono::duration_cast<chrono::seconds>(now - start).count() > 1200) {
 			tsv.change(trans_string, false);
 		}
 
@@ -385,6 +385,7 @@ int videoThread(const int cam_no, const string trans_string, ThreadSafeVector &t
 	}
 
 	writer.release();
+	std::this_thread::sleep_for(std::chrono::seconds(3));
 
 	// isRecording is false
 	if(tsv.exists(trans_string)){

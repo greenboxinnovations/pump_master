@@ -142,7 +142,11 @@ def sync_check():
 def send_videos():
     result = subprocess.run('/opt/lampp/bin/php /opt/lampp/htdocs/pump_master/send_videos.php',shell=True,stdout=subprocess.PIPE)
     print(result.stdout.decode('utf-8'))
-    root.after(3000, send_videos)
+    root.after(5000, send_videos)
+    #with open("send_videos.txt", "a+") as myfile:
+    #    myfile.write(result.stdout.decode('utf-8'))
+    #myfile.close()
+    
 
 
 def disable_event():
@@ -165,9 +169,9 @@ time.sleep(10)
 root.after(3000, ping_camera)
 root.after(3000, check_program_status)
 
-root.after(3000, sync_check)
+root.after(5000, sync_check)
 root.after(5000, send_photos)
-root.after(3500, send_videos)
+root.after(5000, send_videos)
 
 root.protocol("WM_DELETE_WINDOW", disable_event)
 

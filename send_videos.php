@@ -2,11 +2,7 @@
 
 date_default_timezone_set("Asia/Kolkata");
 require 'query/conn.php';
-
-ini_set('log_errors', 1);
-ini_set('error_log', '/opt/lampp/htdocs/pump_master/send_videos.log');
-error_reporting(E_ALL);
-set_error_handler('myErrorHandler');
+$url_main = 'http://fuelmaster.greenboxinnovations.in/receive_videos.php';
 
 function myErrorHandler( $errType, $errStr, $errFile, $errLine, $errContext ) {
 	$displayErrors 	= ini_get( 'display_errors' );
@@ -21,115 +17,94 @@ function myErrorHandler( $errType, $errStr, $errFile, $errLine, $errContext ) {
 	}
 }
 
-function formatBytes($size, $precision = 2)
-{
-    $base = log($size, 1024);    
-    return round(pow(1024, $base - floor($base)), $precision);
-}
+ini_set('log_errors', 1);
+ini_set('error_log', '/opt/lampp/htdocs/pump_master/send_videos.log');
+error_reporting(E_ALL);
+set_error_handler('myErrorHandler');
 
-$url_main = 'http://fuelmaster.greenboxinnovations.in';
-
+$trans_string = "";
+$file_name    = "";
 $index = 0;
-$postData = array();
-$trans_array = array();
-$videos_array = array();
+$date = '';
 
-// $trans_array = array();
-$sql = "SELECT `trans_string` FROM `transactions` WHERE `video` = 'N' ;";
+$trans_array = array();
+$sql = "SELECT `trans_string` FROM `transactions` WHERE `video` = 'N' ORDER BY `trans_id` DESC LIMIT 1;";
 $exe = mysqli_query($conn,$sql);
 while($row1 = mysqli_fetch_assoc($exe)){
-	array_push($videos_array, $row1['trans_string']);	
+	$trans_string = $row1['trans_string'];	
 }
 
+if ($trans_string != "") {
+	// get distinct dates from db
+	$sql_dir = "SELECT distinct(date(`date`)) as 'dir_date' FROM `transactions` WHERE `video` = 'N';";
+	$exe_dir = mysqli_query($conn,$sql_dir);
 
+	if(mysqli_num_rows($exe_dir) > 0){
+		// foreach ($dirs as $key => $path) {
+		while ($row = mysqli_fetch_assoc($exe_dir)) {
 
-// get distinct dates from db
-$sql_dir = "SELECT distinct(date(`date`)) as 'dir_date' FROM `transactions` WHERE `video` = 'N';";
-$exe_dir = mysqli_query($conn,$sql_dir);
+			try{
 
-if(mysqli_num_rows($exe_dir) > 0){
-	// foreach ($dirs as $key => $path) {
-	while ($row = mysqli_fetch_assoc($exe_dir)) {
+				$path =  "/opt/lampp/htdocs/pump_master/videos/".$row['dir_date'];
+				// $path =  "/opt/lampp/htdocs/pump_master/videos/2018-11-17";
+				
+				$files = array_values(array_diff(scandir($path), array('.', '..')));
 
+				foreach ($files as $i => $file) {
 
-		try{
-
-			$path =  "/opt/lampp/htdocs/pump_master/videos/".$row['dir_date'];
-			
-			$files = array_values(array_diff(scandir($path), array('.', '..')));
-
-			foreach ($files as $i => $file) {
-
-				$trans_string =  basename($file, ".mp4");
-
-
-				if (in_array($trans_string, $videos_array)) {				
-					
-					array_push($trans_array, $trans_string);
-
-					$postData['file[' . $index . ']'] = curl_file_create(
-								realpath($path.'/'.$file),
-								mime_content_type($path.'/'.$file),
-								basename($path.'/'.$file)
-							);
-
-					$postData['path[' . $index . ']'] = $path;
-					$index++;
+					if(($trans_string == basename($file,'.mp4'))&&($index == 0)) {				
+						$file_name = $path.'/'.$file;
+						$date = $row['dir_date'];
+						// $date = "2018-11-17";
+						$index++;
+					}
 				}
+			} catch (Exception $e) {
+				trigger_error('Test');
 			}
-
-		} catch (Exception $e) {
-			trigger_error('Test');
 		}
-
 	}
-}
 
-if(sizeof($postData) == 0){
-	echo 'No Videos Found';
-}
-else{
-	foreach ($trans_array as $trans_string) {
+	if($file_name != ""){
 
 		$sql = "UPDATE `transactions` SET `video` = 'U' WHERE `trans_string` = '".$trans_string."' ;";
 		$exe = mysqli_query($conn,$sql);
-	}
+		
+		$cmd = 'curl -F "date='.$date.'" -F "file=@'.$file_name.'" http://fuelmaster.greenboxinnovations.in/receive_videos.php -m 1200';
 
-	$target_url = $url_main.'/receive_videos.php';
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL,$target_url);
-	curl_setopt($ch, CURLOPT_POST,1);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	$result = json_decode(curl_exec ($ch),true);
-	$response = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-	curl_close ($ch);
+		try {
 
-	if($response != 200){
-		trigger_error('Response code'.$response);
-		foreach ($trans_array as $trans_string) {
+			$output = json_decode(shell_exec($cmd),true);
+
+			if($output['success']){
+
+				//echo "working";
+
+				$t_string = $output['trans_string'];
+
+				$sql = "UPDATE `transactions` SET `video` = 'Y' WHERE `trans_string` = '".$t_string."' ;";
+				$exe = mysqli_query($conn,$sql);
+
+			}else{
+
+				//echo "error";
+
+				$sql = "UPDATE `transactions` SET `video` = 'N' WHERE `trans_string` = '".$trans_string."' ;";
+				$exe = mysqli_query($conn,$sql);
+
+			}
+		} catch (Exception $e) {
+
+			//print_r($e);
+
+			trigger_error($e);
 
 			$sql = "UPDATE `transactions` SET `video` = 'N' WHERE `trans_string` = '".$trans_string."' ;";
 			$exe = mysqli_query($conn,$sql);
 		}
-	}else{
-
-		if ($result['success']) {
-			foreach ($result['names'] as $trans_string_name) {
-				$trans_string =  basename($trans_string_name, ".mp4");
-
-				$sql = "UPDATE `transactions` SET `video` = 'Y' WHERE `trans_string` = '".$trans_string."' ;";
-				$exe = mysqli_query($conn,$sql);
-			}
-		}else{
-			foreach ($trans_array as $trans_string) {
-
-				$sql = "UPDATE `transactions` SET `video` = 'N' WHERE `trans_string` = '".$trans_string."' ;";
-				$exe = mysqli_query($conn,$sql);
-			}
-		}
-
-	}	
+	}
 }
+
+	
 
 ?>
