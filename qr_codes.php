@@ -33,7 +33,7 @@ for ($i=0; $i < 200; $i++) {
 	$qr = generateRand();
 
 	$filename= "qr_codes/".$qr.".png";
-	QRcode::png($qr,$filename, QR_ECLEVEL_M, 4.4);
+	QRcode::png($qr,$filename, QR_ECLEVEL_M, 9.8);
 	echo '<br/>';
 }
 

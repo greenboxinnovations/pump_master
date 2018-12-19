@@ -389,9 +389,9 @@ function sendLocalTransactions(){
 	else{
 		echo 'No transactions present';
 
-		$date = date("Y-m-d",strtotime("-1 days"));
- 
-		$sql = "SELECT * FROM `transactions` WHERE date(`date`) = '".$date."' AND  `uploaded` = 'Y' AND `video` = 'Y';";
+		$date = date("Y-m-d");
+
+		$sql = "SELECT * FROM `transactions` WHERE date(`date`) NOT IN ('".$date."') AND  `uploaded` = 'Y' AND `video` = 'Y';";
 		$exe = mysqli_query($conn, $sql);
 		if(mysqli_num_rows($exe) > 0){
 			while ($row = mysqli_fetch_assoc($exe)) {			

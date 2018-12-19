@@ -7,7 +7,8 @@ import os
 
 
 def makeBharatQr(image_path):
-	W, H = (144,168)
+	W, H = (288,336)
+	# W, H = (144,168)
 
 	base = Image.new("RGB",(W, H),color="white")
 	# first paste the QR code
