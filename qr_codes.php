@@ -29,11 +29,14 @@ function generateRand(){
 
 
 for ($i=0; $i < 200; $i++) { 
+// for ($i=0; $i < 1; $i++) { 
 
 	$qr = generateRand();
+	// $qr = "abcderftasd";
 
 	$filename= "qr_codes/".$qr.".png";
-	QRcode::png($qr,$filename, QR_ECLEVEL_M, 9.8);
+	// $filename= "test/".$qr.".png";
+	QRcode::png($qr,$filename, QR_ECLEVEL_M, 9.0);
 	echo '<br/>';
 }
 

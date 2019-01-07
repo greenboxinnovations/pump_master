@@ -332,7 +332,8 @@ function downloadTable($table_name, $last_updated){
 
 function sendLocalTransactions(){
 	Global $conn;
-	$sql = "SELECT * FROM `transactions` WHERE `trans_time` IS NOT NULL AND `uploaded` = 'N';";
+	$sql = "SELECT  * FROM `transactions` WHERE UNIX_TIMESTAMP(`date`) < (UNIX_TIMESTAMP() - 10) AND `uploaded` = 'N';";
+	// $sql = "SELECT * FROM `transactions` WHERE `trans_time` IS NOT NULL AND `uploaded` = 'N';";
 	$exe = mysqli_query($conn, $sql);
 
 	if(mysqli_num_rows($exe) > 0){

@@ -13,9 +13,10 @@ def makeBharatQr(image_path):
 	base = Image.new("RGB",(W, H),color="white")
 	# first paste the QR code
 	code = Image.open("qr_codes/"+image_path)
+	# code = Image.open("test/"+image_path)
 	code_w, code_h = code.size
 	code_x = int((W-code_w)/2)
-	base.paste(code,(code_x,16))
+	base.paste(code,(code_x,26))
 
 	# then paste footer and header
 	header = Image.open("css/icons/header.png")
