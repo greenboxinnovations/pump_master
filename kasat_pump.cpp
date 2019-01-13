@@ -44,16 +44,22 @@ using namespace cv;
 cv::Mat displayFrame1;
 cv::Mat displayFrame2;
 cv::Mat displayFrame3;
+cv::Mat displayFrame4;
+cv::Mat displayFrame5;
 
 std::atomic<bool> first1(0);
 std::atomic<bool> first2(0);
 std::atomic<bool> first3(0);
+std::atomic<bool> first4(0);
+std::atomic<bool> first5(0);
 
 
 
 const string CAM1_IP = "rtsp://192.168.0.129:554/Streaming/Channels/2/?transportmode=unicast";
 const string CAM2_IP = "rtsp://192.168.0.128:554/Streaming/Channels/2/?transportmode=unicast";
 const string CAM3_IP = "rtsp://192.168.0.127:554/Streaming/Channels/1/?transportmode=unicast";
+const string CAM4_IP = "rtsp://192.168.0.133/12";
+const string CAM5_IP = "rtsp://192.168.0.132/12";
 
 
 const string C1WINDOW = "cam-ONE";
@@ -364,20 +370,29 @@ int videoThread(const int cam_no, const string trans_string, ThreadSafeVector &t
 
 
 		if(cam_no == 1){
-			displayFrame1.copyTo(small_frame);
+			displayFrame1.copyTo(small_frame);				
+			displayFrame3.copyTo(big_frame);
 		}
-		else{
+		else if(cam_no == 2){
 			displayFrame2.copyTo(small_frame);
+			displayFrame3.copyTo(big_frame);
 		}
-		// make a copy		
-		displayFrame3.copyTo(big_frame);
+		else if(cam_no == 4){
+			displayFrame4.copyTo(small_frame);
+			displayFrame3.copyTo(big_frame);
+		}
+		else if(cam_no == 5){
+			displayFrame5.copyTo(small_frame);
+			displayFrame3.copyTo(big_frame);
+		}
+		
 
 		
 
 		skip++;
 		if(skip == 9){
 			skip = 0;
-			small_frame.copyTo(big_frame(cv::Rect(1280,0,640,480)));
+			small_frame.copyTo(big_frame(cv::Rect(1280,(1080-small_frame.rows),small_frame.cols,small_frame.rows)));			
 			date_frame = writeDatePrimary(big_frame);
 			cv::resize(date_frame, resized, S2);
 			writer.write(resized);
@@ -403,7 +418,7 @@ int videoThread(const int cam_no, const string trans_string, ThreadSafeVector &t
 
 
 
-void getCamStatus(ThreadSafeVector &tsv) {	
+void getCamStatus(ThreadSafeVector &tsv) {
 
 	try {
 		// housekeeping
@@ -453,22 +468,31 @@ void getCamStatus(ThreadSafeVector &tsv) {
 
 					// select camera
 					if (res->getString("cam_no") == "1")
-					{
-						// writeDateSecondary(displayFrame1);
-						// imwrite(file_name, displayFrame1 );
+					{						
 						Mat d = writeDateSecondary(displayFrame1);
 						imwrite(file_name, d );
-					}else{
-						// writeDateSecondary(displayFrame2);
-						// imwrite(file_name, displayFrame2 );
+						Mat s = writeDatePrimary(displayFrame3);
+						imwrite(file_name2, s );
+					}
+					else if (res->getString("cam_no") == "2") {
 						Mat d = writeDateSecondary(displayFrame2);
 						imwrite(file_name, d );
+						Mat s = writeDatePrimary(displayFrame3);
+						imwrite(file_name2, s );
 					}
-					// writeDatePrimary(displayFrame3);
-					// imwrite(file_name2, displayFrame3 );
-					Mat s = writeDatePrimary(displayFrame3);
-					imwrite(file_name2, s );
-
+					else if (res->getString("cam_no") == "4") {
+						Mat d = writeDateSecondary(displayFrame4);
+						imwrite(file_name, d );
+						Mat s = writeDatePrimary(displayFrame3);
+						imwrite(file_name2, s );
+					}
+					else if (res->getString("cam_no") == "5") {
+						Mat d = writeDateSecondary(displayFrame5);
+						imwrite(file_name, d );
+						Mat s = writeDatePrimary(displayFrame3);
+						imwrite(file_name2, s );
+					}
+					
 
 					// video routing
 					if(t_type == "start"){
@@ -519,7 +543,6 @@ void camThread(const string IP) {
 	}
 	while (1) {
 
-
 		// read frame
 		cap.read(frame);
 		if (!frame.empty()) {			
@@ -530,21 +553,25 @@ void camThread(const string IP) {
 			}
 			else if(IP == CAM2_IP){
 				frame.copyTo(displayFrame2);
-					first2 = true;
+				first2 = true;			
 			}
-			else{
+			else if(IP == CAM3_IP){
 				frame.copyTo(displayFrame3);
-				first3 = true;
+				first3 = true;			
+			}
+			else if(IP == CAM4_IP){
+				frame.copyTo(displayFrame4);
+				first4 = true;			
+			}
+			else if(IP == CAM5_IP){
+				frame.copyTo(displayFrame5);
+				first5 = true;
 			}
 		}
 	}
 }
 
-void systemThread() {
 
-	// system("python3.5 /opt/lampp/htdocs/pump_master/start_cameras.py");
-
-}
 
 
 int main(int argc, char** argv) {
@@ -568,68 +595,33 @@ int main(int argc, char** argv) {
 	t1.detach();
 
 	thread t2(camThread, CAM2_IP);
-	t2.detach();
-
-
-	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
-
-
-	// time (&rawtime);
-	// timeinfo = localtime (&rawtime);
-	// strftime(buffer,80,"%Y-%m-%d",timeinfo);
-	// std::string date(buffer);	
-
+	t2.detach();	
 
 	thread t3(camThread, CAM3_IP);
 	t3.detach();
 
-	// thread t4(systemThread);
-	// t4.detach();
+	thread t4(camThread, CAM4_IP);
+	t4.detach();	
 
+	thread t5(camThread, CAM5_IP);
+	t5.detach();
 
+	
 	ThreadSafeVector tsv;
 
 
 	string checkExit;
 	while (1) {
 
-		if (first1 && first2 && first3) {
+		// if (first1 && first2 && first3) {
+		if (first4 && first5) {
 		// if (first1 && first2) {
 
-			imshow(C1WINDOW, displayFrame1);
-			imshow(C2WINDOW, displayFrame2);
+			imshow(C1WINDOW, displayFrame4);
+			imshow(C2WINDOW, displayFrame5);
 			// imshow(C3WINDOW, displayFrame3);
 
 			getCamStatus(std::ref(tsv));
-
-			// std::chrono::steady_clock::time_point test = std::chrono::steady_clock::now();
-			// if (std::chrono::duration_cast<std::chrono::milliseconds>(test - start).count() > intervalMillis) {
-			// 	cout << (intervalMillis / 1000) << " seconds have passed" << endl;
-			// 	start = std::chrono::steady_clock::now();
-
-
-			// 	// unix timestamp-ISH
-			// 	// not sure
-			// 	auto dur = test.time_since_epoch();
-			// 	auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(dur).count();
-
-			// 	std::cout << "Timestamp: " << timestamp << std::endl;
-			// 	ostringstream out;
-			// 	out << timestamp;
-				//imwrite("/clicks/" + out.str() + ".JPG", frame);
-
-				// try{
-				// 	imwrite("/opt/lampp/htdocs/pump_master/uploads/left/" +date+ std::to_string(i) + ".jpeg", displayFrame1);
-				// 	imwrite("/opt/lampp/htdocs/pump_master/uploads/right/" +date+ std::to_string(i) + ".jpeg", displayFrame2);
-
-				// }catch  (const std::exception& e){
-				// 	 std::cout << e.what(); 
-				// }
-
-				// i++;			
-				
-			// }
-
 		}
 
 		char character = waitKey(10);

@@ -6,6 +6,10 @@ import subprocess
 
 import os
 import time
+
+import requests
+from requests.packages.urllib3.util.retry import Retry
+from requests.adapters import HTTPAdapter
  
 
 
@@ -111,20 +115,131 @@ def start_program():
 	# print(result.stdout.decode('utf-8'))
 
 
+def send_msg(file_msg_name, hostname):
+    print("send msg")
+
+
+
+    now = time.strftime("%H:%M", time.localtime(time.time()))
+    urgent_msg = "CAMERA " +hostname+ " DOWN:- " + str(now)
+    msg_url = "https://www.fast2sms.com/dev/bulk?authorization=CbSpQve5NE&sender_id=SLAUTO&message="+ urgent_msg +"&language=english&route=t&numbers=8411815106&flash=0"
+    # msg_url = "https://9gag.com"  
+
+    try:
+
+        s = requests.Session()
+        retries = Retry(total=5,
+                        backoff_factor=0.1,
+                        status_forcelist=[ 500, 502, 503, 504 ])
+        s.mount('http://', HTTPAdapter(max_retries=retries))
+        # r = s.get('https://9gag.com/')
+        r = s.get(msg_url)
+        print(r.status_code)
+
+        # write to msg_file
+        with open(file_msg_name, 'a') as msg_file:
+            msg_file.write(str(time.time()))
+
+    except Exception as e:
+        # raise
+        print(e)
+        pass
+    else:
+        pass
+    finally:
+        pass
+
+
+# def ping_camera():
+#     global isCamUp
+#     hostname = "192.168.0.128"
+#     response = os.system("ping -c 1 " + hostname)
+#     # and then check the response...
+#     if response == 0:
+#         print("Network Active")
+#         isCamUp = 1
+#     else:
+#         print("Network Error")        
+#         isCamUp = 0
+#         # kill_program_from_out()
+#     root.after(5000, ping_camera)
+
 
 def ping_camera():
     global isCamUp
-    hostname = "192.168.0.128"
-    response = os.system("ping -c 1 " + hostname)
-    # and then check the response...
-    if response == 0:
-        print("Network Active")
-        isCamUp = 1
+    # wait time before msg is sent after ping loss
+    msg_diff = 1*60
+    # msg_diff = 10
+    # wait time before msg is resent after fist msg
+    msg_interval = 5*60
+    # msg_interval = 30
+
+    counter = 0
+
+    ping_list = ["192.168.0.128", "192.168.0.129", "192.168.0.127", "192.168.0.133", "192.168.0.132"]
+
+    for hostname in ping_list:
+        response = os.system("ping -c 1 " + hostname)
+
+        # file names
+        file_name = "/opt/lampp/htdocs/pump_master/"+str(hostname) + ".txt"
+        file_msg_name = "/opt/lampp/htdocs/pump_master/"+str(hostname) + "_msg.txt"
+
+
+       
+        # no response
+        # CAM is down
+        if response != 0:
+
+            # file exists
+            if os.path.isfile(file_name):
+                # read and get time diff
+                my_file = open(file_name, "r") 
+                prev_time = float(my_file.read())
+                sec_diff = time.time() - prev_time
+
+                if sec_diff > msg_diff:
+                    # if msg file does not exist make one
+                    # and send msg
+                    if not os.path.exists(file_msg_name):
+                        send_msg(file_msg_name, hostname)
+                        # pass
+
+            # does NOT exists
+            else:
+                # create here
+                with open(file_name, 'a') as my_file:
+                    my_file.write(str(time.time()))
+
+        # cam is up
+        # delete files if exist
+        else:
+            counter += 1
+            if os.path.exists(file_name):
+                os.remove(file_name)
+
+
+        # check msg file
+        # if interval is greater than file delete interval
+        # delete file   
+        if os.path.isfile(file_msg_name):
+            # read and get time diff
+            my_msg_file = open(file_msg_name, "r") 
+            prev_msg_time = float(my_msg_file.read())
+            sec_msg_diff = time.time() - prev_msg_time
+
+            if sec_msg_diff > msg_interval:
+                if os.path.exists(file_msg_name):
+                    os.remove(file_msg_name)
+
+    if counter==5:
+    	isCamUp = 1
     else:
-        print("Network Error")        
-        isCamUp = 0
-        # kill_program_from_out()
-    root.after(5000, ping_camera)
+    	isCamUp = 0
+
+    print("counter "+str(counter))
+    print("ISCAMPUP "+str(isCamUp))
+    root.after(12000, ping_camera)
 
 
 

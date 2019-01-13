@@ -14,6 +14,8 @@ function generateRand(){
 		$qr_code .= $characters[rand(0, $charactersLength - 1)];
 	}
 
+
+
 	$sql = "SELECT 1 FROM `codes` WHERE `qr_code` = '".$qr_code."' ;";
 	$exe = mysqli_query($conn ,$sql);
 
@@ -21,9 +23,14 @@ function generateRand(){
 		generateRand();
 	}
 	else{
-		$sql = "INSERT INTO `codes`(`qr_code`) Values('".$qr_code."' );";
-		$exe = mysqli_query($conn ,$sql);
-		return $qr_code;
+		if(($qr_code == "asdfg12345")||($qr_code == "12345asdfg")||($qr_code == "4xzliayQPL")||($qr_code == "8FuAVN303E")){
+			generateRand();
+		}
+		else{
+			$sql = "INSERT INTO `codes`(`qr_code`) Values('".$qr_code."' );";
+			$exe = mysqli_query($conn ,$sql);
+			return $qr_code;	
+		}
 	}
 }
 
