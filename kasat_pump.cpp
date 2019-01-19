@@ -62,9 +62,9 @@ const string CAM4_IP = "rtsp://192.168.0.133/12";
 const string CAM5_IP = "rtsp://192.168.0.132/12";
 
 
-const string C1WINDOW = "cam-ONE";
-const string C2WINDOW = "cam-TWO";
-// const string C3WINDOW = "cam-THREE";
+// const string C1WINDOW = "cam-ONE";
+// const string C2WINDOW = "cam-TWO";
+const string C3WINDOW = "GREENBOXINNOVATIONS";
 
 sql::Driver *driver;
 const string HOST = "tcp://127.0.0.1:3306";
@@ -577,16 +577,23 @@ void camThread(const string IP) {
 int main(int argc, char** argv) {
 
 	cout << "ESC on window to exit" << endl;
-	namedWindow(C1WINDOW,WINDOW_NORMAL);
-	namedWindow(C2WINDOW,WINDOW_NORMAL);
-	// namedWindow(C3WINDOW,WINDOW_NORMAL);
+	// namedWindow(C1WINDOW,WINDOW_NORMAL);
+	// namedWindow(C2WINDOW,WINDOW_NORMAL);
+	namedWindow(C3WINDOW,WINDOW_NORMAL);
 
-	cv::resizeWindow(C1WINDOW, 640, 480);
-	cv::resizeWindow(C2WINDOW, 640, 480);
+	// cv::resizeWindow(C1WINDOW, 640, 480);
+	// cv::resizeWindow(C2WINDOW, 640, 480);
+	cv::resizeWindow(C3WINDOW, 640, 480);
+	
 
-	int i = 0;
+	// // horizontal size = d1.cols + d2.cols
+	// int h_size = 0;
+	// // vertical size = d1.ros + d3.rows
+	// int v_size = 0;
 
-	// cv::resizeWindow(C3WINDOW, 640, 480);
+	cv::Mat comboFrame(cv::Size(1280, 834), CV_8UC3);
+
+	
 
 
 	cout << "Main start" << endl;
@@ -613,13 +620,35 @@ int main(int argc, char** argv) {
 	string checkExit;
 	while (1) {
 
-		// if (first1 && first2 && first3) {
-		if (first4 && first5) {
+		if (first1 && first2 && first3 && first4 && first5) {
+		// if (first4 && first5) {
 		// if (first1 && first2) {
 
-			imshow(C1WINDOW, displayFrame4);
-			imshow(C2WINDOW, displayFrame5);
-			// imshow(C3WINDOW, displayFrame3);
+
+			// if(h_size == 0){
+			// 	// horizontal size = d1.cols + d2.cols
+			// 	h_size = displayFrame1.cols + displayFrame2.cols;
+			// 	// vertical size = d1.ros + d3.rows
+			// 	v_size = displayFrame1.rows + displayFrame4.rows;
+
+			// 	cout << h_size << endl;
+			// 	cout << v_size << endl;
+			// 	cout << displayFrame3.type() <<endl;
+
+			// 	// cv::Mat comboFrame(cv::Size(h_size, v_size), displayFrame3.type());
+
+			// 	// resize(comboFrame,comboFrame,Size(h_size,v_size));
+			// }
+
+			displayFrame1.copyTo(comboFrame(cv::Rect(0,0,displayFrame1.cols,displayFrame1.rows)));
+			displayFrame2.copyTo(comboFrame(cv::Rect(640,0,displayFrame2.cols,displayFrame2.rows)));
+			displayFrame4.copyTo(comboFrame(cv::Rect(0,480,displayFrame4.cols,displayFrame4.rows)));
+			displayFrame5.copyTo(comboFrame(cv::Rect(640,480,displayFrame5.cols,displayFrame5.rows)));
+
+
+			// imshow(C1WINDOW, displayFrame4);
+			// imshow(C2WINDOW, displayFrame5);
+			imshow(C3WINDOW, comboFrame);
 
 			getCamStatus(std::ref(tsv));
 		}

@@ -1,2 +1,0 @@
-[2019-01-10 18:30:25] - (/opt/lampp/htdocs/pump_master/send_videos.php, 32) - mysqli_query() expects parameter 1 to be mysqli, boolean given 
-[2019-01-10 18:30:25] - (/opt/lampp/htdocs/pump_master/send_videos.php, 33) - mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, null given 

@@ -2,37 +2,38 @@
 require 'query/conn.php';
 require 'phpqrcode/qrlib.php';
 
-function generateRand(){
 
-	Global $conn;
-
-	$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-	$charactersLength = strlen($characters);
-	$length = 10;
-	$qr_code = '';
-	for ($i = 0; $i < $length; $i++) {
-		$qr_code .= $characters[rand(0, $charactersLength - 1)];
-	}
-
-	// $sql = "SELECT 1 FROM `codes` WHERE `qr_code` = '".$qr_code."' ;";
-	// $exe = mysqli_query($conn ,$sql);
-
-	// if(mysqli_num_rows($exe) > 0){
-		//generateRand();
-	// }
-	// else{
-	// 	$sql = "INSERT INTO `codes`(`qr_code`) Values('".$qr_code."' );";
-	// 	$exe = mysqli_query($conn ,$sql);
-		return $qr_code;
-	// }
-}
+$car_no_plate = "MH12CT5406";
+$fuel = "petrol";
+$amount = "1000.00";
+$url = "http://fuelmaster.greenboxinnovations.in/cmsg.php?t=XgKiuOYnga";
 
 
-for ($i=0; $i < 2; $i++) { 
+date_default_timezone_set("Asia/Kolkata");
+$timestamp = date("d/m/Y H:i:s");
+echo "Formatted date from timestamp:" . $timestamp;
 
-	$qr = generateRand();
 
-	$filename= "".$qr.".png";
-	QRcode::png($qr,$filename, QR_ECLEVEL_M, 6.5);
-	echo '<br/>';
-}
+$newline = "\n";
+
+$message = "SELECT AUTOMOBILES".$newline."Karve Road".$newline.$newline.$car_no_plate.$newline."Rs.".$amount.$newline.strtoupper($fuel).$newline.$timestamp.$newline.$newline.$url;
+$encodedMessage = urlencode($message);
+$api = "https://www.fast2sms.com/dev/bulk?authorization=CbSpQve5NE&sender_id=SLAUTO&message=" . $encodedMessage . "&language=english&route=t&numbers=8411815106&flash=0";
+
+echo $api;
+
+// Get cURL resource
+$curl = curl_init();
+// Set some options - we are passing in a useragent too here
+curl_setopt_array($curl, array(
+CURLOPT_RETURNTRANSFER => 1,
+CURLOPT_URL => $api,
+//CURLOPT_USERAGENT => 'Codular Sample cURL Request'
+));
+curl_setopt($curl, CURLOPT_FRESH_CONNECT, TRUE);
+// Send the request & save response to $resp
+$resp = curl_exec($curl);
+// Close request to clear up some resources
+curl_close($curl);
+
+

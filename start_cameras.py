@@ -122,7 +122,7 @@ def send_msg(file_msg_name, hostname):
 
     now = time.strftime("%H:%M", time.localtime(time.time()))
     urgent_msg = "CAMERA " +hostname+ " DOWN:- " + str(now)
-    msg_url = "https://www.fast2sms.com/dev/bulk?authorization=CbSpQve5NE&sender_id=SLAUTO&message="+ urgent_msg +"&language=english&route=t&numbers=8411815106&flash=0"
+    msg_url = "https://www.fast2sms.com/dev/bulk?authorization=CbSpQve5NE&sender_id=SLAUTO&message="+ urgent_msg +"&language=english&route=t&numbers=9762230207,8411815106&flash=0"
     # msg_url = "https://9gag.com"  
 
     try:
