@@ -86,7 +86,7 @@ require 'exe/lock.php';
 		.transactions_fab{background: url('css/icons/ic_edit.png') no-repeat center center;}
 		.cars_fab{background: url('css/icons/ic_car.png') no-repeat center center;}
 		.payments_fab{background: url('css/icons/ic_pay.png') no-repeat center center;}
-		.receipt_book_fab{background: url('css/icons/ic_receipt.png') no-repeat center center;}
+		.receipt_book_fab{background: url('css/icons/ic_receipt.png') no-repeat center center;} 
 
 		#fab .tooltiptext {
 		    visibility: hidden;
@@ -106,6 +106,8 @@ require 'exe/lock.php';
 		    right: 5px;    
 		}
 
+		.highlight:hover{background-color: rgb(29,182,167);cursor: pointer;}
+		
 		#fab:hover .tooltiptext {
 		    visibility: visible;
 		} 
@@ -673,6 +675,11 @@ require 'exe/lock.php';
 				$('#pager_content').load('forms/add_transaction.php?cust_id='+cust_id+'&trans_id='+trans_id, function(){
 					$('#trans_date').datepicker({ dateFormat: 'dd-mm-yy' });
 				});			
+			});
+
+			$('body').delegate('.highlight', 'click', function(){
+				var trans_string = $(this).attr('transstring');
+				window.open( 'http://fuelmaster.greenboxinnovations.in/c_msg.php?t='+trans_string, '_blank');	
 			});
 
 

@@ -2,7 +2,7 @@
 if(!isset($_SESSION))
 {
 	session_start();
-}
+} 
 
 require '../query/conn.php';
 
@@ -87,6 +87,8 @@ if (isset($_GET['cust_id'])) {
 				$cust_post_paid = $row["cust_post_paid"];
 				$status 		= $row["billed"];
 				$duration 		= $row['trans_time'];
+				$trans_string	= $row["trans_string"];	
+				
 				if ($duration == "") {
 					$duration = '00:00';
 				}
@@ -138,7 +140,14 @@ if (isset($_GET['cust_id'])) {
 				$car_no_plate	 = strtoupper($row["car_no_plate"]);
 
 				// for ($i=0; $i < 50; $i++) { 
-				echo '<tr >';
+
+				if ($row["receipt_no"] == 0) {
+					echo '<tr class="highlight" transstring="'.$trans_string.'" >';
+				}else{
+					echo '<tr >';
+				}
+
+				
 					echo '<td>'.$row["receipt_no"].'</td>';
 					echo '<td>'.$trans_id_disp.'</td>';
 					echo '<td>'.$car_no_plate.'</td>';
