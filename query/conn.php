@@ -1,5 +1,5 @@
 <?php
-	require '../api/classes/globals.class.php';
+	require 'api/classes/globals.class.php';
 
 	$host_name 	= Globals::DB_HOSTNAME;
 	$user_name 	= Globals::DB_USER_NAME;
