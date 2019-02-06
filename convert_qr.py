@@ -4,8 +4,6 @@ from PIL import ImageFont
 from PIL import ImageOps
 import os
 
-
-
 def makeBharatQr(image_path):
 	W, H = (288,336)
 	# W, H = (144,168)
@@ -28,8 +26,6 @@ def makeBharatQr(image_path):
 	# add a border
 	final = ImageOps.expand(base, border=2, fill='#FFCB05')
 	final.save('finished_codes/' + image_path)	
-
-
 
 directory = os.fsencode("qr_codes")
 for file in os.listdir(directory):
