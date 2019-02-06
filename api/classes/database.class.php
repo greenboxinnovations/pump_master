@@ -7,7 +7,7 @@ class Database
 
     private function __construct() {
         // $this->_db = new PDO('mysql:host=localhost;dbname=pump_master', 'pump_master_user', 'pump_master_user123!@#');
-        $this->_db = new PDO('mysql:host=localhost;dbname=pump_master', 'root', 'toor');
+        $this->_db = new PDO('mysql:host=localhost;dbname=fuel_test', 'fuel_test', 'fuel123test!@#');
         $this->_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 
