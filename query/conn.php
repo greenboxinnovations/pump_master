@@ -1,12 +1,10 @@
 <?php
+	require '../api/classes/globals.class.php';
 
-	$host_name 	= 'localhost';
-	$user_name 	= 'fuel_test';
-	$password 	= 'fuel123test!@#';
-	// $user_name 	= 'root';
-	// $password 	= 'toor';
-	$db_name 	= 'fuel_test';
-	// $db_name 	= 'pump_master';
+	$host_name 	= Globals::DB_HOSTNAME;
+	$user_name 	= Globals::DB_USER_NAME;
+	$password 	= Globals::DB_PASSWORD;
+	$db_name 	= Globals::DB_NAME;
 
 	$conn = mysqli_connect($host_name, $user_name, $password, $db_name);
 
