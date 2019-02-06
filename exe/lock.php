@@ -8,8 +8,7 @@ if (!isset($_SESSION['role']))
 {
     header("location: login.php");
 }
-
-require 'query/conn.php';
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 date_default_timezone_set("Asia/Kolkata");
 $date = date("Y-m-d");
 $time = date("Y-m-d H:i:s");

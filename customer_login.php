@@ -308,7 +308,7 @@
 	<div id="left_top"></div>
 	<div id="right_top"></div>
 	<?php
-	require 'query/conn.php';
+	require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 
 	// COMING FROM MESSAGE

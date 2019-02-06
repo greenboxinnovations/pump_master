@@ -1,5 +1,5 @@
 <?php
-require 'query/conn.php';
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 date_default_timezone_set("Asia/Kolkata");
 

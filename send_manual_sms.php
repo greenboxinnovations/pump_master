@@ -1,5 +1,5 @@
 <?php
-require 'query/conn.php';
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 function sendMSG($car_no_plate, $fuel, $amount, $url, $phone_no){
 

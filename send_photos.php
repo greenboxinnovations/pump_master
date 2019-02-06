@@ -1,6 +1,7 @@
 <?php
 date_default_timezone_set("Asia/Kolkata");
-require 'query/conn.php';
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+
 function myErrorHandler( $errType, $errStr, $errFile, $errLine, $errContext ) {
 	$displayErrors 	= ini_get( 'display_errors' );
 	$logErrors 		= ini_get( 'log_errors' );

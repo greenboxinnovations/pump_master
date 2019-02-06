@@ -70,7 +70,7 @@ require 'exe/lock.php';
 <!-- wrapper -->
 <div id="wrapper">
 	<?php
-		require 'query/conn.php';
+		require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 		$sql = "SELECT a.*,b.* FROM `receipt_books` a 
 				JOIN `customers` b

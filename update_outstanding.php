@@ -1,6 +1,6 @@
 <?php
 date_default_timezone_set("Asia/Kolkata");
-require 'query/conn.php';
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 if (isset($_GET['ok'])) {
 	$sql = "SELECT `cust_id` FROM `customers` WHERE `cust_post_paid` = 'Y';";	

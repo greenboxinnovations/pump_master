@@ -1,5 +1,5 @@
 <?php
-require '../query/conn.php';
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 $cust_f_name	 = null;
 $cust_m_name	 = null;

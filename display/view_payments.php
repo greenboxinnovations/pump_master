@@ -1,6 +1,6 @@
 <?php
 
-require '../query/conn.php';;
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 $sql = "SELECT a.*,b.cust_f_name,b.cust_m_name,b.cust_l_name FROM `payments` a JOIN `customers` b ON a.cust_id = b.cust_id WHERE 1 ORDER by `payment_id` ASC";
 $exe = mysqli_query($conn, $sql);

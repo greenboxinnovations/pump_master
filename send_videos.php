@@ -1,7 +1,8 @@
 <?php
 
 date_default_timezone_set("Asia/Kolkata");
-require 'query/conn.php';
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+
 $url_main = 'http://fuelmaster.greenboxinnovations.in/receive_videos.php';
 
 function myErrorHandler( $errType, $errStr, $errFile, $errLine, $errContext ) {

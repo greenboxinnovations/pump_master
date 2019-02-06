@@ -1,7 +1,6 @@
 <?php
 
-require '../query/conn.php';
-
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 function getCustId($rbook_num, &$conn){
 

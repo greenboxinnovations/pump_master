@@ -1,6 +1,6 @@
 <?php
 
-require '../query/conn.php';
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 if(!isset($_SESSION))
 {

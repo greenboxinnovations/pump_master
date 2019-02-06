@@ -141,7 +141,7 @@ header('Access-Control-Allow-Origin: *');
 <?php
 if(isset($_GET['cust_id'])){
 
-	require 'query/conn.php';
+	require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 	$cust_id = $_GET['cust_id'];
 	$date1 = $_GET['date1'];
 	$date2 = $_GET['date2'];
