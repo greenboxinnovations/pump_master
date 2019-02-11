@@ -1,6 +1,9 @@
 <?php
 
 require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+// require dirname(__FILE__).'/query/conn.php';
+// require "/opt/lampp/htdocs/pump_master/exe/query/conn.php";
+// require $_SERVER["DOCUMENT_ROOT"].'/pump_master/query/conn.php';
 
 if(!isset($_SESSION))
 {

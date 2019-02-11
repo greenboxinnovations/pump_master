@@ -7,7 +7,13 @@ class Database
 
     private function __construct() {
         // $this->_db = new PDO('mysql:host=localhost;dbname=pump_master', 'pump_master_user', 'pump_master_user123!@#');
-        $this->_db = new PDO('mysql:host=localhost;dbname=fuel_test', 'fuel_test', 'fuel123test!@#');
+
+        $host_name  = Globals::DB_HOSTNAME;
+        $user_name  = Globals::DB_USER_NAME;
+        $password   = Globals::DB_PASSWORD;
+        $db_name    = Globals::DB_NAME;
+
+        $this->_db = new PDO('mysql:host='.$host_name.';dbname='.$db_name.'', ''.$user_name.'', ''.$password.'');        
         $this->_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 

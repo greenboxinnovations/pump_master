@@ -4,6 +4,7 @@
 *.png
 *.mp4
 *.zip
+api/classes/globals.class.php
 videos/*
 videos/
 mysql_dump/

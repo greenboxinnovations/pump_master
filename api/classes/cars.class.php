@@ -178,9 +178,10 @@ class Cars
 
 		$upload_dir =  realpath(__DIR__ . '/../../mysql_uploads');
 		$filename = $upload_dir ."/".$table_name.'.sql';
-		$db_name = "pump_master";
+		// $db_name = "pump_master";
 		
-		exec("/usr/bin/mysqldump -u\"pump_master_user\" --password=\"pump_master_user123!@#\" \"".$db_name."\" \"".$table_name."\" > ".$filename);
+		// exec("/usr/bin/mysqldump -u\"pump_master_user\" --password=\"pump_master_user123!@#\" \"".$db_name."\" \"".$table_name."\" > ".$filename);
+		exec("/usr/bin/mysqldump -u\"".Globals::DB_USER_NAME."\" --password=\"".Globals::DB_PASSWORD."\" \"".Globals::DB_NAME."\" \"".$table_name."\" > ".$filename);
 
 		$sql = "UPDATE `sync` SET `last_updated`= '".$unix."' WHERE `table_name` = '".$table_name."';";
 		
