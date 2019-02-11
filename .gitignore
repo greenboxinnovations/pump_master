@@ -4,10 +4,13 @@
 *.png
 *.mp4
 *.zip
+*.log
 api/classes/globals.class.php
 videos/*
 videos/
 mysql_dump/
+mysql_dump/*.sql
 mysql_uploads/
+mysql_uploads/*.sql
 qr_codes/
 finished_codes/
