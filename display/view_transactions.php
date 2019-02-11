@@ -1,6 +1,6 @@
 <?php
 
-require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 $counter = 0;
 // $sql = "SELECT * FROM `transactions` WHERE 1";
 

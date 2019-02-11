@@ -3,7 +3,7 @@ date_default_timezone_set("Asia/Kolkata");
 
 if (isset($_POST['verify_otp'])) {
 
-	require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+	require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 	$json = array();
 	$json['success'] = false;

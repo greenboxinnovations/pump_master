@@ -2,7 +2,7 @@
 if(!isset($_SESSION)) {
 	session_start();
 }
-require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 
 function sortPostPre(&$post_paid_arr, &$pre_paid_arr){

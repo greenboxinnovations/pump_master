@@ -1,5 +1,5 @@
 <?php
-require 'exe/lock.php';
+require_once 'exe/lock.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -63,14 +63,14 @@ require 'exe/lock.php';
 <!-- side nav -->
 <?php 
 	$active_page = 'rbooks';
-	require 'nav.php';
+	require_once 'nav.php';
 ?>
 
 
 <!-- wrapper -->
 <div id="wrapper">
 	<?php
-		require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+		require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 		$sql = "SELECT a.*,b.* FROM `receipt_books` a 
 				JOIN `customers` b

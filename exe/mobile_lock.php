@@ -1,6 +1,6 @@
 <?php
 date_default_timezone_set("Asia/Kolkata");
-require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 $time = date("Y-m-d H:i:s");
 $json = array();
@@ -10,7 +10,7 @@ $cookie_name = "fuelmaster_user";
 
 function checkCookie($cookie_name, $storage, $user_agent){
     global $json;    
-    require '../query/conn.php';
+    require_once '../query/conn.php';
     $token = $_COOKIE[$cookie_name];
     $time = date("Y-m-d H:i:s");
 

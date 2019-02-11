@@ -57,7 +57,7 @@ date_default_timezone_set("Asia/Kolkata");
 <?php
 if(isset($_GET['cust_id'])){
 
-	require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+	require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 	$cust_id = $_GET['cust_id'];
 	$date1 = $_GET['date1'];
 	$date2 = $_GET['date2'];

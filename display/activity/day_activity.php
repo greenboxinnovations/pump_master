@@ -1,5 +1,5 @@
 <?php
-require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 date_default_timezone_set("Asia/Kolkata");
 
 if(isset($_GET['date1'])){
@@ -24,7 +24,7 @@ if(($date1=="")||($date2 == "")){
 	}
 
 
-	$sql = "SELECT b.cust_company,b.cust_f_name,b.cust_l_name,b.cust_post_paid a.cust_id,a.*,c.car_no_plate 
+	$sql = "SELECT b.cust_company,b.cust_f_name,b.cust_l_name,b.cust_post_paid, a.cust_id,a.*,c.car_no_plate 
 			FROM `transactions` a 
 			JOIN `customers` b ON a.cust_id = b.cust_id 
 			JOIN `cars` c ON c.car_id = a.car_id 
@@ -45,7 +45,6 @@ else if(($date1!="")&&($date2 != "")){
 			WHERE date(a.date) BETWEEN '".$date1."' AND '".$date2."' 
 			ORDER BY b.cust_company ASC,a.trans_string DESC";
 }
-
 
 $exe = mysqli_query($conn, $sql);
 

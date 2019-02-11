@@ -1,5 +1,5 @@
 <?php
-require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 $sql = "SELECT b.cust_company,b.cust_f_name,b.cust_l_name, count(a.cust_id) as total, a.cust_id 	FROM `transactions` a
 		JOIN `customers` b
 		ON a.cust_id = b.cust_id

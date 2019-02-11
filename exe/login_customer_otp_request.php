@@ -1,6 +1,6 @@
 <?php
 date_default_timezone_set("Asia/Kolkata");
-require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 $output=array();
 function sendOTP($otp,$mobile_no){

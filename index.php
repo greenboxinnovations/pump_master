@@ -1,5 +1,5 @@
 <?php
-require 'exe/lock.php';
+require_once 'exe/lock.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -441,7 +441,7 @@ require 'exe/lock.php';
 <!-- side nav -->
 <?php 
 	$active_page = 'index';
-	require'nav.php';
+	require_once 'nav.php';
 ?>
  
 

@@ -4,7 +4,7 @@ if(!isset($_SESSION))
 	session_start();
 }
 if(isset($_GET['cust_id'])){
-	require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+	require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 	$cust_id = $_GET['cust_id'];
 	date_default_timezone_set("Asia/Kolkata");
 	$e_id = $_SESSION['user_id'];

@@ -29,7 +29,7 @@ class item {
 
 
 require_once(dirname(__FILE__) . "/Escpos.php");
-require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 date_default_timezone_set("Asia/Kolkata");
 
