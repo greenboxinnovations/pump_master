@@ -677,7 +677,7 @@ require_once 'exe/lock.php';
 				});			
 			});
 
-			$('body').delegate('.highlight', 'click', function(){
+			$('body').delegate('.view_transaction', 'click', function(){
 				var trans_string = $(this).attr('transstring');
 				window.open( 'http://fuelmaster.greenboxinnovations.in/c_msg.php?t='+trans_string, '_blank');	
 			});
