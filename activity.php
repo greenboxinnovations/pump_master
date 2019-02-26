@@ -61,6 +61,9 @@ require_once 'exe/lock.php';
 			$('#total_trans').load('display/activity/total_app_trans.php');
 			$('#daily_trans').load('display/activity/day_activity.php');
 
+
+			var msg_url = <?php echo json_encode(Globals::URL_MSG_VIEW);?>;
+			// console.log(msg_url);
 			// $('#app_date').on('change', function(){
 			// 	var date = $(this).val();
 			// 	if(date != ""){
@@ -80,11 +83,6 @@ require_once 'exe/lock.php';
 					console.log(date1+" "+date2);
 					$('#daily_trans').load('display/activity/day_activity.php?date1='+date1+'&date2='+date2);
 				}
-
-				// 
-				// // if(date != ""){
-				// // 	$('#daily_trans').load('display/activity/day_app_trans.php?date='+date);
-				// // }
 			});
 
 			$('body').delegate('.show_more', 'click', function(){
@@ -100,8 +98,9 @@ require_once 'exe/lock.php';
 			});
 
 			$('body').delegate('.highlight', 'click', function(){
-				var trans_string = $(this).attr('transstring');
-				window.open( 'http://fuelmaster.greenboxinnovations.in/c_msg.php?t='+trans_string, '_blank');	
+				var trans_string = $(this).attr('transstring');				
+				window.open( msg_url + trans_string, '_blank' );
+				// window.open( 'http://fuelmaster.greenboxinnovations.in/c_msg.php?t='+trans_string, '_blank');				
 			});
 		});
 	</script>

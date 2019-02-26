@@ -71,7 +71,8 @@ if ($trans_string != "") {
 		$sql = "UPDATE `transactions` SET `video` = 'U' WHERE `trans_string` = '".$trans_string."' ;";
 		$exe = mysqli_query($conn,$sql);
 		
-		$cmd = 'curl -F "date='.$date.'" -F "file=@'.$file_name.'" http://fuelmaster.greenboxinnovations.in/receive_videos.php -m 1200';
+		// $cmd = 'curl -F "date='.$date.'" -F "file=@'.$file_name.'" http://fuelmaster.greenboxinnovations.in/receive_videos.php -m 1200';
+		$cmd = 'curl -F "date='.$date.'" -F "file=@'.$file_name.'" '.Globals::URL_SYNC_CHECK.'/receive_videos.php -m 1200';
 
 		try {
 

@@ -76,27 +76,27 @@ class Sync
 		echo json_encode($json);
 	}
 
-	private function updateSyncTable($table_name){
-		date_default_timezone_set("Asia/Kolkata");
-		$date = date("Y-m-d H:i:s");
-		$unix = strtotime($date);
+	// private function updateSyncTable($table_name){
+	// 	date_default_timezone_set("Asia/Kolkata");
+	// 	$date = date("Y-m-d H:i:s");
+	// 	$unix = strtotime($date);
 
-		//if exists update else insert
-		$sql = "SELECT 1 FROM `sync` WHERE `table_name` = '".$table_name."';";
+	// 	//if exists update else insert
+	// 	$sql = "SELECT 1 FROM `sync` WHERE `table_name` = '".$table_name."';";
 
-		$this->_db->query($sql);
-		$this->_db->execute();
+	// 	$this->_db->query($sql);
+	// 	$this->_db->execute();
 
-		if($this->_db->rowCount() == 0)
-		{
-			$sql = "INSERT INTO `sync`(`table_name`, `last_updated`) VALUES ('".$table_name."','".$unix."');";			
-		}else{
-			$sql = "UPDATE `sync` SET `last_updated`= '".$unix."' WHERE `table_name` = '".$table_name."';";
-		}
-		$this->_db->query($sql);
-		$this->_db->execute();
+	// 	if($this->_db->rowCount() == 0)
+	// 	{
+	// 		$sql = "INSERT INTO `sync`(`table_name`, `last_updated`) VALUES ('".$table_name."','".$unix."');";			
+	// 	}else{
+	// 		$sql = "UPDATE `sync` SET `last_updated`= '".$unix."' WHERE `table_name` = '".$table_name."';";
+	// 	}
+	// 	$this->_db->query($sql);
+	// 	$this->_db->execute();
 		
-	}
+	// }
 }
 
 ?>

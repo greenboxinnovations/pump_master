@@ -5,7 +5,7 @@ require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 $json = file_get_contents('php://input');
 $obj = json_decode($json,true);
-
+ 
 $request_otp = addslashes($obj['request_otp']);
 $mobile_no = addslashes($obj['mobile_no']);
 
@@ -15,7 +15,8 @@ function sendOTP($otp,$mobile_no){
 
 	$message = "Thanks for registration at Select Automobiles. OTP: ".$otp;
     $encodedMessage = urlencode($message);
-    $api = "https://www.fast2sms.com/dev/bulk?authorization=CbSpQve5NE&sender_id=SLAUTO&message=" . $encodedMessage . "&language=english&route=t&numbers=".$mobile_no."&flash=0";
+    $api = Globals::msgString($encodedMessage, $mobile_no);
+    // $api = "https://www.fast2sms.com/dev/bulk?authorization=CbSpQve5NE&sender_id=SLAUTO&message=" . $encodedMessage . "&language=english&route=t&numbers=".$mobile_no."&flash=0";
 
     // Get cURL resource
 	$curl = curl_init();

@@ -2,37 +2,10 @@
 
 require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
+
 if(!isset($_SESSION))
 {
 	session_start();
-}
-
-function updateSyncTable($table_name, $id, $unix){
-	Global $conn;	
-	
-	// $upload_dir =  realpath(__DIR__ . '/../../mysql_uploads');
-	// $filename = $upload_dir ."/".$table_name.'.sql';
-
-	$upload_dir =  realpath(__DIR__ . '/../');
-	$filename = $upload_dir ."/mysql_uploads/".$table_name.'.sql';
-
-	$db_name = "pump_master";
-	
-	exec("/usr/bin/mysqldump -u\"pump_master_user\" --password=\"pump_master_user123!@#\"  \"".$db_name."\" \"".$table_name."\" > ".$filename);
-	//add -t for data only for appending data
-	//exec("/usr/bin/mysqldump -u\"pump_master_user\" --password=\"pump_master_user123!@#\"  -t \"".$db_name."\" \"".$table_name."\" > ".$filename);
-
-	// if exists update else insert
-	$sql1 = "SELECT MAX(".$id.") as d FROM ".$table_name." WHERE 1 LIMIT 1;";
-	$exe1 = mysqli_query($conn ,$sql1);
-	if(mysqli_num_rows($exe1) > 0){
-
-		$row1 = mysqli_fetch_assoc($exe1);
-		$new_id = $row1['d'];
-
-		$sql3 = "UPDATE `sync` SET `last_updated`= '".$unix."' WHERE `table_name` = '".$table_name."';";
-		$exe3 = mysqli_query($conn ,$sql3);
-	}	
 }
 
 if(isset($_POST['new_cashier'])){
@@ -51,11 +24,12 @@ if(isset($_POST['new_cashier'])){
 		$date_new = date("Y-m-d H:i:s");
 		$unix = strtotime($date_new);
 
-		updateSyncTable("users", "user_id", $unix);
+		Globals::updateSyncTable("users", "user_id", $unix);
 	}else{
 		echo'Duplicate name';
 	}	
 	
 }
+
 
 ?>

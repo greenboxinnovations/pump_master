@@ -31,7 +31,8 @@ function url(){
   //   isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https' : 'http',
   //   $_SERVER['SERVER_NAME']
   // );
-	return 'http://fuelmaster.greenboxinnovations.in';
+	// return 'http://fuelmaster.greenboxinnovations.in';
+	return Globals::URL_SYNC_CHECK;
 }
 
 
@@ -288,8 +289,7 @@ function downloadTable($table_name, $last_updated){
 			$exe = mysqli_query($conn, $sql);
 
 			// linux
-			echo exec('/opt/lampp/bin/mysql -u"root" --password="toor"  "pump_master" < /opt/lampp/htdocs/pump_master/mysql_dump/'.$table_name.".sql");
-
+			echo exec('/opt/lampp/bin/mysql -u"'.Globals::DB_USER_NAME.'" --password="'.Globals::DB_PASSWORD.'"  "'.Globals::DB_NAME.'" < /opt/lampp/htdocs/pump_master/mysql_dump/'.$table_name.".sql");				
 			// windows
 			// exec('C:/xampp/mysql/bin/mysql -u"root" --password="toor"  "pump_master" < '.$destination);
 

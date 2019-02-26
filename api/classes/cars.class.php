@@ -21,7 +21,7 @@ class Cars
 			$today = date("Y-m-d");
 			switch ($size) {
 				case 0:
-					// $this->getAllCarsShifts(0,$today);					
+					// $this->getAllCarsShifts(0,$today);
 					break;
 				case 1:
 					// pass pump id
@@ -98,7 +98,8 @@ class Cars
 			$id           = "car_id";
 			$unix = strtotime($date); 
 
-			$this->updateSyncTable($table_name,$id,$unix);
+			// $this->updateSyncTable($table_name,$id,$unix);
+			Globals::updateSyncTable($table_name,$id,$unix);
 
 			$output['success'] = true;
 
@@ -171,23 +172,24 @@ class Cars
 		echo json_encode($output,JSON_NUMERIC_CHECK);
 	}
 
-	private function updateSyncTable($table_name, $id, $unix){
+	// private function updateSyncTable($table_name, $id, $unix){
 		
-		date_default_timezone_set("Asia/Kolkata");
-		$date = date("Y-m-d H:i:s");
+	// 	date_default_timezone_set("Asia/Kolkata");
+	// 	$date = date("Y-m-d H:i:s");
 
-		$upload_dir =  realpath(__DIR__ . '/../../mysql_uploads');
-		$filename = $upload_dir ."/".$table_name.'.sql';
-		// $db_name = "pump_master";
+	// 	$upload_dir =  realpath(__DIR__ . '/../../mysql_uploads');
+	// 	$filename = $upload_dir ."/".$table_name.'.sql';
+	// 	// $db_name = "pump_master";
 		
-		// exec("/usr/bin/mysqldump -u\"pump_master_user\" --password=\"pump_master_user123!@#\" \"".$db_name."\" \"".$table_name."\" > ".$filename);
-		exec("/usr/bin/mysqldump -u\"".Globals::DB_USER_NAME."\" --password=\"".Globals::DB_PASSWORD."\" \"".Globals::DB_NAME."\" \"".$table_name."\" > ".$filename);
+	// 	// exec("/usr/bin/mysqldump -u\"pump_master_user\" --password=\"pump_master_user123!@#\" \"".$db_name."\" \"".$table_name."\" > ".$filename);
+	// 	// exec("/usr/bin/mysqldump -u\"".Globals::DB_USER_NAME."\" --password=\"".Globals::DB_PASSWORD."\" \"".Globals::DB_NAME."\" \"".$table_name."\" > ".$filename);
+	// 	exec(Globals::MYSQLDUMP_PATH." -u\"".Globals::DB_USER_NAME."\" --password=\"".Globals::DB_PASSWORD."\" \"".Globals::DB_NAME."\" \"".$table_name."\" > ".$filename);
 
-		$sql = "UPDATE `sync` SET `last_updated`= '".$unix."' WHERE `table_name` = '".$table_name."';";
+	// 	$sql = "UPDATE `sync` SET `last_updated`= '".$unix."' WHERE `table_name` = '".$table_name."';";
 		
-		$this->_db->query($sql);
-		$this->_db->execute();
+	// 	$this->_db->query($sql);
+	// 	$this->_db->execute();
 		
-	}
+	// }
 }
 ?>

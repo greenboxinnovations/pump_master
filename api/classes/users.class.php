@@ -63,22 +63,5 @@ class users
 		}
 		echo json_encode($output,JSON_NUMERIC_CHECK);
 	}
-
-	private function updateSyncTable($table_name, $id, $unix){
-		date_default_timezone_set("Asia/Kolkata");
-		$date = date("Y-m-d H:i:s");
-		
-		$upload_dir =  realpath(__DIR__ . '/../../mysql_uploads');
-		$filename = $upload_dir ."/".$table_name.'.sql';
-		$db_name = "pump_master_test";
-		
-		exec("/usr/bin/mysqldump -u\"pump_master_user\" --password=\"pump_master_user123!@#\" \"".$db_name."\" \"".$table_name."\" > ".$filename);
-
-		$sql = "UPDATE `sync` SET `last_updated`= '".$unix."' WHERE `table_name` = '".$table_name."';";
-		
-		$this->_db->query($sql);
-		$this->_db->execute();
-		
-	}
 }
 ?>

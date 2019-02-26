@@ -7,7 +7,7 @@ $obj = json_decode($json,true);
 
 $myuser = addslashes($obj['name']);
 $pass = addslashes($obj['pass']);
-$imei = addslashes($obj['imei']);
+$imei = addslashes($obj['imei']); 
 
 $json = array();
 
@@ -35,18 +35,10 @@ if (password_verify($pass, $hash)) {
 		$json['petrol_rate']	= $row2['petrol'];
 		$json['diesel_rate']	= $row2['diesel']; 
 	}
-
-
+	
 	// imei and login
-	// if (($row1['imei'] == NULL)&&($row1['role'] == 'operator')) {
-	// 	$sql = "UPDATE `users` SET `imei` = '".$imei."' WHERE `name` = '".$myuser."';";
-	// 	$exe = mysqli_query($conn ,$sql);
-	// 	$row1['imei'] = $imei;
-	// }
-	// if (($row1['imei'] == $imei)&&($row1['role'] == 'operator')) {
-	if (
-		(($imei == "357120093538457") || ($imei == "358213083247251")|| ($imei == "353107095806820")||("864510039799492")) 
-		&&($row1['role'] == 'operator')) {		
+	if (in_array($imei, Globals::IMEI_LIST) && ($row1['role'] == 'operator')) {
+
 		$json['success'] 	= true;
 		$json['user_id'] 	= $row1['user_id'];
 		$json['pump_id'] 	= $row1['user_pump_id'];

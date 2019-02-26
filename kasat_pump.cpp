@@ -55,16 +55,22 @@ std::atomic<bool> first5(0);
 
 
 
-const string CAM1_IP = "rtsp://192.168.0.129:554/Streaming/Channels/2/?transportmode=unicast";
-const string CAM2_IP = "rtsp://192.168.0.128:554/Streaming/Channels/2/?transportmode=unicast";
-const string CAM3_IP = "rtsp://192.168.0.127:554/Streaming/Channels/1/?transportmode=unicast";
-const string CAM4_IP = "rtsp://192.168.0.133/12";
-const string CAM5_IP = "rtsp://192.168.0.132/12";
+// const string CAM1_IP = "rtsp://192.168.0.129:554/Streaming/Channels/2/?transportmode=unicast";
+// const string CAM2_IP = "rtsp://192.168.0.128:554/Streaming/Channels/2/?transportmode=unicast";
+// const string CAM3_IP = "rtsp://192.168.0.127:554/Streaming/Channels/1/?transportmode=unicast";
+// const string CAM4_IP = "rtsp://192.168.0.133/12";
+// const string CAM5_IP = "rtsp://192.168.0.132/12";
+
+const string CAM1_IP = "rtsp://192.168.0.123:554/Streaming/Channels/2/?transportmode=unicast";
+const string CAM2_IP = "rtsp://192.168.0.124:554/Streaming/Channels/2/?transportmode=unicast";
+const string CAM3_IP = "rtsp://192.168.0.123:554/Streaming/Channels/2/?transportmode=unicast";
+const string CAM4_IP = "rtsp://192.168.0.124:554/Streaming/Channels/2/?transportmode=unicast";
+const string CAM5_IP = "rtsp://192.168.0.123:554/Streaming/Channels/2/?transportmode=unicast";
 
 
-// const string C1WINDOW = "cam-ONE";
-// const string C2WINDOW = "cam-TWO";
-const string C3WINDOW = "GREENBOXINNOVATIONS";
+const string C1WINDOW = "cam-ONE";
+const string C2WINDOW = "cam-TWO";
+// const string C3WINDOW = "GREENBOXINNOVATIONS";
 
 sql::Driver *driver;
 const string HOST = "tcp://127.0.0.1:3306";
@@ -266,7 +272,7 @@ cv::Mat writeDateSecondary(Mat frame){
 	// our rectangle...
 	cv::Rect rect(x, y, width, height);			
 	// essentially do the same thing
-	cv::rectangle(frame, rect, cv::Scalar(0, 0, 0), CV_FILLED);
+	cv::rectangle(frame, rect, cv::Scalar(0, 0, 0), FILLED);
 
 
 	cv::putText(frame, //target image
@@ -292,7 +298,7 @@ cv::Mat writeDatePrimary(Mat frame){
 	// our rectangle...
 	cv::Rect rect(x, y, width, height);			
 	// essentially do the same thing
-	cv::rectangle(frame, rect, cv::Scalar(0, 0, 0), CV_FILLED);
+	cv::rectangle(frame, rect, cv::Scalar(0, 0, 0), FILLED);
 
 
 	cv::putText(frame, //target image
@@ -355,7 +361,7 @@ int videoThread(const int cam_no, const string trans_string, ThreadSafeVector &t
 	string file_name = "/opt/lampp/htdocs/pump_master/videos/"+date+"/"+trans_string+".avi";
 	string file_name_mp4 = "/opt/lampp/htdocs/pump_master/videos/"+date+"/"+trans_string+".mp4";
 
-	VideoWriter writer = VideoWriter(file_name, CV_FOURCC('H','2','6','4'), 25, S2);
+	VideoWriter writer = VideoWriter(file_name, VideoWriter::fourcc('H','2','6','4'), 25, S2);
 
 	// dont let video record more than 20 min
 	auto start = chrono::steady_clock::now();
@@ -577,13 +583,13 @@ void camThread(const string IP) {
 int main(int argc, char** argv) {
 
 	cout << "ESC on window to exit" << endl;
-	// namedWindow(C1WINDOW,WINDOW_NORMAL);
-	// namedWindow(C2WINDOW,WINDOW_NORMAL);
-	namedWindow(C3WINDOW,WINDOW_NORMAL);
+	namedWindow(C1WINDOW,WINDOW_NORMAL);
+	namedWindow(C2WINDOW,WINDOW_NORMAL);
+	// namedWindow(C3WINDOW,WINDOW_NORMAL);
 
-	// cv::resizeWindow(C1WINDOW, 640, 480);
-	// cv::resizeWindow(C2WINDOW, 640, 480);
-	cv::resizeWindow(C3WINDOW, 640, 480);
+	cv::resizeWindow(C1WINDOW, 640, 480);
+	cv::resizeWindow(C2WINDOW, 640, 480);
+	// cv::resizeWindow(C3WINDOW, 640, 480);
 	
 
 	// // horizontal size = d1.cols + d2.cols
@@ -604,14 +610,14 @@ int main(int argc, char** argv) {
 	thread t2(camThread, CAM2_IP);
 	t2.detach();	
 
-	thread t3(camThread, CAM3_IP);
-	t3.detach();
+	// thread t3(camThread, CAM3_IP);
+	// t3.detach();
 
-	thread t4(camThread, CAM4_IP);
-	t4.detach();	
+	// thread t4(camThread, CAM4_IP);
+	// t4.detach();	
 
-	thread t5(camThread, CAM5_IP);
-	t5.detach();
+	// thread t5(camThread, CAM5_IP);
+	// t5.detach();
 
 	
 	ThreadSafeVector tsv;
@@ -620,9 +626,9 @@ int main(int argc, char** argv) {
 	string checkExit;
 	while (1) {
 
-		if (first1 && first2 && first3 && first4 && first5) {
+		// if (first1 && first2 && first3 && first4 && first5) {
 		// if (first4 && first5) {
-		// if (first1 && first2) {
+		if (first1 && first2) {
 
 
 			// if(h_size == 0){
@@ -640,15 +646,15 @@ int main(int argc, char** argv) {
 			// 	// resize(comboFrame,comboFrame,Size(h_size,v_size));
 			// }
 
-			displayFrame1.copyTo(comboFrame(cv::Rect(0,0,displayFrame1.cols,displayFrame1.rows)));
-			displayFrame2.copyTo(comboFrame(cv::Rect(640,0,displayFrame2.cols,displayFrame2.rows)));
-			displayFrame4.copyTo(comboFrame(cv::Rect(0,480,displayFrame4.cols,displayFrame4.rows)));
-			displayFrame5.copyTo(comboFrame(cv::Rect(640,480,displayFrame5.cols,displayFrame5.rows)));
+			// displayFrame1.copyTo(comboFrame(cv::Rect(0,0,displayFrame1.cols,displayFrame1.rows)));
+			// displayFrame2.copyTo(comboFrame(cv::Rect(640,0,displayFrame2.cols,displayFrame2.rows)));
+			// displayFrame4.copyTo(comboFrame(cv::Rect(0,480,displayFrame4.cols,displayFrame4.rows)));
+			// displayFrame5.copyTo(comboFrame(cv::Rect(640,480,displayFrame5.cols,displayFrame5.rows)));
 
 
-			// imshow(C1WINDOW, displayFrame4);
-			// imshow(C2WINDOW, displayFrame5);
-			imshow(C3WINDOW, comboFrame);
+			imshow(C1WINDOW, displayFrame1);
+			imshow(C2WINDOW, displayFrame2);
+			// imshow(C3WINDOW, comboFrame);
 
 			getCamStatus(std::ref(tsv));
 		}

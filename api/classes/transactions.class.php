@@ -21,7 +21,7 @@ class Transactions
 			$today = date("Y-m-d");
 			switch ($size) {
 				case 0:
-					// $this->getAllCarsShifts(0,$today);				
+					// $this->getAllCarsShifts(0,$today);
 					break;
 				case 1:
 					//$this->getAllCarsShifts(0,$today);
@@ -273,7 +273,8 @@ class Transactions
 			$id           = "trans_id";
 			$unix = strtotime($last_updated); 
 
-			$this->updateSyncTable($table_name, $id, $unix);
+			// $this->updateSyncTable($table_name, $id, $unix);
+			Globals::updateSyncTable($table_name,$id,$unix);
 
 		
 			$output['success'] = true;
@@ -396,9 +397,12 @@ class Transactions
 			$r = $this->_db->single();
 			$trans_id = $r['trans_id'];
 
-			$this->printReceipt($trans_id);
-			$this->printReceipt($trans_id);
-			$this->updateSyncTable($table_name,$id,$unix);
+			if(Globals::PRINT_RECEIPT){
+				$this->printReceipt($trans_id);
+				$this->printReceipt($trans_id);	
+			}			
+			// $this->updateSyncTable($table_name,$id,$unix);
+			Globals::updateSyncTable($table_name,$id,$unix);
 		}
 		// else{
 		// 	$output['success'] 	= false;		
@@ -408,13 +412,11 @@ class Transactions
 	}
 
 	private function printReceipt($trans_id){
-
 		try {
-	      file_get_contents("http://192.168.0.100/pump_master/print/print.php?trans_id=".$trans_id);
+	      file_get_contents(Globals::PRINT_URL.$trans_id);
 	    } catch (Exception $e) {
 	    	
 	    }
-
 	}
 
 	private function postRates($postParams){
@@ -516,7 +518,8 @@ class Transactions
 			$date_new = date("Y-m-d H:i:s");
 			$unix = strtotime($date_new);
 
-			$this->updateSyncTable($table_name,$id,$unix);
+			// $this->updateSyncTable($table_name,$id,$unix);
+			Globals::updateSyncTable($table_name,$id,$unix);
 		}
 		else{
 			$row = $this->_db->single();
@@ -582,25 +585,26 @@ class Transactions
 		echo'Transaction deleted Successfully';
 	}
 
-	private function updateSyncTable($table_name, $id, $unix){
-		date_default_timezone_set("Asia/Kolkata");
-		$date = date("Y-m-d H:i:s");
+	// private function updateSyncTable($table_name, $id, $unix){
+	// 	date_default_timezone_set("Asia/Kolkata");
+	// 	$date = date("Y-m-d H:i:s");
 		
-		$upload_dir =  realpath(__DIR__ . '/../../mysql_uploads');
-		$filename = $upload_dir ."/".$table_name.'.sql';
-		$db_name = "pump_master";
+	// 	$upload_dir =  realpath(__DIR__ . '/../../mysql_uploads');
+	// 	$filename = $upload_dir ."/".$table_name.'.sql';
+	// 	$db_name = "pump_master";
 
-		if ($table_name == "customers") {
+	// 	if ($table_name == "customers") {
 			
-			exec("/usr/bin/mysqldump -u\"pump_master_user\" --password=\"pump_master_user123!@#\"  -t \"".$db_name."\" \"".$table_name."\" > ".$filename);
-		}
+	// 		// exec("/usr/bin/mysqldump -u\"pump_master_user\" --password=\"pump_master_user123!@#\"  -t \"".$db_name."\" \"".$table_name."\" > ".$filename);
+	// 		exec(Globals::MYSQLDUMP_PATH." -u\"".Globals::DB_USER_NAME."\" --password=\"".Globals::DB_PASSWORD."\" \"".Globals::DB_NAME."\" \"".$table_name."\" > ".$filename);
+	// 	}
 
-		$sql = "UPDATE `sync` SET `last_updated`= '".$unix."' WHERE `table_name` = '".$table_name."';";
+	// 	$sql = "UPDATE `sync` SET `last_updated`= '".$unix."' WHERE `table_name` = '".$table_name."';";
 		
-		$this->_db->query($sql);
-		$this->_db->execute();
+	// 	$this->_db->query($sql);
+	// 	$this->_db->execute();
 		 
-	} 
+	// } 
 
 	private function updateSyncTableRates($table_name, $id, $unix){
 		date_default_timezone_set("Asia/Kolkata");
@@ -664,7 +668,8 @@ class Transactions
 				$car_no_plate = $r['car_no_plate'];
 
 				// $url = "http://fuelmaster.greenboxinnovations.in/c_msg.php?t=".$row['trans_string'];
-				$url = "http://fuelmaster.greenboxinnovations.in/cmsg.php?t=".$row['trans_string'];
+				$url = Globals::URL_MSG_VIEW.$row['trans_string'];
+				// $url = "http://fuelmaster.greenboxinnovations.in/cmsg.php?t=".$row['trans_string'];
 
 
 
@@ -687,7 +692,8 @@ class Transactions
 			$table_name	  = "customers";
 			$id           = "cust_id";
 			
-			$this->updateSyncTable($table_name,$id,$unix);
+			// $this->updateSyncTable($table_name,$id,$unix);
+			Globals::updateSyncTable($table_name,$id,$unix);
 		}
 	}
 
@@ -708,7 +714,11 @@ class Transactions
 
 		$message = "SELECT AUTOMOBILES".$newline."Karve Road".$newline.$newline.$car_no_plate.$newline."Rs.".$amount.$newline.strtoupper($fuel).$newline.$timestamp.$newline.$newline.$url;
 		$encodedMessage = urlencode($message);
-		$api = "https://www.fast2sms.com/dev/bulk?authorization=CbSpQve5NE&sender_id=SLAUTO&message=" . $encodedMessage . "&language=english&route=t&numbers=".$phone_no.",8411815106&flash=0";
+
+
+		$api = Globals::msgString($encodedMessage,$phone_no, true);
+
+		// $api = "https://www.fast2sms.com/dev/bulk?authorization=CbSpQve5NE&sender_id=SLAUTO&message=" . $encodedMessage . "&language=english&route=t&numbers=".$phone_no.",8411815106&flash=0";
 
 	    
 

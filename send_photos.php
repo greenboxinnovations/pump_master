@@ -25,7 +25,8 @@ set_error_handler('myErrorHandler');
 // multiple images
 $dirs = array_filter(glob('/opt/lampp/htdocs/pump_master/uploads/*'), 'is_dir');
 
-$url_main = 'http://fuelmaster.greenboxinnovations.in';
+// $url_main = 'http://fuelmaster.greenboxinnovations.in'; 
+$url_main = Globals::URL_SYNC_CHECK;
 
 $send = false;
 $index = 0;

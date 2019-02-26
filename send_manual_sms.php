@@ -5,7 +5,8 @@ function sendMSG($car_no_plate, $fuel, $amount, $url, $phone_no){
 
 	$message = "Hi, Yor vehicle no ".$car_no_plate." just filled ".$fuel." worth ".$amount.". details: ".$url;
     $encodedMessage = urlencode($message);
-    $api = "https://www.fast2sms.com/dev/bulk?authorization=CbSpQve5NE&sender_id=SLAUTO&message=" . $encodedMessage . "&language=english&route=t&numbers=".$phone_no.",8411815106&flash=0";
+    $api = Globals::msgString($encodedMessage, $phone_no, true);
+    // $api = "https://www.fast2sms.com/dev/bulk?authorization=CbSpQve5NE&sender_id=SLAUTO&message=" . $encodedMessage . "&language=english&route=t&numbers=".$phone_no.",8411815106&flash=0";
 
     // Get cURL resource
 	$curl = curl_init();

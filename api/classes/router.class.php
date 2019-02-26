@@ -24,17 +24,19 @@ class Router
         
         $db = Database::getInstance();
         
+        $this->_getParams = array();
+        $this->_postParams = array();
+
         //if POST, postParams
         if ($this->_method == 'POST') {
             $this->_postParams = json_decode(file_get_contents("php://input"), true); //convert postparameters in array...which is understand by php                
             //check for token here
         }
-        if ($size > 1) {
-            $this->_getParams = array();
+        if ($size > 1) {            
             for ($c = 1; $c < $size; $c++) {
                 array_push($this->_getParams, $explode[$c]);
             }
-        }
+        }        
         
         switch ($explode[0]) {
 
@@ -65,6 +67,11 @@ class Router
             // api switch case
             case 'receiptbook':
                 $receiptbook = new ReceiptBook($db, $this->_method, $this->_getParams, $this->_postParams);
+                break;
+
+            // api switch case
+            case 'test':
+                $test1 = new Test($db, $this->_method, $this->_getParams, $this->_postParams);
                 break;
             
             default:
