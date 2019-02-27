@@ -2,8 +2,8 @@
 
 date_default_timezone_set("Asia/Kolkata");
 require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
-
-$url_main = 'http://fuelmaster.greenboxinnovations.in/receive_videos.php';
+$local_install_dir = Globals::LOCAL_INSTALL_DIR;
+$url_main = Globals::URL_SYNC_CHECK.'/receive_videos.php';
 
 function myErrorHandler( $errType, $errStr, $errFile, $errLine, $errContext ) {
 	$displayErrors 	= ini_get( 'display_errors' );
@@ -19,7 +19,7 @@ function myErrorHandler( $errType, $errStr, $errFile, $errLine, $errContext ) {
 }
 
 ini_set('log_errors', 1);
-ini_set('error_log', '/opt/lampp/htdocs/pump_master/send_videos.log');
+ini_set('error_log', $local_install_dir.'send_videos.log');
 error_reporting(E_ALL);
 set_error_handler('myErrorHandler');
 
@@ -46,7 +46,7 @@ if ($trans_string != "") {
 
 			try{
 
-				$path =  "/opt/lampp/htdocs/pump_master/videos/".$row['dir_date'];
+				$path =  $local_install_dir."videos/".$row['dir_date'];
 				// $path =  "/opt/lampp/htdocs/pump_master/videos/2018-11-17";
 				
 				$files = array_values(array_diff(scandir($path), array('.', '..')));
@@ -72,7 +72,7 @@ if ($trans_string != "") {
 		$exe = mysqli_query($conn,$sql);
 		
 		// $cmd = 'curl -F "date='.$date.'" -F "file=@'.$file_name.'" http://fuelmaster.greenboxinnovations.in/receive_videos.php -m 1200';
-		$cmd = 'curl -F "date='.$date.'" -F "file=@'.$file_name.'" '.Globals::URL_SYNC_CHECK.'/receive_videos.php -m 1200';
+		$cmd = 'curl -F "date='.$date.'" -F "file=@'.$file_name.'" '.$url_main.' -m 1200';
 
 		try {
 

@@ -192,6 +192,9 @@
 				console.log(storage,user_agent);
 				check(storage,user_agent);
 
+				var msg_url        = <?php echo json_encode(Globals::URL_MSG_VIEW);?>;
+				var cust_login_url = <?php echo json_encode(Globals::URL_CUST_LOGIN);?>;
+
 
 				function getWidth(){
 					var v = $(window).width();
@@ -222,13 +225,13 @@
 							else{
 								console.log("fail");
 								var cust_id = getUrlParameter('cust_id');
-								window.location = 'http://fuelmaster.greenboxinnovations.in/customer_login.php?cust_id='+cust_id;
+								window.location = cust_login_url + cust_id;
 							}
 						}
 					});
 				}
 
-
+ 
 				var getUrlParameter = function getUrlParameter(sParam) {
 					var sPageURL = decodeURIComponent(window.location.search.substring(1)),
 					sURLVariables = sPageURL.split('&'),
@@ -257,7 +260,7 @@
 					if(type=="trans"){
 
 						var trans_string = $(this).attr('t');
-						window.location.href = "http://fuelmaster.greenboxinnovations.in/c_msg.php?t="+trans_string;						
+						window.location.href = msg_url + trans_string;						
 					}
 					else if(type=="invoice"){
 						var invoice_no = $(this).attr('t');

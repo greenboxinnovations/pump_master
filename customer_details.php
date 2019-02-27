@@ -130,6 +130,7 @@ require_once 'exe/lock.php';
 	<script type="text/javascript">
 		$(document).ready(function(){
 
+			var msg_url        = <?php echo json_encode(Globals::URL_MSG_VIEW);?>;
 			var getUrlParameter = function getUrlParameter(sParam) {
 			    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
 			        sURLVariables = sPageURL.split('&'),
@@ -679,7 +680,7 @@ require_once 'exe/lock.php';
 
 			$('body').delegate('.view_transaction', 'click', function(){
 				var trans_string = $(this).attr('transstring');
-				window.open( 'http://fuelmaster.greenboxinnovations.in/c_msg.php?t='+trans_string, '_blank');	
+				window.open( msg_url + trans_string, '_blank');	
 			});
 
 

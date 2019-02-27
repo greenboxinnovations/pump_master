@@ -2,6 +2,8 @@
 date_default_timezone_set("Asia/Kolkata");
 require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
+$local_install_dir = Globals::LOCAL_INSTALL_DIR;
+
 function myErrorHandler( $errType, $errStr, $errFile, $errLine, $errContext ) {
 	$displayErrors 	= ini_get( 'display_errors' );
 	$logErrors 		= ini_get( 'log_errors' );
@@ -15,7 +17,7 @@ function myErrorHandler( $errType, $errStr, $errFile, $errLine, $errContext ) {
 }
 
 ini_set('log_errors', 1);
-ini_set('error_log', '/opt/lampp/htdocs/pump_master/send_photos.log');
+ini_set('error_log', $local_install_dir.'send_photos.log');
 error_reporting(E_ALL);
 
 set_error_handler('myErrorHandler');
@@ -23,7 +25,7 @@ set_error_handler('myErrorHandler');
 
 
 // multiple images
-$dirs = array_filter(glob('/opt/lampp/htdocs/pump_master/uploads/*'), 'is_dir');
+$dirs = array_filter(glob($local_install_dir.'uploads/*'), 'is_dir');
 
 // $url_main = 'http://fuelmaster.greenboxinnovations.in'; 
 $url_main = Globals::URL_SYNC_CHECK;
@@ -109,12 +111,12 @@ else{
 			echo '<div>Photos Sent</div>';
 
 			foreach ($data as $key => $path) {
-				unlink("/opt/lampp/htdocs/pump_master/".$path);
+				unlink($local_install_dir.$path);
 			}	
 
 			foreach ($dirs as $key => $dir) {
 
-				if ($dir != "/opt/lampp/htdocs/pump_master/uploads/".date("Y-m-d")) {
+				if ($dir != $local_install_dir."uploads/".date("Y-m-d")) {
 					rmdir($dir);		
 				}
 			}	

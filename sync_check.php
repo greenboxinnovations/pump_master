@@ -3,6 +3,8 @@ require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 date_default_timezone_set("Asia/Kolkata");
 
+$local_install_dir = Globals::LOCAL_INSTALL_DIR;
+
 function myErrorHandler( $errType, $errStr, $errFile, $errLine, $errContext ) {
 	$displayErrors 	= ini_get( 'display_errors' );
 	$logErrors 		= ini_get( 'log_errors' );
@@ -17,7 +19,7 @@ function myErrorHandler( $errType, $errStr, $errFile, $errLine, $errContext ) {
 }
 
 ini_set('log_errors', 1);
-ini_set('error_log', '/opt/lampp/htdocs/pump_master/sync_check.log');
+ini_set('error_log', $local_install_dir.'sync_check.log');
 error_reporting(E_ALL);
 set_error_handler('myErrorHandler');
 
@@ -279,7 +281,7 @@ function downloadTable($table_name, $last_updated){
 
 		try {
 
-			$destination = "/opt/lampp/htdocs/pump_master/mysql_dump/".$table_name.".sql";
+			$destination = $local_install_dir."mysql_uploads/".$table_name.".sql";
 
 			$file = fopen($destination, "w+");
 			fputs($file, $result);
@@ -289,7 +291,7 @@ function downloadTable($table_name, $last_updated){
 			$exe = mysqli_query($conn, $sql);
 
 			// linux
-			echo exec('/opt/lampp/bin/mysql -u"'.Globals::DB_USER_NAME.'" --password="'.Globals::DB_PASSWORD.'"  "'.Globals::DB_NAME.'" < /opt/lampp/htdocs/pump_master/mysql_dump/'.$table_name.".sql");				
+			echo exec(Globals::MYSQL_BINARY_PATH.' -u"'.Globals::DB_USER_NAME.'" --password="'.Globals::DB_PASSWORD.'"  "'.Globals::DB_NAME.'" < '.$local_install_dir.'mysql_uploads/'.$table_name.".sql");				
 			// windows
 			// exec('C:/xampp/mysql/bin/mysql -u"root" --password="toor"  "pump_master" < '.$destination);
 

@@ -38,6 +38,10 @@
 			console.log(storage,user_agent);
 			check(storage,user_agent);
 
+			var msg_url        = <?php echo json_encode(Globals::URL_MSG_VIEW);?>;
+			var cust_login_url = <?php echo json_encode(Globals::URL_CUST_LOGIN);?>;
+
+
 
 			function check($storage,$user_agent){
 				$.ajax({
@@ -80,7 +84,7 @@
 						var json = $.parseJSON(response);
 						console.log(response);
 						if (json.success) {
-							window.location.href = 'http://fuelmaster.greenboxinnovations.in/customer_login.php?cust_id='+json.cust_id;
+							window.location.href = cust_login_url + json.cust_id;
 						}else{
 							alert(json.msg);
 						}	
@@ -259,8 +263,9 @@ if(isset($_GET['t'])){
 
 				echo '<div id="button_div">';
 
-				$url  = 'http://fuelmaster.greenboxinnovations.in/c_list.php?cust_id='.$row['cust_id'];
-				$url1 = 'http://fuelmaster.greenboxinnovations.in/customer_login.php?cust_id='.$row['cust_id'];
+				$url  = Globals::URL_CUST_LIST.$row['cust_id'];
+				$url1 = Globals::URL_CUST_LOGIN.$row['cust_id'];
+
 
 				// if ($btn) {
 				// 	echo '<button custid="'.$row['cust_id'].'" id="view_all" ><a href="'.$url.'">VIEW ALL</a></button>';

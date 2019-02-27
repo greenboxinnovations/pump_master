@@ -8,6 +8,7 @@ header('Access-Control-Allow-Origin: *');
 	<script type="text/javascript" src="js/jquery.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function(){
+			var print_url        = <?php echo json_encode(Globals::PRINT_URL);?>;
 			// generate invoice click
 			$('body').delegate('#generate_bill', 'click', function(){
 
@@ -67,7 +68,7 @@ header('Access-Control-Allow-Origin: *');
 			$('body').delegate('.print', 'click', function(){
 
 				var trans_id = $(this).attr("id");
-				var url = 'http://192.168.0.100/pump_master/print/reprint.php?trans_id='+trans_id;
+				var url = print_url + trans_id;
 
 				if (confirm('Reprint Transaction?')) {		
 					$.ajax({

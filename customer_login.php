@@ -37,6 +37,9 @@
 			storage = jscd.os +' '+ jscd.osVersion +' '+ jscd.browser +' '+jscd.mobile;
 			user_agent = navigator.userAgent;
 
+			var c_list_url        = <?php echo json_encode(Globals::URL_CUST_LIST);?>;
+			var cust_login_url = <?php echo json_encode(Globals::URL_CUST_LOGIN);?>;
+
 
 			function setCookie(key, value, days) {
 				var expires = new Date();
@@ -74,7 +77,7 @@
 							var json = $.parseJSON(response);
 
 							if (json.success == true) {					
-								window.location.href = 'http://fuelmaster.greenboxinnovations.in/c_list.php?cust_id='+cust_id;
+								window.location.href = c_list_url + cust_id;
 							}else{
 								alert('Retry Sending OTP');
 							}
@@ -106,7 +109,7 @@
 					},						
 					success: function(response) {
 						console.log(response);
-						window.location.href = 'http://fuelmaster.greenboxinnovations.in/c_list.php?cust_id='+cust_id;
+						window.location.href = c_list_url + cust_id;
 					}
 				});
 			}); 
@@ -129,7 +132,7 @@
 							var json = $.parseJSON(response);
 							console.log(response);
 							if (json.success) {
-								window.location.href = 'http://fuelmaster.greenboxinnovations.in/customer_login.php?cust_id='+json.cust_id;
+								window.location.href = cust_login_url + json.cust_id;
 							}else{
 								alert(json.msg);
 							}							
