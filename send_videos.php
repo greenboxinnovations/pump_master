@@ -25,54 +25,46 @@ set_error_handler('myErrorHandler');
 
 $trans_string = "";
 $file_name    = "";
-$index = 0;
-$date = '';
+$date = date('Y-m-d H:i:s');
+
 
 $trans_array = array();
-$sql = "SELECT `trans_string` FROM `transactions` WHERE `video` = 'N' ORDER BY `trans_id` DESC LIMIT 1;";
+$sql = "SELECT `trans_string` , date(`date`) as 'dir_date', `date` as t FROM `transactions` WHERE `video` = 'N' ORDER BY RAND() LIMIT 1;";
 $exe = mysqli_query($conn,$sql);
 while($row1 = mysqli_fetch_assoc($exe)){
 	$trans_string = $row1['trans_string'];	
+	$dir_date = $row1['dir_date'];
+	$time_diff = strtotime($date) - strtotime($row1['t']);
 }
 
-if ($trans_string != "") {
-	// get distinct dates from db
-	$sql_dir = "SELECT distinct(date(`date`)) as 'dir_date' FROM `transactions` WHERE `video` = 'N';";
-	$exe_dir = mysqli_query($conn,$sql_dir);
+if (($trans_string != "")&&($time_diff > 30)) {
 
-	if(mysqli_num_rows($exe_dir) > 0){
-		// foreach ($dirs as $key => $path) {
-		while ($row = mysqli_fetch_assoc($exe_dir)) {
+	try{
 
-			try{
+		$path =  $local_install_dir.'/'.$dir_date;
+		$video = $path.'/'.$trans_string.'.mp4';
+		
 
-				$path =  $local_install_dir."videos/".$row['dir_date'];
-				// $path =  "/opt/lampp/htdocs/pump_master/videos/2018-11-17";
-				
-				$files = array_values(array_diff(scandir($path), array('.', '..')));
-
-				foreach ($files as $i => $file) {
-
-					if(($trans_string == basename($file,'.mp4'))&&($index == 0)) {				
-						$file_name = $path.'/'.$file;
-						$date = $row['dir_date'];
-						// $date = "2018-11-17";
-						$index++;
-					}
-				}
-			} catch (Exception $e) {
-				trigger_error('Test');
-			}
+		if (file_exists($video)) {
+			$file_name = $video;
+			//trigger_error("exists".$video);
+		}else{
+			//trigger_error("dosent exists".$time_diff.$trans_string);
+			$sql = "UPDATE `transactions` SET `video` = 'A' WHERE `trans_string` = '".$trans_string."' ;";
+			$exe = mysqli_query($conn,$sql);
 		}
-	}
 
+	} catch (Exception $e) {
+		trigger_error('Test');
+	}
+	
 	if($file_name != ""){
 
 		$sql = "UPDATE `transactions` SET `video` = 'U' WHERE `trans_string` = '".$trans_string."' ;";
 		$exe = mysqli_query($conn,$sql);
 		
 		// $cmd = 'curl -F "date='.$date.'" -F "file=@'.$file_name.'" http://fuelmaster.greenboxinnovations.in/receive_videos.php -m 1200';
-		$cmd = 'curl -F "date='.$date.'" -F "file=@'.$file_name.'" '.$url_main.' -m 1200';
+		$cmd = 'curl -F "date='.$dir_date.'" -F "file=@'.$file_name.'" '.$url_main.' -m 1200';
 
 		try {
 

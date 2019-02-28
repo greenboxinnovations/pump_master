@@ -41,11 +41,14 @@
 using namespace std;
 using namespace cv;
 
-cv::Mat displayFrame1;
-cv::Mat displayFrame2;
-cv::Mat displayFrame3;
-cv::Mat displayFrame4;
-cv::Mat displayFrame5;
+cv::Mat displayFrame1(480,640,CV_8UC3,Scalar(66, 134, 244));
+cv::Mat displayFrame2(480,640,CV_8UC3,Scalar(66, 134, 244));
+cv::Mat displayFrame3(1080,1920,CV_8UC3,Scalar(178, 204, 93));
+cv::Mat displayFrame4(480,640,CV_8UC3,Scalar(66, 134, 244));
+cv::Mat displayFrame5(480,640,CV_8UC3,Scalar(66, 134, 244));
+
+
+
 
 std::atomic<bool> first1(0);
 std::atomic<bool> first2(0);
@@ -582,6 +585,13 @@ void camThread(const string IP) {
 
 int main(int argc, char** argv) {
 
+
+	putText(displayFrame1,"island 1 left",cv::Point(5, 120),cv::FONT_HERSHEY_DUPLEX,1.5,CV_RGB(255, 255, 255),1.0);
+	putText(displayFrame2,"island 1 right",cv::Point(5, 120),cv::FONT_HERSHEY_DUPLEX,1.5,CV_RGB(255, 255, 255),1.0);
+	putText(displayFrame3,"overhead",cv::Point(100, 500),cv::FONT_HERSHEY_DUPLEX,2.5,CV_RGB(255, 255, 255),2.0);
+	putText(displayFrame4,"island 2 left",cv::Point(5, 120),cv::FONT_HERSHEY_DUPLEX,1.5,CV_RGB(255, 255, 255),1.0);
+	putText(displayFrame5,"island 2 left",cv::Point(5, 120),cv::FONT_HERSHEY_DUPLEX,1.5,CV_RGB(255, 255, 255),1.0);
+
 	cout << "ESC on window to exit" << endl;
 	namedWindow(C1WINDOW,WINDOW_NORMAL);
 	namedWindow(C2WINDOW,WINDOW_NORMAL);
@@ -597,18 +607,18 @@ int main(int argc, char** argv) {
 	// // vertical size = d1.ros + d3.rows
 	// int v_size = 0;
 
-	cv::Mat comboFrame(cv::Size(1280, 834), CV_8UC3);
+	// cv::Mat comboFrame(cv::Size(1280, 834), CV_8UC3);
 
 	
 
 
 	cout << "Main start" << endl;
 
-	thread t1(camThread, CAM1_IP);
-	t1.detach();
+	// thread t1(camThread, CAM1_IP);
+	// t1.detach();
 
-	thread t2(camThread, CAM2_IP);
-	t2.detach();	
+	// thread t2(camThread, CAM2_IP);
+	// t2.detach();	
 
 	// thread t3(camThread, CAM3_IP);
 	// t3.detach();
@@ -628,7 +638,7 @@ int main(int argc, char** argv) {
 
 		// if (first1 && first2 && first3 && first4 && first5) {
 		// if (first4 && first5) {
-		if (first1 && first2) {
+		// if (first1 && first2) {
 
 
 			// if(h_size == 0){
@@ -653,12 +663,13 @@ int main(int argc, char** argv) {
 
 
 			imshow(C1WINDOW, displayFrame1);
-			imshow(C2WINDOW, displayFrame2);
+			
 			// imshow(C3WINDOW, comboFrame);
 
 			getCamStatus(std::ref(tsv));
-		}
+		// }
 
+		Mat d;
 		char character = waitKey(10);
 		switch (character)
 		{
@@ -668,6 +679,10 @@ int main(int argc, char** argv) {
 			break;
 
 		case 32:
+			cout << "space" << endl;
+			d = writeDatePrimary(displayFrame3);
+			// imwrite(file_name, d );
+			imshow(C2WINDOW, d);
 			break;
 
 

@@ -63,17 +63,18 @@ foreach ($dirs as $key => $path) {
 					$file1 = $path.'/'.$data[0].'_start.jpeg';
 					$file2 = $path.'/'.$data[0].'_stop.jpeg';
 
-					$t1 = date("Y-m-d H:i:s",filemtime($file1));
-				    $t2 = date("Y-m-d H:i:s",filemtime($file2));
+					if(file_exists($file1($file1)) && (file_exists($file2))){
 
-				    $interval = (new DateTime($t1))->diff(new DateTime($t2));
-				    $time_diff =  $interval->format('%H:%I:%S');
-				    
-				    // echo $time_diff;
+						$t1 = date("Y-m-d H:i:s",filemtime($file1));
+					    $t2 = date("Y-m-d H:i:s",filemtime($file2));
 
-				    $sql1 = "UPDATE `transactions` SET `trans_time` = '".$time_diff."'  WHERE `trans_string` = '".$data[0]."' ;";
-					$exe1 = mysqli_query($conn, $sql1);
-
+					    $interval = (new DateTime($t1))->diff(new DateTime($t2));
+					    $time_diff =  $interval->format('%H:%I:%S');
+					    
+					    // echo $time_diff;
+					    $sql1 = "UPDATE `transactions` SET `trans_time` = '".$time_diff."'  WHERE `trans_string` = '".$data[0]."' ;";
+						$exe1 = mysqli_query($conn, $sql1);
+					}
 
 				    $send = true;
 				}
