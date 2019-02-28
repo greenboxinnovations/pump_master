@@ -63,7 +63,7 @@ foreach ($dirs as $key => $path) {
 					$file1 = $path.'/'.$data[0].'_start.jpeg';
 					$file2 = $path.'/'.$data[0].'_stop.jpeg';
 
-					if(file_exists($file1($file1)) && (file_exists($file2))){
+					if((file_exists($file1)) && (file_exists($file2))){
 
 						$t1 = date("Y-m-d H:i:s",filemtime($file1));
 					    $t2 = date("Y-m-d H:i:s",filemtime($file2));
@@ -81,7 +81,7 @@ foreach ($dirs as $key => $path) {
 			}
 		}
 	} catch (Exception $e) {
-		trigger_error('Test');
+		trigger_error('Error');
 	}
 }
 
