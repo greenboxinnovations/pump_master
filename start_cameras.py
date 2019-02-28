@@ -265,7 +265,9 @@ def send_videos():
 
 
 def disable_event():
-    pass
+    # pass
+    root.destroy()
+    exit()
 
 # root window created. Here, that would be the only window, but
 # you can later have windows within windows.
@@ -284,9 +286,12 @@ time.sleep(10)
 # root.after(3000, ping_camera)
 root.after(3000, check_program_status)
 
-# root.after(5000, sync_check)
-# root.after(5000, send_photos)
-# root.after(5000, send_videos)
+
+
+# sync_check()
+root.after(5000, sync_check)
+root.after(5000, send_photos)
+root.after(5000, send_videos)
 
 root.protocol("WM_DELETE_WINDOW", disable_event)
 

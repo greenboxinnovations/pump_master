@@ -1,7 +1,9 @@
 <?php
 
 date_default_timezone_set("Asia/Kolkata");
-require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+// require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require_once __DIR__.'/query/conn.php';
+
 $local_install_dir = Globals::LOCAL_INSTALL_DIR;
 $url_main = Globals::URL_SYNC_CHECK.'/receive_videos.php';
 

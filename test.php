@@ -1,6 +1,11 @@
 <?php
 
-require_once 'query/conn.php';
+require_once __DIR__.'/query/conn.php';
+
+
+// echo getcwd();
+// echo "\n";
+// echo $_SERVER["DOCUMENT_ROOT"];
 
 // date_default_timezone_set("Asia/Kolkata");
 // $date = date("Y-m-d H:i:s");
@@ -67,9 +72,11 @@ class Globals2
 // 	echo $value;
 // }
 
-if(in_array("BM", Globals2::IMEI_LIST)){
-	echo "f";
-}
+print_r(Globals::IMEI_LIST);
+
+// if(in_array("BM", Globals::IMEI_LIST)){
+// 	echo "f";
+// }
 
 // $msg = Globals::msgString("tesasdt msg",123, true);
 
