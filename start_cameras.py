@@ -44,11 +44,11 @@ class Window(Frame):
         # quitButton = Button(self, text="Exit",command=self.client_exit)
         # startButton = Button(self, text="Exit",command=self.start_client)
         # quitButton = Button(self, text="Exit",command=self.client_exit)
-        stopButton = Button(self, text="Stop",command=self.kill_program)
+        # stopButton = Button(self, text="Stop",command=self.kill_program)
 
         # placing the button on my window
         # quitButton.place(x=0, y=0)
-        stopButton.place(x=100, y=100)
+        # stopButton.place(x=100, y=100)
 
 
        
@@ -278,13 +278,13 @@ root.geometry("400x300+300+300")
 #creation of an instance
 app = Window(root)
 
-time.sleep(10)
+# time.sleep(10)
 
 
 # loops here
 
 # root.after(3000, ping_camera)
-root.after(3000, check_program_status)
+# root.after(3000, check_program_status)
 
 
 

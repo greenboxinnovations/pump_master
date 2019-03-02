@@ -14,6 +14,7 @@ $cust_gst		 =  null;
 $cust_service	 =  null;
 $cust_address	 = null;
 $cust_credit_limit = null;
+$cust_app_limit = null;
 $cust_id = null;
 
 
@@ -113,12 +114,51 @@ if (isset($_GET['cust_id'])) {
 	<div><textarea style="padding: 5px;" id="in_cust_address" placeholder="Address"  rows="5" cols="28" ><?php echo $cust_address;?></textarea></div>
 
 	<div style="margin-top: 25px;"></div>
-	<div><input type="number" id="in_cust_balance" placeholder="Current Balance" class="single_decimal" value=<?php echo $cust_balance;?>></div>
-	<div><input type="number" id="in_cust_outstanding" placeholder="Outstanding Amount" class="single_decimal" value=<?php echo $cust_outstanding;?>></div>
-	<div><input type="number" id="in_cust_credit_limit" placeholder="Credit limit" class="single_decimal" value=<?php echo $cust_credit_limit;?> ></div>
-	<div><input type="number" id="in_cust_deposit" placeholder="Deposit Paid" class="single_decimal" value=<?php echo $cust_deposit;?>></div>
-	<div style="margin-top: 20px;"></div>
-	<div style="margin-top: 20px;"></div>
+
+	<?php
+
+	if(($cust_post_paid == "Y")||($cust_post_paid == null)){
+		echo '<div class="small_headers">CURRENT BALANCE</div>';
+		echo '<div><input type="number" id="in_cust_balance" placeholder="Current Balance" class="single_decimal" disabled value='.$cust_balance.'></div>';
+		echo '<div class="small_headers">OUTSTANDING AMOUNT</div>';
+		echo '<div><input type="number" id="in_cust_outstanding" placeholder="Outstanding Amount" class="single_decimal" value='.$cust_outstanding.'></div>';
+		echo '<div class="small_headers">CREDIT LIMIT</div>';
+		echo '<div><input type="number" id="in_cust_credit_limit" placeholder="Credit limit" class="single_decimal" value='.$cust_credit_limit.'></div>';
+		echo '<div class="small_headers">APP LIMIT</div>';
+		echo '<div><input type="number" id="in_cust_app_limit" placeholder="App Limit" class="single_decimal" value='.$cust_app_limit.'></div>';
+		echo '<div class="small_headers">DEPOSIT PAID</div>';
+		echo '<div><input type="number" id="in_cust_deposit" placeholder="Deposit Paid" class="single_decimal" value='.$cust_deposit.'></div>';
+		echo '<div style="margin-top: 20px;"></div>';
+		echo '<div style="margin-top: 20px;"></div>';
+	}
+	else if($cust_post_paid == "N"){
+		echo '<div class="small_headers">CURRENT BALANCE</div>';
+		echo '<div><input type="number" id="in_cust_balance" placeholder="Current Balance" class="single_decimal" value='.$cust_balance.'></div>';
+		echo '<div class="small_headers">OUTSTANDING AMOUNT</div>';
+		echo '<div><input type="number" id="in_cust_outstanding" placeholder="Outstanding Amount" class="single_decimal" disabled  value='.$cust_outstanding.'></div>';
+		echo '<div class="small_headers">CREDIT LIMIT</div>';
+		echo '<div><input type="number" id="in_cust_credit_limit" placeholder="Credit limit" class="single_decimal" disabled value='.$cust_credit_limit.'></div>';
+		echo '<div class="small_headers">APP LIMIT</div>';
+		echo '<div><input type="number" id="in_cust_app_limit" placeholder="App Limit" class="single_decimal" value='.$cust_app_limit.'></div>';
+		echo '<div class="small_headers">DEPOSIT PAID</div>';
+		echo '<div><input type="number" id="in_cust_deposit" placeholder="Deposit Paid" class="single_decimal" disabled value='.$cust_deposit.'></div>';	
+		echo '<div style="margin-top: 20px;"></div>';
+		echo '<div style="margin-top: 20px;"></div>';
+	}
+	?>
+<!-- 		<div class="small_headers">CURRENT BALANCE</div>
+		<div><input type="number" id="in_cust_balance" placeholder="Current Balance" class="single_decimal" value=></div>
+		<div class="small_headers">OUTSTANDING AMOUNT</div>
+		<div><input type="number" id="in_cust_outstanding" placeholder="Outstanding Amount" class="single_decimal" disabled  value=></div>
+		<div class="small_headers">CREDIT LIMIT</div>
+		<div><input type="number" id="in_cust_credit_limit" placeholder="Credit limit" class="single_decimal" disabled value=></div>
+		<div class="small_headers">App Limit</div>
+		<div><input type="number" id="in_cust_disp_limit" placeholder="App Limit" class="single_decimal" value=></div>
+		<div class="small_headers">DEPOSIT PAID</div>
+		<div><input type="number" id="in_cust_deposit" placeholder="Deposit Paid" class="single_decimal" disabled value=></div>		
+		<div style="margin-top: 20px;"></div>
+		<div style="margin-top: 20px;"></div> -->
+	
 	<!-- <div><button id="btn_cancel_cust">Cancel</button><button id="btn_new_cust">Create</button></div> -->
 
 	<?php

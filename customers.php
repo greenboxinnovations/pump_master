@@ -76,6 +76,8 @@ require_once 'exe/lock.php';
 		select{padding: 5px;margin-top: 5px;width: 250px;}
 		.form_header{font-weight: 700;margin: 10px auto;padding-left: 2px;color: rgb(100,100,100);}
 
+		.small_headers{font-size: 12px;font-weight: 600;margin-top: 10px;color: rgba(0,0,0,0.85);}
+
 
 		.transactions_fab{background: url('css/icons/ic_edit.png') no-repeat center center;}
 		.cars_fab{background: url('css/icons/ic_car.png') no-repeat center center;}
@@ -180,6 +182,27 @@ require_once 'exe/lock.php';
 						$('#snackbar').animate({'bottom':'-50px'});           
 					},2000);
 				});
+			}
+
+			function toggleInputs(choice){
+				if(choice == 'Y'){
+					$('#in_cust_balance').prop("disabled", true);
+					$('#in_cust_outstanding').prop("disabled", false);
+					$('#in_cust_credit_limit').prop("disabled", false);
+					$('#in_cust_deposit').prop("disabled", false);
+					$('#in_cust_balance').val("");
+					$('#in_cust_app_limit').val("");
+				}
+				else{
+					$('#in_cust_balance').prop("disabled", false);
+					$('#in_cust_outstanding').prop("disabled", true);
+					$('#in_cust_credit_limit').prop("disabled", true);
+					$('#in_cust_deposit').prop("disabled", true);
+					$('#in_cust_outstanding').val("");
+					$('#in_cust_credit_limit').val("");
+					$('#in_cust_deposit').val("");
+					$('#in_cust_app_limit').val("");
+				}
 			}
 
 			// globals
@@ -378,6 +401,20 @@ require_once 'exe/lock.php';
 				event.preventDefault();
 			});
 
+
+			// set display limit to 25% of outstanding or balance
+			$('body').delegate('#in_cust_outstanding,#in_cust_balance', 'keyup', function(event){
+				var v = $(this).val();
+				var disp_limit = v * 0.25;
+				console.log(disp_limit);
+				if(disp_limit == 0){
+					$('#in_cust_app_limit').val("");
+				}else{
+					$('#in_cust_app_limit').val(disp_limit);
+				}
+				
+			});
+
 			// $('body').delegate('#in_cust_ph_no', 'keydown', function(e){
 			// 	// console.log(e.keyCode);
 			// 	if((e.keyCode == 46)||(e.keyCode == 190)){
@@ -389,21 +426,8 @@ require_once 'exe/lock.php';
 			// payment type change
 			// show limit input
 			$('body').delegate('#select_is_postpaid', 'change', function(){
-
 				var choice = $(this).find(":selected").val();
-
-				if(choice == 'Y'){
-					$('#in_cust_balance').prop("disabled", true);
-					$('#in_cust_outstanding').prop("disabled", false);
-					$('#in_cust_credit_limit').prop("disabled", false);
-					$('#in_cust_deposit').prop("disabled", false);
-				}
-				else{
-					$('#in_cust_balance').prop("disabled", false);
-					$('#in_cust_outstanding').prop("disabled", true);
-					$('#in_cust_credit_limit').prop("disabled", true);
-					$('#in_cust_deposit').prop("disabled", true);
-				}
+				toggleInputs(choice);
 			});
 
 			$('body').delegate('#in_cust_ph_no', 'keyup change input paste', function(e){

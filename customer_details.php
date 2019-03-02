@@ -617,7 +617,6 @@ require_once 'exe/lock.php';
 						del_click = false;
 					}
 				}
-
 			});
 
  
@@ -696,7 +695,6 @@ require_once 'exe/lock.php';
 				else{
 					switch(id){
 						case 'rs':
-
 							if(rate_val == ""){
 								$(this).val("");
 								showSnackBar("Enter Rate");
@@ -806,8 +804,7 @@ require_once 'exe/lock.php';
 							clicked = false;
 						},
 						error: function(data, errorThrown){
-							showSnackBar(errorThrown);
-				    
+							showSnackBar(errorThrown);				    
 				            clicked = false;
 				        }
 					});
@@ -942,8 +939,7 @@ require_once 'exe/lock.php';
 				if ($(this).val() != "") {
 					$('#select_car').focus();
 					checkRates();
-				}
-			
+				}		
 			});
 
 			$('body').delegate('#trans_date', 'keyup', function(){
@@ -951,13 +947,11 @@ require_once 'exe/lock.php';
 				event.preventDefault();
 				if((keycode == 13)&&($(this).val() != "")){
 					$('#select_car').focus();
-				}
-			
+				}			
 			});
 
 			$('body').delegate('#select_car', 'change', function(){
 				checkRates();
-
 			});
 
 

@@ -39,11 +39,11 @@ while($row1 = mysqli_fetch_assoc($exe)){
 	$time_diff = strtotime($date) - strtotime($row1['t']);
 }
 
-if (($trans_string != "")&&($time_diff > 30)) {
+if ($trans_string != "") {
 
 	try{
 
-		$path =  $local_install_dir.'/'.$dir_date;
+		$path =  $local_install_dir.'videos/'.$dir_date;
 		$video = $path.'/'.$trans_string.'.mp4';
 		
 
@@ -51,9 +51,11 @@ if (($trans_string != "")&&($time_diff > 30)) {
 			$file_name = $video;
 			//trigger_error("exists".$video);
 		}else{
-			//trigger_error("dosent exists".$time_diff.$trans_string);
-			$sql = "UPDATE `transactions` SET `video` = 'A' WHERE `trans_string` = '".$trans_string."' ;";
-			$exe = mysqli_query($conn,$sql);
+			if ($time_diff > 60*3) {
+				//trigger_error("dosent exists".$time_diff.$trans_string);
+				$sql = "UPDATE `transactions` SET `video` = 'A' WHERE `trans_string` = '".$trans_string."' ;";
+				$exe = mysqli_query($conn,$sql);
+			}			
 		}
 
 	} catch (Exception $e) {
