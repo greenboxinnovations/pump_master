@@ -104,6 +104,8 @@ class Customers
 
 		$cust_credit_limit   = $postParams['cust_credit_limit'];
 
+		$cust_app_limit   = $postParams['cust_app_limit'];
+
 		$cust_deposit		 = $postParams['cust_deposit'];	
 
 		if ($cust_id == null ) {
@@ -120,8 +122,8 @@ class Customers
 
 		if($valid && ($cust_id == NULL)){
 
-			$sql = "INSERT INTO `customers` (`cust_f_name`,`cust_m_name`,`cust_l_name`,`cust_ph_no`,`cust_pump_id`,`cust_post_paid`,`cust_balance`,`cust_outstanding`,`cust_credit_limit`,`cust_address`,`cust_company`,`cust_gst`,`cust_acc_no`,`cust_deposit`,`cust_service`) 
-			VALUES (:field1,:field2,:field3,:field4,:field5,:field6,:field7,:field8,:field9,:field10,:field11,:field12,:field13,:field14,:field15);";
+			$sql = "INSERT INTO `customers` (`cust_f_name`,`cust_m_name`,`cust_l_name`,`cust_ph_no`,`cust_pump_id`,`cust_post_paid`,`cust_balance`,`cust_outstanding`,`cust_credit_limit`,`cust_app_limit`,`cust_address`,`cust_company`,`cust_gst`,`cust_acc_no`,`cust_deposit`,`cust_service`) 
+			VALUES (:field1,:field2,:field3,:field4,:field5,:field6,:field7,:field8,:field9,:field10,:field11,:field12,:field13,:field14,:field15,:field16);";
 
 			$this->_db->query($sql);
 
@@ -134,12 +136,13 @@ class Customers
 			$this->_db->bind(':field7', $cust_balance);
 			$this->_db->bind(':field8', $cust_outstanding);
 			$this->_db->bind(':field9', $cust_credit_limit);
-			$this->_db->bind(':field10', $cust_address);
-			$this->_db->bind(':field11', $cust_company);
-			$this->_db->bind(':field12', $cust_gst);
-			$this->_db->bind(':field13', $account_num);
-			$this->_db->bind(':field14', $cust_deposit);
-			$this->_db->bind(':field15', $cust_service);
+			$this->_db->bind(':field10', $cust_app_limit);
+			$this->_db->bind(':field11', $cust_address);
+			$this->_db->bind(':field12', $cust_company);
+			$this->_db->bind(':field13', $cust_gst);
+			$this->_db->bind(':field14', $account_num);
+			$this->_db->bind(':field15', $cust_deposit);
+			$this->_db->bind(':field16', $cust_service);
 			$this->_db->execute();
 
 			date_default_timezone_set("Asia/Kolkata");
@@ -163,7 +166,7 @@ class Customers
 			$table_name	  = "customers";
 			$last_updated = strtotime($date);
 
-			$sql = "UPDATE `customers` SET `cust_f_name`= :field1,`cust_m_name`= :field2,`cust_l_name`= :field3,`cust_ph_no`= :field4,`cust_service`= :field15,`cust_address`= :field10,`cust_post_paid`= :field6,`cust_balance`= :field7,`cust_outstanding`= :field8,`cust_credit_limit`= :field9,`cust_deposit`= :field14,`cust_company`= :field11,`cust_gst`= :field12,`cust_last_updated`= :field16 WHERE `cust_id` = :field17 ;";
+			$sql = "UPDATE `customers` SET `cust_f_name`= :field1,`cust_m_name`= :field2,`cust_l_name`= :field3,`cust_ph_no`= :field4,`cust_service`= :field5,`cust_address`= :field6,`cust_post_paid`= :field7,`cust_balance`= :field8,`cust_outstanding`= :field9,`cust_credit_limit`= :field10,`cust_app_limit`= :field11,`cust_deposit`= :field12,`cust_company`= :field13,`cust_gst`= :field14,`cust_last_updated`= :field15 WHERE `cust_id` = :field16 ;";
 
 			$this->_db->query($sql);
 
@@ -171,17 +174,18 @@ class Customers
 			$this->_db->bind(':field2', $cust_m_name);
 			$this->_db->bind(':field3', $cust_l_name);
 			$this->_db->bind(':field4', $cust_ph_no);
-			$this->_db->bind(':field6', $cust_post_paid);
-			$this->_db->bind(':field7', $cust_balance);
-			$this->_db->bind(':field8', $cust_outstanding);
-			$this->_db->bind(':field9', $cust_credit_limit);
-			$this->_db->bind(':field10', $cust_address);
-			$this->_db->bind(':field11', $cust_company);
-			$this->_db->bind(':field12', $cust_gst);
-			$this->_db->bind(':field14', $cust_deposit);
-			$this->_db->bind(':field15', $cust_service);
-			$this->_db->bind(':field16', $date);
-			$this->_db->bind(':field17', $cust_id);
+			$this->_db->bind(':field5', $cust_service);
+			$this->_db->bind(':field6', $cust_address);
+			$this->_db->bind(':field7', $cust_post_paid);
+			$this->_db->bind(':field8', $cust_balance);
+			$this->_db->bind(':field9', $cust_outstanding);
+			$this->_db->bind(':field10', $cust_credit_limit);
+			$this->_db->bind(':field11', $cust_app_limit);
+			$this->_db->bind(':field12', $cust_deposit);
+			$this->_db->bind(':field13', $cust_company);
+			$this->_db->bind(':field14', $cust_gst);					
+			$this->_db->bind(':field15', $date);
+			$this->_db->bind(':field16', $cust_id);
 			$this->_db->execute();				
 
 			date_default_timezone_set("Asia/Kolkata");

@@ -37,7 +37,8 @@ if (isset($_GET['cust_id'])) {
 			$cust_gst	 	 = $row['cust_gst'];
 			$cust_service	 = $row['cust_service'];
 			$cust_address	 = $row['cust_address'];
-			$cust_credit_limit= $row['cust_credit_limit'];				
+			$cust_credit_limit= $row['cust_credit_limit'];
+			$cust_app_limit = $row['cust_app_limit'];
 		}
 
 		if ($cust_post_paid == 'Y') {

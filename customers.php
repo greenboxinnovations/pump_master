@@ -274,6 +274,7 @@ require_once 'exe/lock.php';
 				var cust_deposit     = $('#in_cust_deposit').val();
 				var cust_company 	= $('#in_cust_comp_name').val();
 				var cust_gst 		= $('#in_cust_gst').val();
+				var cust_app_limit = $('#in_cust_app_limit').val();
 
 				var type 			=  $(this).attr('type');
 				var cust_id 		= null;
@@ -285,7 +286,10 @@ require_once 'exe/lock.php';
 				var ph_bool = false;
 				var address_bool = false;
 				var cust_ph_no = "";
-				var ph_count = 1;
+				var ph_count = 1;				
+
+
+
 				$('.in_cust_ph_no').each(function(){
 
 
@@ -334,6 +338,7 @@ require_once 'exe/lock.php';
 						myObject.cust_balance 	= cust_balance;
 						myObject.cust_outstanding = cust_outstanding;
 						myObject.cust_credit_limit = cust_credit_limit;
+						myObject.cust_app_limit = cust_app_limit;
 						myObject.cust_deposit	= cust_deposit;
 						myObject.cust_company	= cust_company;
 						myObject.cust_gst 		= cust_gst;
@@ -403,7 +408,7 @@ require_once 'exe/lock.php';
 
 
 			// set display limit to 25% of outstanding or balance
-			$('body').delegate('#in_cust_outstanding,#in_cust_balance', 'keyup', function(event){
+			$('body').delegate('#in_cust_credit_limit,#in_cust_balance', 'keyup', function(event){
 				var v = $(this).val();
 				var disp_limit = v * 0.25;
 				console.log(disp_limit);
@@ -411,8 +416,7 @@ require_once 'exe/lock.php';
 					$('#in_cust_app_limit').val("");
 				}else{
 					$('#in_cust_app_limit').val(disp_limit);
-				}
-				
+				}				
 			});
 
 			// $('body').delegate('#in_cust_ph_no', 'keydown', function(e){
