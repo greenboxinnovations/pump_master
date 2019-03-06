@@ -88,87 +88,89 @@ require_once __DIR__.'/query/conn.php';
 // echo '<pre>';
 
 // details from CUSTOMERS
-$sql = "SELECT * FROM `customers` WHERE 1";
-$exe = mysqli_query($conn ,$sql);
-while ($row = mysqli_fetch_assoc($exe)) {
-	// display company or name
-	$display_name = ucwords($row['cust_company']);
-	if($display_name == ""){
-		$display_name = ucwords($row['cust_f_name']." ".$row['cust_l_name']);
-	}
-	// encode results
-	$json['success'] 	= true;	
-	$json['cust_name'] 	= $display_name;
+// $sql = "SELECT * FROM `customers` WHERE 1";
+// $exe = mysqli_query($conn ,$sql);
+// while ($row = mysqli_fetch_assoc($exe)) {
+// 	// display company or name
+// 	$display_name = ucwords($row['cust_company']);
+// 	if($display_name == ""){
+// 		$display_name = ucwords($row['cust_f_name']." ".$row['cust_l_name']);
+// 	}
+// 	// encode results
+// 	$json['success'] 	= true;	
+// 	$json['cust_name'] 	= $display_name;
 
-	$cust_post_paid 	= $row["cust_post_paid"];
-	$cust_app_limit 	= (float)$row["cust_app_limit"];
-	$cust_outstanding 	= (float)$row["cust_outstanding"];
-	$cust_balance 		= (float)$row["cust_balance"];
-	$cust_credit_limit 	= (float)$row["cust_credit_limit"];
+// 	$cust_post_paid 	= $row["cust_post_paid"];
+// 	$cust_app_limit 	= (float)$row["cust_app_limit"];
+// 	$cust_outstanding 	= (float)$row["cust_outstanding"];
+// 	$cust_balance 		= (float)$row["cust_balance"];
+// 	$cust_credit_limit 	= (float)$row["cust_credit_limit"];
 
 
 
-	// $cust_app_limit 	= 20;
-	// $cust_outstanding 	= 400;
-	// $cust_balance 		= $row["cust_balance"];
-	// $cust_credit_limit 	= 50;
+// 	// $cust_app_limit 	= 20;
+// 	// $cust_outstanding 	= 400;
+// 	// $cust_balance 		= $row["cust_balance"];
+// 	// $cust_credit_limit 	= 50;
 
-	if($cust_post_paid == "Y"){
-		$working_balance = $cust_credit_limit - $cust_outstanding;
-	}
-	else{
-		$working_balance = $cust_balance;
-	}	
+// 	if($cust_post_paid == "Y"){
+// 		$working_balance = $cust_credit_limit - $cust_outstanding;
+// 	}
+// 	else{
+// 		$working_balance = $cust_balance;
+// 	}	
 	
-	(float)$alert_value = 0.0;
-	$alert = false;
-	if($working_balance > 0){ 
-		// customer has not crossed credit limit
-		if($working_balance <= $cust_app_limit){
-			// customer working balance is less than app limit
-			$alert = true;
-			$alert_value = $working_balance;
-		}
-	}
-	else{ 		
-		// customer has exceeded credit-limit		
-		$alert = true;		
-	}
+// 	(float)$alert_value = 0.0;
+// 	$alert = false;
+// 	if($working_balance > 0){ 
+// 		// customer has not crossed credit limit
+// 		if($working_balance <= $cust_app_limit){
+// 			// customer working balance is less than app limit
+// 			$alert = true;
+// 			$alert_value = $working_balance;
+// 		}
+// 	}
+// 	else{ 		
+// 		// customer has exceeded credit-limit		
+// 		$alert = true;		
+// 	}
 
 
 
 
 
 
-	// echo "cust_post_paid\t".$cust_post_paid;
-	// echo "<br>";
+// 	// echo "cust_post_paid\t".$cust_post_paid;
+// 	// echo "<br>";
 	
-	// echo "cust_outstanding\t".$cust_outstanding;
-	// echo "<br>";
-	// echo "cust_balance\t".$cust_balance;
-	// echo "<br>";
-	// // echo "cust_credit_limit\t".$cust_credit_limit;
-	// // echo "<br>";
-	// echo "working_balance\t".$working_balance;
-	// echo "<br>";
-	if($alert){
-		echo "cust_app_limit\t".$row["cust_id"];
-	echo "<br>";
-		// ini_set("serialize_precision",-1);
-		// echo ini_get("serialize_precision");
-		var_dump($alert_value);
-		echo "<br>";
-	// echo "alert\ttrue";
-	}
-	// else{
-	// echo "alert\tfalse";
-	// }
+// 	// echo "cust_outstanding\t".$cust_outstanding;
+// 	// echo "<br>";
+// 	// echo "cust_balance\t".$cust_balance;
+// 	// echo "<br>";
+// 	// // echo "cust_credit_limit\t".$cust_credit_limit;
+// 	// // echo "<br>";
+// 	// echo "working_balance\t".$working_balance;
+// 	// echo "<br>";
+// 	if($alert){
+// 		echo "cust_app_limit\t".$row["cust_id"];
+// 	echo "<br>";
+// 		// ini_set("serialize_precision",-1);
+// 		// echo ini_get("serialize_precision");
+// 		var_dump($alert_value);
+// 		echo "<br>";
+// 	// echo "alert\ttrue";
+// 	}
+// 	// else{
+// 	// echo "alert\tfalse";
+// 	// }
 
 	
-	// echo "alert_value\t".$alert_value;
-	// echo "<br>";
-	// echo "<br>";
-}
+// 	// echo "alert_value\t".$alert_value;
+// 	// echo "<br>";
+// 	// echo "<br>";
+// }
+
+print_r(Globals::generateRandTest());
 // print_r($json);
 // echo '</pre>';
 

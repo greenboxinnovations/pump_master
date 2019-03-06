@@ -56,7 +56,8 @@ if ($photo_type == 'stop') {
 
 }else{
 
-    $trans_string = generateRand();
+    // $trans_string = generateRand();
+    $trans_string = Globals::generateRand();
 
     $sql1 = "UPDATE `cameras` SET `status` = 1,`trans_string` = '".$trans_string."',`type` = '".$photo_type."'  WHERE `cam_qr_code` = '".$pump_code."';";
 
