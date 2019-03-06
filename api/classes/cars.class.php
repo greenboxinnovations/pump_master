@@ -122,9 +122,10 @@ class Cars
 			}
 
 
-			$output['success'] = true;			
-			$output['cust_name'] 	= $display_name;
-			$output['isPetrol'] 	= $isPetrol;
+			$output['success'] = true;
+			$output['cust_id'] 	= $car_cust_id;		
+			$output['cust_name'] = $display_name;
+			$output['isPetrol'] = $isPetrol;
 			$output['car_no'] 	= $car_no_plate;
 			$output['car_id'] 	= $last_id;
 
