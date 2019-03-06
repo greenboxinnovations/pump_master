@@ -84,6 +84,10 @@ class Database
         return $this->stmt->debugDumpParams();
     }
 
+    public function lastInsertId(){
+        return $this->_db->lastInsertId();
+    }
+
 }
 
 ?>

@@ -8,11 +8,10 @@ if (isset($_GET['cust_id'])) {
 	$sql = "SELECT * FROM `payments` WHERE `cust_id` ='".$cust_id."' ";
 	$exe = mysqli_query($conn, $sql);
 	$count = mysqli_num_rows($exe);
+	echo '<table id="header-fixed"></table>';
+	echo '<table id="table-1">';
 	if ($count > 0) {
-
-
-		echo '<table id="header-fixed"></table>';
-		echo '<table id="table-1">';
+	
 		echo '<thead>';
 			echo '<tr style="border:1px solid rgb(207,216,220);">';
 				echo '<th>#</th>';
@@ -50,8 +49,13 @@ if (isset($_GET['cust_id'])) {
 			$i++;
 		}
 		echo '</tbody>';
-		echo '</table>';
+		
+	}else{
+		echo '<tr >';
+			echo '<td >No payments present</td>';
+		echo '</tr>';
 	}
+	echo '</table>';
 	
 }
 ?>

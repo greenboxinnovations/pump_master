@@ -55,7 +55,8 @@ require_once 'exe/lock.php';
 		/*tr:nth-child(odd){background-color: rgb();}*/
 
 		/*.td_num{text-align: right;}*/
-		#display{padding-top: 50px;margin-bottom: 30px;}
+		#display{padding-top: 50px;margin-bottom: 30px;display: inline-block;}
+		#notes{padding-top: 50px;margin-bottom: 30px; background-color: red; width: 200px; height: 150px; display: inline-block;position: absolute;}
 		#name{font-family: 'Roboto Slab', serif;font-size: 40px;margin-bottom: 10px;}
 		#ph_no{font-weight: 600; color: rgb(100,100,100);}
 		#bal{font-weight: 700;color: rgb(100,100,100);}
@@ -393,11 +394,11 @@ require_once 'exe/lock.php';
 						$('#fab span').text('ADD CAR');
 						$('#fab .tooltiptext').css('width','60px');
 						break;
-					// case "payments":
-					// 	$('#pager_content').load('display/cust_payments.php?cust_id='+cust_id);
-					// 	$('#fab span').text('ADD PAYMENT');
-					// 	$('#fab .tooltiptext').css('width','100px');
-					// 	break;
+					case "payments":
+						$('#pager_content').load('display/cust_payments.php?cust_id='+cust_id);
+						$('#fab span').text('ADD PAYMENT');
+						$('#fab .tooltiptext').css('width','100px');
+						break;
 					case "invoices":
 						$('#pager_content').load('display/cust_invoices.php?cust_id='+cust_id, scrollInit);
 							// $('#fab span').text('ADD PAYMENT');
@@ -1040,11 +1041,14 @@ require_once 'exe/lock.php';
 				<div id="transactions" class="tab tab_active">TRANSACTIONS</div>
 				<div id="cars" class="tab">CARS</div>
 				<div id="invoices" class="tab">INVOICES</div>
+				<div id="payments" class="tab">PAYMENTS</div>
 				<div id="receipt_book" class="tab">RECEIPT-BOOKS</div>
 			</div>
 			<div id="pager_content" style="padding-top: 20px;margin-bottom: 50px;"></div>
 		</div>
+		
 	</div>
+	<div id="notes"></div>	
 </div>
 
 <!-- snackbar -->
