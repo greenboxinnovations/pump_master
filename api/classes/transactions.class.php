@@ -318,11 +318,17 @@ class Transactions
 
 		$pump_code      = trim($postParams['pump_code']);	
 
-		$sql = "SELECT `trans_string` FROM `cameras` WHERE `cam_qr_code` = '".$pump_code."';";		
-		$this->_db->query($sql);
-		$r = $this->_db->single();
-		$trans_string = $r['trans_string'];
 
+		if($pump_code == -1){
+			$trans_string = Globals::generateRand();
+		}
+		else{
+			$sql = "SELECT `trans_string` FROM `cameras` WHERE `cam_qr_code` = '".$pump_code."';";		
+			$this->_db->query($sql);
+			$r = $this->_db->single();
+			$trans_string = $r['trans_string'];
+		}
+		
 
 		$sql_pre = "SELECT `last_updated` FROM `transactions` 
 					WHERE `pump_id` = :field1
