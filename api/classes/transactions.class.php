@@ -679,7 +679,10 @@ class Transactions
 
 
 				$ph_no = str_replace("|", ",", $ph_no);
-				$this->sendMSG($car_no_plate, $row['fuel'], $row['amount'], $url, $ph_no);
+				if (Globals::SEND_MSG) {
+					$this->sendMSG($car_no_plate, $row['fuel'], $row['amount'], $url, $ph_no);
+				}
+				
 
 				$d = true;
 

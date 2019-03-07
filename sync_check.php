@@ -236,7 +236,7 @@ function uploadRates(){
 			print_r($response);
 			if($json['success']){
 				$new_time = $json['unix'];
-				echo $sql = "UPDATE `sync` SET `last_updated` = '".$new_time."' WHERE `table_name` = 'rates';";
+				$sql = "UPDATE `sync` SET `last_updated` = '".$new_time."' WHERE `table_name` = 'rates';";
 				$exe = mysqli_query($conn, $sql);	
 			}
 			else{
@@ -259,6 +259,7 @@ function uploadRates(){
 function downloadTable($table_name, $last_updated){
 
 	Global $conn;
+	Global $local_install_dir;
 	$proceed = false;
 
 	$target_url = url()."/mysql_uploads/".$table_name.".sql";

@@ -5,6 +5,7 @@
 *.mp4
 *.zip
 *.log
+sync_check.log
 api/classes/globals.class.php
 videos/*
 videos/
