@@ -79,7 +79,7 @@ class Cars
 		{
 			$sql = "INSERT INTO `cars` (`car_brand`,`car_sub_brand`,`car_no_plate`,`car_fuel_type`,`car_cust_id`,`car_qr_code`,`car_pump_id`) VALUES (:field1,:field2,:field3,:field4,:field5,:field6,:field7);";
 
-			$this->_db->query($sql);
+			$this->_db->query($sql);			
 
 			$this->_db->bind(':field1', $car_brand);
 			$this->_db->bind(':field2', $car_sub_brand);
@@ -90,6 +90,7 @@ class Cars
 			$this->_db->bind(':field7', 1);
 
 			$this->_db->execute();
+			$car_id = $this->_db->lastInsertId();
 
 			date_default_timezone_set("Asia/Kolkata");
 			$date = date("Y-m-d H:i:s");		
@@ -98,45 +99,15 @@ class Cars
 			$id           = "car_id";
 			$unix = strtotime($date); 
 
-			// $this->updateSyncTable($table_name,$id,$unix);
-			Globals::updateSyncTable($table_name,$id,$unix);
-
+			Globals::updateSyncTable($table_name,$id,$unix);			
 			$output['success'] = true;
-
-<<<<<<< HEAD
-			// get customer details
-			// required when car is added from receipt-android
-			$sql = "SELECT * FROM `customers` WHERE `cust_id` = '".$car_cust_id."';";
-			$this->_db->query($sql);
-			$row = $this->_db->single();
-
-			// display company or name
-			$display_name = ucwords($row['cust_company']);
-			if($display_name == ""){
-				$display_name = ucwords($row['cust_f_name']." ".$row['cust_l_name']);
-			}
-
-
-			$output['success'] = true;
-			$output['cust_id'] 	= $car_cust_id;		
-			$output['cust_name'] = $display_name;
-			$output['isPetrol'] = $isPetrol;
-			$output['car_no'] 	= $car_no_plate;
-			$output['car_id'] 	= $last_id;
-
-
-			$cust_post_paid 	= $row["cust_post_paid"];
-			$cust_app_limit 	= $row["cust_app_limit"];
-			$cust_outstanding 	= $row["cust_outstanding"];
-			$cust_balance 		= $row["cust_balance"];
-			$cust_credit_limit 	= $row["cust_credit_limit"];
-=======
+			$output['car_id'] = $car_id;
 		}
->>>>>>> parent of ec85f4b... add receipt from android
+		else{
+			$output['msg'] = "Duplicate Car";	
+		}
 
 		echo json_encode($output);
-
-		
 	}
 
 
@@ -201,24 +172,5 @@ class Cars
 		echo json_encode($output,JSON_NUMERIC_CHECK);
 	}
 
-	// private function updateSyncTable($table_name, $id, $unix){
-		
-	// 	date_default_timezone_set("Asia/Kolkata");
-	// 	$date = date("Y-m-d H:i:s");
-
-	// 	$upload_dir =  realpath(__DIR__ . '/../../mysql_uploads');
-	// 	$filename = $upload_dir ."/".$table_name.'.sql';
-	// 	// $db_name = "pump_master";
-		
-	// 	// exec("/usr/bin/mysqldump -u\"pump_master_user\" --password=\"pump_master_user123!@#\" \"".$db_name."\" \"".$table_name."\" > ".$filename);
-	// 	// exec("/usr/bin/mysqldump -u\"".Globals::DB_USER_NAME."\" --password=\"".Globals::DB_PASSWORD."\" \"".Globals::DB_NAME."\" \"".$table_name."\" > ".$filename);
-	// 	exec(Globals::MYSQLDUMP_PATH." -u\"".Globals::DB_USER_NAME."\" --password=\"".Globals::DB_PASSWORD."\" \"".Globals::DB_NAME."\" \"".$table_name."\" > ".$filename);
-
-	// 	$sql = "UPDATE `sync` SET `last_updated`= '".$unix."' WHERE `table_name` = '".$table_name."';";
-		
-	// 	$this->_db->query($sql);
-	// 	$this->_db->execute();
-		
-	// }
 }
 ?>
