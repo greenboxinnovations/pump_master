@@ -110,13 +110,18 @@ if($_SERVER['REQUEST_METHOD'] == "POST"){
 					$car_no_plate = str_replace(' ','',$car_no_plate);
 					$msg_string = $car_no_plate." ".$cust_name;
 					$json['msg']  = "QR Added Succesfully";
-					sendMSG($msg_string, 9762230207);
+					if(Globals::SEND_MSG){
+						sendMSG($msg_string, 9762230207);	
+					}
+					
 					// updateSyncTable("cars");
 					Globals::updateSyncTable("cars", "car_id", $unix);
 
 				} catch (Exception $e) {
 					$json['msg']  = "QR Exception";
-					sendMSG($car_id, 9762230207);	
+					if(Globals::SEND_MSG){
+						sendMSG($car_id, 9762230207);		
+					}					
 				}
 				
 				// updateSyncTable("users", "user_id", $unix);

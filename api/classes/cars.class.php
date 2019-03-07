@@ -58,7 +58,7 @@ class Cars
 		$car_sub_brand	 = trim($car_sub_brand);
 
 		$car_no_plate	 = $postParams['car_no_plate'];
-		$car_no_plate	 = trim($car_no_plate);
+		$car_no_plate	 = strtolower(preg_replace("/[\W_]+/u", '', $car_no_plate));
 
 		$car_fuel_type	 = $postParams['car_fuel_type'];
 		$car_fuel_type	 = trim($car_fuel_type);

@@ -26,20 +26,9 @@ error_reporting(E_ALL);
 set_error_handler('myErrorHandler');
 
 
-
-
-
 function url(){
-  // return sprintf(
-  //   "%s://%s",
-  //   isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https' : 'http',
-  //   $_SERVER['SERVER_NAME']
-  // );
-	// return 'http://fuelmaster.greenboxinnovations.in';
 	return Globals::URL_SYNC_CHECK;
 }
-
-
 
 function queryServer(){
 
@@ -63,7 +52,6 @@ function queryServer(){
 	if($response != 200){
 		trigger_error('response'.$response);
 	}
-
 
 	// server is up
 	if($proceed){
@@ -95,7 +83,7 @@ function queryServer(){
 				}
 				else if($table_name == 'transactions'){
 					if($row['id'] != $id){
-						echo $sql = "UPDATE `sync` SET `id` = '".$id."' WHERE `table_name` = 'transactions';";
+						$sql = "UPDATE `sync` SET `id` = '".$id."' WHERE `table_name` = 'transactions';";
 						$exe = mysqli_query($conn, $sql);	
 					}
 				}
@@ -157,8 +145,6 @@ function updateServerId($table_name, $id){
 	}		
 }
 
-
-
 function downloadRates($new_id, $new_time){
 
 	Global $conn;
@@ -200,7 +186,6 @@ function downloadRates($new_id, $new_time){
 	curl_close ($ch);
 
 }
-
 
 function uploadRates(){
 	Global $conn;
@@ -252,9 +237,6 @@ function uploadRates(){
 	}
 	curl_close($ch);
 }
-
-
-
 
 function downloadTable($table_name, $last_updated){
 
@@ -314,7 +296,6 @@ function downloadTable($table_name, $last_updated){
 					break;
 			}
 
-
 			if($prim_key != ''){
 				$sql = "SELECT `".$prim_key."` as 'new_id' FROM `".$table_name."` WHERE 1 ORDER BY `".$prim_key."` DESC LIMIT 1;";
 				$exe = mysqli_query($conn, $sql);
@@ -333,7 +314,6 @@ function downloadTable($table_name, $last_updated){
 		}	
 	}	
 }
-
 
 function sendLocalTransactions(){
 	Global $conn;
@@ -405,10 +385,8 @@ function sendLocalTransactions(){
 				$exe1 = mysqli_query($conn, $sql1);
 			}
 		}
-
 	}
 }
-
 
 queryServer();
 sendLocalTransactions();
