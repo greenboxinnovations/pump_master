@@ -98,6 +98,11 @@ class Payments
 			$new_bal	 = round($prev_bal + $amount_paid);
 		}	
 
+		
+
+		
+
+
 		$sql = "INSERT INTO `payments` (`cust_id`,`pump_id`,`prev_bal`,`prev_out`,`amount_paid`,`new_bal`,`new_out`,`date`,`last_updated`,`is_postpaid`,`comment`) 
 				VALUES (:field1,:field2,:field3,:field4,:field5,:field6,:field7,:field8,:field9,:field10,:field11);";
 
@@ -117,7 +122,7 @@ class Payments
 
 		$this->_db->execute();
 
-		$sql = "UPDATE `customers` SET `cust_balance` = :field1,`cust_outstanding` = :field2,`cust_last_updated` = :field3 WHERE `cust_id` = '".$cust_id."' ;";		
+		$sql = "UPDATE `customers` SET `cust_balance` = :field1,`cust_outstanding` = :field2,`cust_last_updated` = :field3 WHERE `cust_id` = '".$cust_id."' ;";
 
 		$this->_db->query($sql);
 

@@ -62,12 +62,6 @@ class Cars
 
 		$car_fuel_type	 = $postParams['car_fuel_type'];
 		$car_fuel_type	 = trim($car_fuel_type);
-		if($car_fuel_type == "petrol"){
-			$isPetrol = true;
-		}
-		else{
-			$isPetrol = false;
-		}
 
 		$car_cust_id  	 = $postParams['cust_id'];; 
 		// $car_cust_id	 = $postParams['car_cust_id'];
@@ -96,7 +90,6 @@ class Cars
 			$this->_db->bind(':field7', 1);
 
 			$this->_db->execute();
-			$last_id = $this->_db->lastInsertId();
 
 			date_default_timezone_set("Asia/Kolkata");
 			$date = date("Y-m-d H:i:s");		
@@ -108,7 +101,9 @@ class Cars
 			// $this->updateSyncTable($table_name,$id,$unix);
 			Globals::updateSyncTable($table_name,$id,$unix);
 
+			$output['success'] = true;
 
+<<<<<<< HEAD
 			// get customer details
 			// required when car is added from receipt-android
 			$sql = "SELECT * FROM `customers` WHERE `cust_id` = '".$car_cust_id."';";
@@ -135,37 +130,13 @@ class Cars
 			$cust_outstanding 	= $row["cust_outstanding"];
 			$cust_balance 		= $row["cust_balance"];
 			$cust_credit_limit 	= $row["cust_credit_limit"];
-
-
-			if($cust_post_paid == "Y"){
-			$working_balance = $cust_credit_limit - $cust_outstanding;
-			}
-			else{
-				$working_balance = $cust_balance;
-			}
-
-			ini_set("serialize_precision",-1);		
-		
-			$alert_value = 0;
-			$alert = false;
-			if($working_balance > 0){ 
-				// customer has not crossed credit limit
-				if($working_balance <= $cust_app_limit){
-					// customer working balance is less than app limit
-					$alert = true;
-					$alert_value = number_format(round($working_balance, 2), 2);
-				}
-			}
-			else{ 		
-				// customer has exceeded credit-limit		
-				$alert = true;		
-			}
-
-			$output['alert'] 			= $alert;
-			$output['alert_value'] 	= $alert_value;
+=======
 		}
+>>>>>>> parent of ec85f4b... add receipt from android
 
-		echo json_encode($output);		
+		echo json_encode($output);
+
+		
 	}
 
 

@@ -5,9 +5,8 @@ require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 $sql = "SELECT a.*,b.cust_f_name,b.cust_m_name,b.cust_l_name FROM `payments` a JOIN `customers` b ON a.cust_id = b.cust_id WHERE 1 ORDER by `payment_id` ASC";
 $exe = mysqli_query($conn, $sql);
 $count = mysqli_num_rows($exe);
-	echo'<table>';
 	if ($count > 0) {
-
+		echo'<table>';
 			echo '<tr>';
 				echo '<th>Sr No</th>';
 				echo '<th>Customer Name</th>';
@@ -50,11 +49,6 @@ $count = mysqli_num_rows($exe);
 			echo '</tr>';
 			$i++;
 		}
-	}else{
-		echo '<tr >';
-			echo '<td class="c_id">No payments present</td>';
-		echo '</tr>';
+		echo '</table>';
 	}
-		
-	echo '</table>';
 ?>

@@ -47,52 +47,12 @@ if($qr != ""){
 		$json['isPetrol'] 	= $isPetrol;
 		$json['car_no'] 	= $car_no;
 		$json['car_id'] 	= $car_id;
-
-		$cust_post_paid 	= $row["cust_post_paid"];
-		$cust_app_limit 	= $row["cust_app_limit"];
-		$cust_outstanding 	= $row["cust_outstanding"];
-		$cust_balance 		= $row["cust_balance"];
-		$cust_credit_limit 	= $row["cust_credit_limit"];
-
-		// $json['cust_credit_limit'] 			= $cust_credit_limit;
-		// $json['cust_outstanding'] 	= $cust_outstanding;
-
-
-
-
-		if($cust_post_paid == "Y"){
-			$working_balance = $cust_credit_limit - $cust_outstanding;
-		}
-		else{
-			$working_balance = $cust_balance;
-		}
-
-		ini_set("serialize_precision",-1);		
-		
-		$alert_value = 0;
-		$alert = false;
-		if($working_balance > 0){ 
-			// customer has not crossed credit limit
-			if($working_balance <= $cust_app_limit){
-				// customer working balance is less than app limit
-				$alert = true;
-				$alert_value = number_format(round($working_balance, 2), 2);
-			}
-		}
-		else{ 		
-			// customer has exceeded credit-limit		
-			$alert = true;		
-		}
-
-		$json['alert'] 			= $alert;
-		$json['alert_value'] 	= $alert_value;
-
 	}
 	else{
 		// no matches in cars db
 		$json['success'] = false;
 
-		$sql_c = "SELECT 1 FROM `codes` WHERE `qr_code` = '".$qr."' ;";
+		$sql_c = "SELECT 1 FROM `codes` WHERE `qr_code` = '".$qr_code."' ;";
 		$exe_c = mysqli_query($conn, $sql_c);
 		$count = mysqli_num_rows($exe_c);
 
