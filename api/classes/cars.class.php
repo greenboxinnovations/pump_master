@@ -75,6 +75,8 @@ class Cars
 		$this->_db->query($sql);
 		$this->_db->execute();
 
+
+
 		if($this->_db->rowCount() == 0)
 		{
 			$sql = "INSERT INTO `cars` (`car_brand`,`car_sub_brand`,`car_no_plate`,`car_fuel_type`,`car_cust_id`,`car_qr_code`,`car_pump_id`) VALUES (:field1,:field2,:field3,:field4,:field5,:field6,:field7);";
@@ -102,8 +104,24 @@ class Cars
 			Globals::updateSyncTable($table_name,$id,$unix);			
 			$output['success'] = true;
 			$output['car_id'] = $car_id;
+
+			if ($car_fuel_type == 'petrol') {
+				$output['isPetrol'] = true;
+			}else{
+				$output['isPetrol'] = false;
+			}
+			
 		}
 		else{
+
+			$r = $this->_db->single();
+			if ($r['car_fuel_type'] == 'petrol') {
+				$output['isPetrol'] = true;
+			}else{
+				$output['isPetrol'] = false;
+			}
+
+			$output['car_id'] = $r['car_id'];
 			$output['msg'] = "Duplicate Car";	
 		}
 
