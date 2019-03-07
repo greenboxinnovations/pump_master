@@ -107,7 +107,7 @@ class Cars
 			$output['msg'] = "Duplicate Car";	
 		}
 
-		echo json_encode($output);
+		echo json_encode($output, JSON_NUMERIC_CHECK);
 	}
 
 
