@@ -360,6 +360,8 @@ require_once 'exe/lock.php';
 
 						console.log(json_string);
 
+						$('#btn_new_cust').hide();
+
 						$.ajax({
 							url: url,
 							type: 'POST',
@@ -375,19 +377,25 @@ require_once 'exe/lock.php';
 									else{
 										showSnackBar("New Customer Added!");
 									}
-									
+									$('#btn_new_cust').show();
 									init();
 									$("#fab").show();
 								}
 								else{
 									showSnackBar(json.msg);
+									$('#btn_new_cust').show();
 								}
+							},
+							error: function (request, status, error) {
+								console.log(request.responseText);
+								$('#btn_new_cust').show();
 							}
 						});
 					}
 					else{
 						showSnackBar('Empty Input Values!');
 						console.log('inputs are invalid');
+						$('#btn_new_cust').show();
 					}
 				}
 			});
