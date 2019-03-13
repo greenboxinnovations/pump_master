@@ -419,8 +419,10 @@ int videoThread(const int cam_no, const string trans_string, ThreadSafeVector &t
 		tsv.remove(trans_string);
 	}
 	else{
-		// delete video
+		// delete video when app starts new video (over right case, old trans string video is invalid)
 		videoDelete(file_name);
+		
+
 	}	
 	return 0;
 }

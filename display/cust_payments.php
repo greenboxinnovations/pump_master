@@ -38,7 +38,7 @@ if (isset($_GET['cust_id'])) {
 			$date	 = $row["date"];
 			$date = date("M-d, g:i a", strtotime($date));
 
-			echo '<tr class="highlight">';
+			echo '<tr class="highlight view_comment" comment ="'.$row['comment'].'">';
 				echo '<td>'.$i.'</td>';
 				echo '<td>'.$date.'</td>';
 				echo '<td>'.$prev_bal.'</td>';

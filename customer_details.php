@@ -56,7 +56,7 @@ require_once 'exe/lock.php';
 
 		/*.td_num{text-align: right;}*/
 		#display{padding-top: 50px;margin-bottom: 30px;display: inline-block;}
-		#notes{padding-top: 50px;margin-bottom: 30px; background-color: red; width: 200px; height: 150px; display: inline-block;}
+		#notes{padding-top: 1px;margin-top: 260px; background-color: rgb(232,235,237); color: #868786; height: 80px; display: none; }
 		#name{font-family: 'Roboto Slab', serif;font-size: 40px;margin-bottom: 10px;}
 		#ph_no{font-weight: 600; color: rgb(100,100,100);}
 		#bal{font-weight: 700;color: rgb(100,100,100);}
@@ -65,7 +65,7 @@ require_once 'exe/lock.php';
 
 		.edit{
 			background: url('css/icons/ic_edit.png') no-repeat center center;
-		}
+		} 
 
 		.delete_invoice{
 			background: url('css/icons/ic_cancel.png') no-repeat center center;
@@ -385,7 +385,8 @@ require_once 'exe/lock.php';
 				$()
 				
 				$('#fab').attr('class','');
-				$('#fab').addClass(id+'_fab');				
+				$('#fab').addClass(id+'_fab');	
+				$('#notes').hide();			
 				// load display
 				switch(id){
 					case "transactions":
@@ -402,6 +403,7 @@ require_once 'exe/lock.php';
 						$('#pager_content').load('display/cust_payments.php?cust_id='+cust_id);
 						$('#fab span').text('ADD PAYMENT');
 						$('#fab .tooltiptext').css('width','100px');
+						$('#notes').show();
 						break;
 					case "invoices":
 						$('#pager_content').load('display/cust_invoices.php?cust_id='+cust_id, scrollInit);
@@ -640,6 +642,15 @@ require_once 'exe/lock.php';
 				$('#pager_content').load('display/cust_payments.php?cust_id='+cust_id, scrollInit);
 				$("#fab").show();
 			});
+
+			// cancel payment
+			$('body').delegate('.view_comment', 'click', function(){
+
+				var comment = $(this).attr('comment');
+				$('#notes').text(comment);
+				
+			});
+
 			// confirm payment
 			$('body').delegate('#btn_confirm_payment', 'click', function(){
 				var payment_amount 	= $('#payment_amount').val();
