@@ -32,11 +32,10 @@ while($row = mysqli_fetch_assoc($exe)){
 		$row1 = mysqli_fetch_assoc($exe1);
 
 		$amount = $row1['amount'];
-
+		//test
 
 		$sql2 = "UPDATE `customers` SET `cust_balance` = 100000-'".$amount."' WHERE `cust_id` = ".$row['cust_id']."  ;";
 		$exe2 = mysqli_query($conn, $sql2);
-
 
 }
 
