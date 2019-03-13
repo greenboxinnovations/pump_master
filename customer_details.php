@@ -403,7 +403,6 @@ require_once 'exe/lock.php';
 						$('#pager_content').load('display/cust_payments.php?cust_id='+cust_id);
 						$('#fab span').text('ADD PAYMENT');
 						$('#fab .tooltiptext').css('width','100px');
-						$('#notes').show();
 						break;
 					case "invoices":
 						$('#pager_content').load('display/cust_invoices.php?cust_id='+cust_id, scrollInit);
@@ -648,6 +647,7 @@ require_once 'exe/lock.php';
 
 				var comment = $(this).attr('comment');
 				$('#notes').text(comment);
+				$('#notes').show();
 				
 			});
 
