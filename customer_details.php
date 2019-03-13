@@ -56,7 +56,7 @@ require_once 'exe/lock.php';
 
 		/*.td_num{text-align: right;}*/
 		#display{padding-top: 50px;margin-bottom: 30px;display: inline-block;}
-		#notes{padding-top: 1px;margin-top: 260px; background-color: rgb(232,235,237); color: #868786; height: 80px; display: none; }
+		#notes{padding-top: 1px;margin-top: 260px; background-color: rgb(232,235,237); color: #868786; height: 80px; display: none; max-width: 200px; }
 		#name{font-family: 'Roboto Slab', serif;font-size: 40px;margin-bottom: 10px;}
 		#ph_no{font-weight: 600; color: rgb(100,100,100);}
 		#bal{font-weight: 700;color: rgb(100,100,100);}
