@@ -245,7 +245,6 @@ class Customers
 	}
 
 
-
 	// helper functions
 	private function generateRandomNumber($length) {
 		$characters = '0123456789';

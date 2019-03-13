@@ -43,7 +43,7 @@ class ReceiptBook
 				$this->deleteBook($this->_postParams);
 			}else{
 				$this->addBook($this->_postParams);
-			}
+			}	
 		}
 	}
 
@@ -93,7 +93,6 @@ class ReceiptBook
 		}else{
 			echo "Invalid values Or duplicate reciept book";
 		}
-
 	}
 
 	private function deleteBook($postParams){
@@ -104,10 +103,16 @@ class ReceiptBook
 		$id	 = $postParams['id'];
 		$id	 = trim($id);		
 
-		$sql = "DELETE FROM `receipt_books` WHERE `rb_id` = '".$id."'";
+		$sql = "SELECT 1 FROM `receipt_books` WHERE `rb_id` = '".$id."'";
 		$this->_db->query($sql);
 		$this->_db->execute();
 
+		if($this->_db->rowCount() == 1){
+			
+			$sql = "DELETE FROM `receipt_books` WHERE `rb_id` = '".$id."'";
+			$this->_db->query($sql);
+			$this->_db->execute();
+		}	
 	}
 }
 ?>

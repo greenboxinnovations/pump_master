@@ -76,7 +76,6 @@ class Transactions
 		}
 	}
 
-
 	private function postTransaction($postParams){
 
 		if(!isset($_SESSION))
@@ -480,7 +479,6 @@ class Transactions
 		echo json_encode($output);
 	}
 
-
 	private function updateOldRate($rate, $date, $fuel_type, $pump_id){
 		date_default_timezone_set("Asia/Kolkata");
 		$check_date = date("Y-m-d" , strtotime($date));
@@ -553,8 +551,6 @@ class Transactions
 				}
 			}
 		}
-
-		
 	}
 
 	private function deleteTransaction($postParams){
@@ -590,27 +586,6 @@ class Transactions
 		echo'Transaction deleted Successfully';
 	}
 
-	// private function updateSyncTable($table_name, $id, $unix){
-	// 	date_default_timezone_set("Asia/Kolkata");
-	// 	$date = date("Y-m-d H:i:s");
-		
-	// 	$upload_dir =  realpath(__DIR__ . '/../../mysql_uploads');
-	// 	$filename = $upload_dir ."/".$table_name.'.sql';
-	// 	$db_name = "pump_master";
-
-	// 	if ($table_name == "customers") {
-			
-	// 		// exec("/usr/bin/mysqldump -u\"pump_master_user\" --password=\"pump_master_user123!@#\"  -t \"".$db_name."\" \"".$table_name."\" > ".$filename);
-	// 		exec(Globals::MYSQLDUMP_PATH." -u\"".Globals::DB_USER_NAME."\" --password=\"".Globals::DB_PASSWORD."\" \"".Globals::DB_NAME."\" \"".$table_name."\" > ".$filename);
-	// 	}
-
-	// 	$sql = "UPDATE `sync` SET `last_updated`= '".$unix."' WHERE `table_name` = '".$table_name."';";
-		
-	// 	$this->_db->query($sql);
-	// 	$this->_db->execute();
-		 
-	// } 
-
 	private function updateSyncTableRates($table_name, $id, $unix){
 		date_default_timezone_set("Asia/Kolkata");
 		$date = date("Y-m-d H:i:s");
@@ -619,9 +594,7 @@ class Transactions
 		
 		$this->_db->query($sql);
 		$this->_db->execute();
-		
 	}
-
 
 	// takes json array of transactions
 	// send back prim key of local
@@ -707,28 +680,16 @@ class Transactions
 
 	private function sendMSG($car_no_plate, $fuel, $amount, $url, $phone_no){
 
-		// $newline = "%0A";
-
-		// $message = "Vehicle no ".$car_no_plate.$newline.ucwords($fuel)." Rs. ".$amount.$newline.$newline.$url;
-	 //    $encodedMessage = urlencode($message);
-	 //    $api = "https://www.fast2sms.com/dev/bulk?authorization=CbSpQve5NE&sender_id=SLAUTO&message=" . $encodedMessage . "&language=english&route=t&numbers=".$phone_no.",8411815106&flash=0";
-
 	    date_default_timezone_set("Asia/Kolkata");
 		$timestamp = date("d/m/Y H:i:s");
 		echo "Formatted date from timestamp:" . $timestamp;
-
 
 		$newline = "\n";
 
 		$message = "SELECT AUTOMOBILES".$newline."Karve Road".$newline.$newline.$car_no_plate.$newline."Rs.".$amount.$newline.strtoupper($fuel).$newline.$timestamp.$newline.$newline.$url;
 		$encodedMessage = urlencode($message);
 
-
 		$api = Globals::msgString($encodedMessage,$phone_no, true);
-
-		// $api = "https://www.fast2sms.com/dev/bulk?authorization=CbSpQve5NE&sender_id=SLAUTO&message=" . $encodedMessage . "&language=english&route=t&numbers=".$phone_no.",8411815106&flash=0";
-
-	    
 
 	    // Get cURL resource
 		$curl = curl_init();

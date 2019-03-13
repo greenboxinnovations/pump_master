@@ -58,7 +58,7 @@ require_once 'exe/lock.php';
 						$fixedHeader.hide();
 					}
 				}
-			}
+			} 
 
 			function validateManualTrans(){
 				var returnVal = true;
@@ -269,6 +269,8 @@ require_once 'exe/lock.php';
 						$('#m_trans_result').html("");
 						$('#rbook_input').val("");
 
+						$('#btn_manual_t_confirm').hide();
+
 						$.ajax({
 							url: 'api/transactions/regular',
 							type: 'POST',
@@ -282,16 +284,19 @@ require_once 'exe/lock.php';
 									$('#m_trans_result').html("");
 									$('#rbook_input').val("");
 									$('#user_id').focus();
+									$('#btn_manual_t_confirm').show();
 								}
 								else{
 									showSnackBar(json.msg);
+									$('#btn_manual_t_confirm').show();
 								}
 								click = false;
 							},
 							error: function(data, errorThrown){
 								  showSnackBar(errorThrown);
-					    
+					    		
 					              click = false;
+					              $('#btn_manual_t_confirm').show();
 					        }
 						});
 						

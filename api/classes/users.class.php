@@ -59,7 +59,6 @@ class users
 				$json["user_pump_id"]	= $row["user_pump_id"];
 				array_push($output, $json);
 			}
-			
 		}
 		echo json_encode($output,JSON_NUMERIC_CHECK);
 	}

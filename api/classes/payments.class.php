@@ -43,13 +43,6 @@ class Payments
 		}
 	}
 
-
-	// private function getCustPayments($cust_id){
-
-	// }
-
-
-
 	private function newPayment($postParams){
 
 

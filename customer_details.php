@@ -382,7 +382,7 @@ require_once 'exe/lock.php';
 				// toggle tab styles
 				$('.tab').removeClass('tab_active');
 				$('#'+id).addClass('tab_active');
-				
+				$()
 				
 				$('#fab').attr('class','');
 				$('#fab').addClass(id+'_fab');				
@@ -489,12 +489,15 @@ require_once 'exe/lock.php';
 			// cancel new car
 			$('body').delegate('#btn_cancel_new_car', 'click', function(){
 				$('#pager_content').load('display/cust_cars.php?cust_id='+cust_id, scrollInit);
+				$("#fab").show();
 			});
 			// submit values and add to DB
 			$('body').delegate('#btn_new_car', 'click', function(){
 
+				clicked = true;
+
 				// add ph_no validation here
-				if(validateNewCar()){
+				if((validateNewCar())&&(!clicked)){
 
 					// BRAND
 					if($('#in_car_brand').is(':visible')) {
@@ -557,6 +560,7 @@ require_once 'exe/lock.php';
 					myObject.cust_id = cust_id;
 
 
+
 					json_string = JSON.stringify(myObject);
 
 					var url = 'api/cars';
@@ -572,13 +576,18 @@ require_once 'exe/lock.php';
 							console.log(response);
 							$('#pager_content').load('display/cust_cars.php?cust_id='+cust_id, scrollInit);
 							// showSnackBar("New Company Added!");
-							// $("#fab").show();
+							$("#fab").show();
+							clicked = false;
+						},
+						error: function (error) {
+						    clicked = false;
 						}
 					});
 				}
 				else{
 					console.log('invalid inputs');
 					showSnackBar('Invalid Inputs');
+					clicked = false;
 				}
 			});
 			
@@ -629,6 +638,7 @@ require_once 'exe/lock.php';
 			// cancel payment
 			$('body').delegate('#btn_cancel_payment', 'click', function(){
 				$('#pager_content').load('display/cust_payments.php?cust_id='+cust_id, scrollInit);
+				$("#fab").show();
 			});
 			// confirm payment
 			$('body').delegate('#btn_confirm_payment', 'click', function(){
@@ -636,11 +646,12 @@ require_once 'exe/lock.php';
 				var payment_date 	= $('#payment_date').val();
 				var payment_comment = $('#payment_comment').val();
 
-
 				// console.log(payment_comment);
 
-				if((payment_amount > 0) && (payment_date != "")){
+				if((payment_amount > 0) && (payment_date != "") &&(!clicked)){
 					// add ph_no validation here
+
+					clicked = true;
 
 					var myObject = {};
 					myObject.payment_amount = payment_amount;
@@ -662,12 +673,19 @@ require_once 'exe/lock.php';
 						success: function(response){
 							$('#display').load('display/cust_details.php?cust_id='+cust_id);
 							$('#pager_content').load('display/cust_payments.php?cust_id='+cust_id, scrollInit);
+							$('#fab').show();
+							clicked = false;
+						},
+						error: function(data, errorThrown){
+							showSnackBar(errorThrown);
+							clicked = false;
 						}
 					});
 				}
 				else{
 					console.log('invalid amount or date');
 					showSnackBar('INVALID AMOUNT OR DATE');
+					clicked = false;
 				}
 			});
 			
@@ -732,13 +750,15 @@ require_once 'exe/lock.php';
 			});
 			$('body').delegate('#btn_cancel_transaction', 'click', function(){				
 				$('#pager_content').load('display/cust_transactions.php?cust_id='+cust_id, scrollInit);
+				$("#fab").show();
 			});
 			$('body').delegate('#btn_new_transaction', 'click', function(){
 
 
 				if((validateNewTransaction()&&(!clicked))){
-					console.log('valid');	
+
 					clicked = true;			
+
 					var pump_id 	= -2;				
 					var car_id 		= $('#select_car').val();
 					var is_postpaid = $('#cust_post_paid').val();
@@ -802,6 +822,7 @@ require_once 'exe/lock.php';
 								
 								$('#display').load('display/cust_details.php?cust_id='+cust_id);
 								$('#pager_content').load('display/cust_transactions.php?cust_id='+cust_id, scrollInit);
+								$('#fab').show();
 							}
 							else{
 								showSnackBar(json.msg);
@@ -826,29 +847,43 @@ require_once 'exe/lock.php';
 				var min = $('#in_rbook_min').val();
 				var max = $('#in_rbook_max').val();
 
+				if ((min != "")&&(max != "")&&(max > min)&&(!clicked)) {
 
-				var myObject = {};
-				myObject["cust_id"] = cust_id;
-				myObject["min"] = min;
-				myObject["max"] = max;
+					clicked = true;
 
-				var json_data = JSON.stringify(myObject);
+					var myObject = {};
+					myObject["cust_id"] = cust_id;
+					myObject["min"] = min;
+					myObject["max"] = max;
 
-				$.ajax({
-					url: 'api/receiptbook',
-					type: 'POST',
-					contentType: "application/json",
-					data:json_data,
-					success: function(response) {
-						console.log(response);
-						showSnackBar(response);
-						$('#pager_content').load('display/cust_rbooks.php?cust_id='+cust_id, scrollInit);
-					}
-				});
+					var json_data = JSON.stringify(myObject);
+
+					$.ajax({
+						url: 'api/receiptbook/',
+						type: 'POST',
+						contentType: "application/json",
+						data:json_data,
+						success: function(response) {
+							console.log(response);
+							showSnackBar(response);
+							$('#pager_content').load('display/cust_rbooks.php?cust_id='+cust_id, scrollInit);
+							$('#fab').show();
+							clicked = false;
+						},
+						error: function(data, errorThrown){
+							showSnackBar(errorThrown);				    
+				            $('#fab').show();
+				            clicked = false;
+				        }
+					});
+				}else{
+					showSnackBar("Please enter correct values!");
+				}
 			
 			});
 			$('body').delegate('#btn_cancel_rbook', 'click', function(){
 				$('#pager_content').load('display/cust_rbooks.php?cust_id='+cust_id, scrollInit);
+				$("#fab").show();
 			});
 
 			$('body').delegate('.delete', 'click', function(){
@@ -875,11 +910,10 @@ require_once 'exe/lock.php';
 				}
 			});
 
-
 			// fab click
 			$('#fab').on('click', function(){
 				var mode = $(this).attr('class').replace('_fab','');
-
+				$('#fab').hide();
 				switch(mode){
 					case 'transactions':
 						$('#pager_content').load('forms/add_transaction.php?cust_id='+cust_id, function(){
@@ -939,7 +973,6 @@ require_once 'exe/lock.php';
 				} 
 			});
 
-
 			$('body').delegate('#trans_date', 'change', function(){
 				if ($(this).val() != "") {
 					$('#select_car').focus();
@@ -958,7 +991,6 @@ require_once 'exe/lock.php';
 			$('body').delegate('#select_car', 'change', function(){
 				checkRates();
 			});
-
 
 			$('body').delegate('#select_car', 'keydown', function(){
 				var keycode = (event.keyCode ? event.keyCode : event.which);
@@ -992,7 +1024,6 @@ require_once 'exe/lock.php';
 					$('#btn_new_transaction').trigger('click');
 				}
 			});
-
 
 			// delete car
 			$('body').delegate('.del_car', 'click', function(){
