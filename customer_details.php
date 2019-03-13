@@ -925,6 +925,7 @@ require_once 'exe/lock.php';
 			$('#fab').on('click', function(){
 				var mode = $(this).attr('class').replace('_fab','');
 				$('#fab').hide();
+				$('#notes').hide();
 				switch(mode){
 					case 'transactions':
 						$('#pager_content').load('forms/add_transaction.php?cust_id='+cust_id, function(){
