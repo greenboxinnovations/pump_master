@@ -9,7 +9,7 @@ header('Access-Control-Allow-Origin: *');
 	<script type="text/javascript" src="js/jquery.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function(){
-			var print_url        = <?php echo json_encode(Globals::PRINT_URL);?>;
+			var print_url        = <?php echo json_encode(Globals::REPRINT_URL);?>;
 			// generate invoice click
 			$('body').delegate('#generate_bill', 'click', function(){
 
