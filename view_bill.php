@@ -1,4 +1,5 @@
 <?php
+require_once 'exe/lock.php';
 header('Access-Control-Allow-Origin: *'); 
 ?>
 <!DOCTYPE html>
