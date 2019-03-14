@@ -1,5 +1,4 @@
 <?php
-require_once 'exe/lock.php';
 if(!isset($_SESSION))
 {
 	session_start();

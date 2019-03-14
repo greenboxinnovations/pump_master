@@ -33,13 +33,13 @@ if ($type == 'new') {
 
 	// $html_file_url = $_SERVER["DOCUMENT_ROOT"]."/bill.php?cust_id=".$cust_id."&date1=".$date1."&date2=".$date2."&type=".$type."&date_invoice=".$date_invoice."&late_fee=".$late_fee;
 
-	$html_file_url = url()."/bill.php?cust_id=".$cust_id."&date1=".$date1."&date2=".$date2."&type=".$type."&date_invoice=".$date_invoice."&late_fee=".$late_fee;
+	echo $html_file_url = url()."/bill.php?cust_id=".$cust_id."&date1=".$date1."&date2=".$date2."&type=".$type."&date_invoice=".$date_invoice."&late_fee=".$late_fee;
 
 	// $html_file_url = "http://fuelmaster.greenboxinnovations.in/bill.php?cust_id=".$cust_id."&date1=".$date1."&date2=".$date2."&type=".$type."&date_invoice=".$date_invoice."&late_fee=".$late_fee; // html file 
 
 	// $html_file_url = "http://192.168.1.110/pump_master/bill.php?cust_id=".$cust_id."&date1=".$date1."&date2=".$date2."&type=".$type."&date_invoice=".$date_invoice."&late_fee=".$late_fee;
 
-	$pdf_file_url = "../reports/Invoice-".$invoice_no.".pdf"; // pdf file 
+	$pdf_file_url = '../reports/Invoice-'.$invoice_no.'.pdf'; // pdf file 
 
 	if (!file_exists($pdf_file_url)) {  
 
