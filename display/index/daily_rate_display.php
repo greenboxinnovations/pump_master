@@ -1,5 +1,5 @@
 <?php
-
+date_default_timezone_set("Asia/Kolkata");
  
 if(!isset($_SESSION)) {
 	session_start();
@@ -8,10 +8,8 @@ require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 
 if(isset($_GET['date'])){
-	$date = date("Y-m-d", strtotime($_GET['date']));
 
-
-
+	$date = $_GET['date'];
 	if($date == ""){
 		$date = date("Y-m-d");
 	}else{

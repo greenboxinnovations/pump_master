@@ -61,9 +61,9 @@ if(mysqli_num_rows($exe) > 0){
 
 	while($row = mysqli_fetch_assoc($exe)){
 		
-		$f_name 	= $row['cust_f_name'];
-		$l_name 	= $row['cust_l_name'];
-		$cust_id 	= $row['cust_id'];
+		$cust_f_name 	= $row['cust_f_name'];
+		$cust_l_name 	= $row['cust_l_name'];
+		$cust_id 		= $row['cust_id'];
 
 		$trans_id	 	= $row["trans_id"];	
 		$trans_id_disp  = $trans_id + 100000;
