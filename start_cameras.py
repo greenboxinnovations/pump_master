@@ -265,9 +265,9 @@ def send_videos():
 
 
 def disable_event():
-    # pass
-    root.destroy()
-    exit()
+    pass
+    # root.destroy()
+    # exit()
 
 # root window created. Here, that would be the only window, but
 # you can later have windows within windows.
@@ -278,13 +278,13 @@ root.geometry("400x300+300+300")
 #creation of an instance
 app = Window(root)
 
-# time.sleep(10)
+time.sleep(10)
 
 
 # loops here
 
-# root.after(3000, ping_camera)
-# root.after(3000, check_program_status)
+root.after(3000, ping_camera)
+root.after(3000, check_program_status)
 
 
 
