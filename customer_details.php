@@ -495,10 +495,12 @@ require_once 'exe/lock.php';
 			// submit values and add to DB
 			$('body').delegate('#btn_new_car', 'click', function(){
 
-				clicked = true;
+				
 
 				// add ph_no validation here
 				if((validateNewCar())&&(!clicked)){
+
+					clicked = true;
 
 					// BRAND
 					if($('#in_car_brand').is(':visible')) {
