@@ -1,3 +1,6 @@
+<?php
+require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -311,7 +314,7 @@
 	<div id="left_top"></div>
 	<div id="right_top"></div>
 	<?php
-	require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+
 
 
 	// COMING FROM MESSAGE
