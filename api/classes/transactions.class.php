@@ -401,7 +401,7 @@ class Transactions
 			$r = $this->_db->single();
 			$trans_id = $r['trans_id'];
 
-			if(Globals::PRINT_RECEIPT){
+			if((Globals::PRINT_RECEIPT)&&($receipt_no == 0)){
 				$this->printReceipt($trans_id);
 				$this->printReceipt($trans_id);	
 			}			

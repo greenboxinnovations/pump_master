@@ -141,7 +141,7 @@ if (isset($_GET['cust_id'])) {
 
 				// for ($i=0; $i < 50; $i++) { 
 
-				if ($row["receipt_no"] == 0) {
+				if ($row["trans_string"] != NULL) {
 					echo '<tr class="highlight view_transaction" transstring="'.$trans_string.'" >';
 				}else{
 					echo '<tr >';
