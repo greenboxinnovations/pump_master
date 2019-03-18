@@ -154,7 +154,7 @@ if(isset($_GET['cust_id'])){
 			echo '<div id="pump_name">'.$pump_name.'</div>';
 			echo '<div id="pump_add">'.$pump_address.'</div>';
 			echo '<div id="pump_gst">GST No '.$pump_gst.'</div>';
-			echo '<div id="pump_phno">Ph No: +91 8329347297</div>';
+			echo '<div id="pump_phno">Ph No: 020-25433867</div>';
 		}
 
 
