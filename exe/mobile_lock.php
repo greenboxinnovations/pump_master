@@ -10,7 +10,7 @@ $cookie_name = "fuelmaster_user";
 
 function checkCookie($cookie_name, $storage, $user_agent){
     global $json;    
-    require_once '../query/conn.php';
+    global $conn;
     $token = $_COOKIE[$cookie_name];
     $time = date("Y-m-d H:i:s");
 
