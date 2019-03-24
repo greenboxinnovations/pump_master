@@ -17,3 +17,4 @@ mysql_uploads/
 mysql_uploads/*.sql
 qr_codes/
 finished_codes/
+wkhtmltopdf/*
