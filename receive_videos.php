@@ -22,8 +22,6 @@ set_error_handler('myErrorHandler');
 
 if (isset($_POST) ){
 
-	file_put_contents('v_log.txt',print_r($_FILES,true));
-
 	$output = array();
 	$output['success'] = false;
 	$trans_string = "";
