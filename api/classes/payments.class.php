@@ -59,8 +59,6 @@ class Payments
 			$payment_comment = NULL;
 		}
 
-
-
 		date_default_timezone_set("Asia/Kolkata");
 		$time 				= date("H:i:s");
 
@@ -89,12 +87,7 @@ class Payments
 			$new_out	 = round($prev_out - $amount_paid);
 		}else{
 			$new_bal	 = round($prev_bal + $amount_paid);
-		}	
-
-		
-
-		
-
+		}
 
 		$sql = "INSERT INTO `payments` (`cust_id`,`pump_id`,`prev_bal`,`prev_out`,`amount_paid`,`new_bal`,`new_out`,`date`,`last_updated`,`is_postpaid`,`comment`) 
 				VALUES (:field1,:field2,:field3,:field4,:field5,:field6,:field7,:field8,:field9,:field10,:field11);";
@@ -115,27 +108,29 @@ class Payments
 
 		$this->_db->execute();
 
-		$sql = "UPDATE `customers` SET `cust_balance` = :field1,`cust_outstanding` = :field2,`cust_last_updated` = :field3 WHERE `cust_id` = '".$cust_id."' ;";
+		// update CUSTOMERS table from paymrnt method
 
-		$this->_db->query($sql);
+		// $sql = "UPDATE `customers` SET `cust_balance` = :field1,`cust_outstanding` = :field2,`cust_last_updated` = :field3 WHERE `cust_id` = '".$cust_id."' ;";
 
-		$this->_db->bind(':field1', $new_bal);
-		$this->_db->bind(':field2', $new_out);
-		$this->_db->bind(':field3', $last_updated);
+		// $this->_db->query($sql);
 
-		$this->_db->execute();
+		// $this->_db->bind(':field1', $new_bal);
+		// $this->_db->bind(':field2', $new_out);
+		// $this->_db->bind(':field3', $last_updated);
 
-		$table_name	  = "customers";
-		$last_updated = strtotime($last_updated); 
+		// $this->_db->execute();
 
-		$sql = "UPDATE `sync` SET `last_updated` = :field2 WHERE `table_name` = :field1;";
+		// $table_name	  = "customers";
+		// $last_updated = strtotime($last_updated); 
 
-		$this->_db->query($sql);
+		// $sql = "UPDATE `sync` SET `last_updated` = :field2 WHERE `table_name` = :field1;";
 
-		$this->_db->bind(':field1', $table_name);
-		$this->_db->bind(':field2', $last_updated);
+		// $this->_db->query($sql);
 
-		$this->_db->execute();
+		// $this->_db->bind(':field1', $table_name);
+		// $this->_db->bind(':field2', $last_updated);
+
+		// $this->_db->execute();
 	}
 }
 ?>
