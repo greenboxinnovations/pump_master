@@ -13,8 +13,14 @@ class Database
         $password   = Globals::DB_PASSWORD;
         $db_name    = Globals::DB_NAME;
 
-        $this->_db = new PDO('mysql:host='.$host_name.';dbname='.$db_name.'', ''.$user_name.'', ''.$password.'');        
-        $this->_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        try { 
+            $this->_db = new PDO('mysql:host='.$host_name.';dbname='.$db_name.'', ''.$user_name.'', ''.$password.'');
+            $this->_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            echo "Connected successfully";
+        } catch (PDOException $error) {
+            echo 'Connection error: ' . $error->getMessage();
+        }               
+       
     }
 
     private function __clone(){}
