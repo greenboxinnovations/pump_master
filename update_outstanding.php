@@ -41,5 +41,14 @@ if (isset($_GET['ok'])) {
 			$exe2 = mysqli_query($conn, $sql2);
 
 	}
+
+
+	$date = date("Y-m-d H:i:s");		
+	$table_name	  = "customers";
+	$last_updated = strtotime($date);
+	$id           = "cust_id";
+	$unix = $last_updated;
+			
+	Globals::updateSyncTable($table_name,$id,$unix);
 }
 ?>
