@@ -9,7 +9,8 @@ if (isset($_GET['ok'])) {
 	$exe = mysqli_query($conn, $sql);
 	while($row = mysqli_fetch_assoc($exe)){
 
-			$cust_id = $row['cust_id'];
+			echo $cust_id = $row['cust_id'];
+			echo '<br/>';
 
 			$sql1 = "SELECT SUM(`amount`) as amount FROM `transactions` WHERE `cust_id` = ".$cust_id." AND `billed` = 'N';";
 			$exe1 = mysqli_query($conn, $sql1);
@@ -28,7 +29,8 @@ if (isset($_GET['ok'])) {
 	$exe = mysqli_query($conn, $sql);
 	while($row = mysqli_fetch_assoc($exe)){
 
-			$cust_id = $row['cust_id'];
+			echo $cust_id = $row['cust_id'];
+			echo '<br/>';
 
 			$sql1 = "SELECT SUM(`amount`) as amount FROM `transactions` WHERE `cust_id` = ".$cust_id." AND `billed` = 'N';";
 			$exe1 = mysqli_query($conn, $sql1);
