@@ -15,7 +15,7 @@ if(isset($_POST['new_cashier'])){
 	$count = mysqli_num_rows($exe);
 
 	if ($count < 1) {
-		$sql = "INSERT INTO `users`(`name`,`pass`,`user_pump_id`,`role`) VALUES('".$_POST['new_cashier']."','12345','".$_SESSION['pump_id']."','operator') ;";
+		$sql = "INSERT INTO `users`(`name`,`pass`,`user_pump_id`,`role`) VALUES('".$_POST['new_cashier']."','$2y$12$rFB9FuiEMwmuBvcjd5o.aubS/4FwJ/A5hXZ/WptPTAMQU0xgPZ11S','".$_SESSION['pump_id']."','operator') ;";
 		$exe = mysqli_query($conn, $sql);		
 
 		echo'User added successfully';
