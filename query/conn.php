@@ -1,5 +1,7 @@
 <?php
 
+	date_default_timezone_set("Asia/Kolkata");
+
 	$oneUp = realpath(__DIR__.'/..');
 	
 	require_once $oneUp.'/api/classes/globals.class.php';
