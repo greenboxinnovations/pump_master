@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 if(isset($_GET['trans_id'])){
 	$trans_id = $_GET['trans_id'];

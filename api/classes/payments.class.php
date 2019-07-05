@@ -55,22 +55,28 @@ class Payments
 
 		$payment_comment 	= $postParams['payment_comment'];
 		$payment_comment 	= trim($payment_comment);
+
 		if($payment_comment == ""){
 			$payment_comment = NULL;
 		}
 
-		date_default_timezone_set("Asia/Kolkata");
 		$time 				= date("H:i:s");
 
 		$date 				= $postParams['payment_date']." ".$time;
-		$last_updated		= $date;
+		$last_updated		=  date("Y-m-d H:i:s");
 
+
+		//new variables to be posted
+
+		$invoice_no 		= $postParams['invoice_no'];
+		$invoice_amount 	= $postParams['invoice_amount'];
 
 		$new_out = 0;
 		$new_bal = 0;
 
+		$prev_out			= $invoice_amount;
 
-		$sql = "SELECT `cust_pump_id`,`cust_post_paid`,`cust_balance`,`cust_outstanding` FROM `customers` WHERE `cust_id` = '".$cust_id."' ";
+		$sql = "SELECT `cust_pump_id`,`cust_post_paid`,`payment_balance`,`cust_ph_no` FROM `customers` WHERE `cust_id` = '".$cust_id."' ";
 		$this->_db->query($sql);
 		$this->_db->execute();
 
@@ -79,58 +85,97 @@ class Payments
 			$r = $this->_db->single();
 			$pump_id	 		= $r["cust_pump_id"];
 			$is_postpaid	 	= $r["cust_post_paid"];
-			$prev_bal	 		= $r["cust_balance"];
-			$prev_out			= $r["cust_outstanding"];
+			$payment_balance	= $r["payment_balance"];
+			$ph_no 				= $r['cust_ph_no'];
+			$ph_no 				= str_replace("|", ",", $ph_no);
+			
 		}
 
-		if ($is_postpaid == 'Y') {
-			$new_out	 = round($prev_out - $amount_paid);
+
+		$sql = "SELECT `new_out` FROM `payments` WHERE `cust_id` = '".$cust_id."' AND `invoice_no` = '".$invoice_no."' ORDER BY `payment_id` DESC LIMIT 1";
+		$this->_db->query($sql);
+		$this->_db->execute();
+		if($this->_db->rowCount() == 1)
+		{
+			$r = $this->_db->single();
+			$prev_out	 		= $r["new_out"];			
+		}
+
+		$new_out	 = round($prev_out - $amount_paid);
+
+		if ($payment_balance < 1) {
+			$payment_balance = $new_out;
 		}else{
-			$new_bal	 = round($prev_bal + $amount_paid);
+			$payment_balance =  $payment_balance - $amount_paid;
 		}
 
-		$sql = "INSERT INTO `payments` (`cust_id`,`pump_id`,`prev_bal`,`prev_out`,`amount_paid`,`new_bal`,`new_out`,`date`,`last_updated`,`is_postpaid`,`comment`) 
-				VALUES (:field1,:field2,:field3,:field4,:field5,:field6,:field7,:field8,:field9,:field10,:field11);";
+		$sql = "INSERT INTO `payments` (`cust_id`,`pump_id`,`prev_out`,`amount_paid`,`new_out`,`date`,`last_updated`,`is_postpaid`,`comment`,`invoice_no`,`invoice_amount`) 
+				VALUES (:field1,:field2,:field4,:field5,:field7,:field8,:field9,:field10,:field11,:field12,:field13);";
 
 		$this->_db->query($sql);
 
 		$this->_db->bind(':field1', $cust_id);
 		$this->_db->bind(':field2', $pump_id);
-		$this->_db->bind(':field3', $prev_bal);
 		$this->_db->bind(':field4', $prev_out);
 		$this->_db->bind(':field5', $amount_paid);
-		$this->_db->bind(':field6', $new_bal);
 		$this->_db->bind(':field7', $new_out);
 		$this->_db->bind(':field8', $date);
 		$this->_db->bind(':field9', $last_updated);
 		$this->_db->bind(':field10', $is_postpaid);
 		$this->_db->bind(':field11', $payment_comment);
+		$this->_db->bind(':field12', $invoice_no);
+		$this->_db->bind(':field13', $invoice_amount);
 
 		$this->_db->execute();
 
 		// update CUSTOMERS table from paymrnt method
 
-		// $sql = "UPDATE `customers` SET `cust_balance` = :field1,`cust_outstanding` = :field2,`cust_last_updated` = :field3 WHERE `cust_id` = '".$cust_id."' ;";
+		// $sql = "UPDATE `customers` SET `payment_balance` = :field1, `cust_last_updated` = :field3 WHERE `cust_id` = '".$cust_id."' ;";
 
 		// $this->_db->query($sql);
 
-		// $this->_db->bind(':field1', $new_bal);
-		// $this->_db->bind(':field2', $new_out);
+		// $this->_db->bind(':field1', $payment_balance);
 		// $this->_db->bind(':field3', $last_updated);
 
 		// $this->_db->execute();
 
 		// $table_name	  = "customers";
-		// $last_updated = strtotime($last_updated); 
+		// $id           = "cust_id";
+		// $unix = $last_updated;
 
-		// $sql = "UPDATE `sync` SET `last_updated` = :field2 WHERE `table_name` = :field1;";
+		// Globals::updateSyncTable($table_name,$id,$unix);
 
-		// $this->_db->query($sql);
+		if (Globals::SEND_MSG) {
+			$this->sendMSG($ph_no,$invoice_no,$invoice_amount,$amount_paid,$payment_balance);
+		}
 
-		// $this->_db->bind(':field1', $table_name);
-		// $this->_db->bind(':field2', $last_updated);
+	}
 
-		// $this->_db->execute();
+	private function sendMSG($ph_no,$invoice_no,$invoice_amount,$amount_paid,$payment_balance){
+
+		$timestamp = date("d/m/Y H:i:s");
+		echo "Formatted date from timestamp:" . $timestamp;
+
+		$newline = "\n";
+
+		$message = "Dear Customer".$newline."Your Payment of Rs ".$amount_paid." against Invoice no ".$invoice_no." of Invoice amount ".$invoice_amount." has been received.".$newline."Your total payable amount is ".$payment_balance.$newline.$timestamp;
+		$encodedMessage = urlencode($message);
+
+		$api = Globals::msgString($encodedMessage,$ph_no, true);
+
+	    // Get cURL resource
+		$curl = curl_init();
+		// Set some options - we are passing in a useragent too here
+		curl_setopt_array($curl, array(
+		    CURLOPT_RETURNTRANSFER => 1,
+		    CURLOPT_URL => $api,
+		    //CURLOPT_USERAGENT => 'Codular Sample cURL Request'
+		));
+		curl_setopt($curl, CURLOPT_FRESH_CONNECT, TRUE);
+		// Send the request & save response to $resp
+		$resp = curl_exec($curl);
+		// Close request to clear up some resources
+		curl_close($curl);
 	}
 }
 ?>

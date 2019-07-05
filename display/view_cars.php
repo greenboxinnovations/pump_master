@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 echo '<table border="1">';
 

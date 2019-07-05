@@ -1,9 +1,5 @@
 <?php
-if(!isset($_SESSION))
-{
-	session_start();
-}
-date_default_timezone_set("Asia/Kolkata");
+require __DIR__.'/query/conn.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -57,7 +53,6 @@ date_default_timezone_set("Asia/Kolkata");
 <?php
 if(isset($_GET['cust_id'])){
 
-	require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 	$cust_id = $_GET['cust_id'];
 	$date1 = $_GET['date1'];
 	$date2 = $_GET['date2'];
@@ -120,7 +115,7 @@ if(isset($_GET['cust_id'])){
 			FROM `transactions` a
 			JOIN `cars` b
 			ON a.car_id = b.car_id
-			WHERE a.cust_id = '".$cust_id."' AND a.billed = 'Y' AND date(a.date) BETWEEN '".$date1."' AND '".$date2."' ORDER BY date(a.date) ASC;";
+			WHERE date(a.date) BETWEEN '".$date1."' AND '".$date2."' AND a.cust_id = '".$cust_id."' AND a.billed = 'Y' ORDER BY date(a.date) ASC;";
 
 			$sql9 = "SELECT  date(`date`) as d FROM `invoices` WHERE `cust_id` = '".$cust_id."' AND `from` =  '".$date1."' AND `to`= '".$date2."';";
 			$exe9 = mysqli_query($conn, $sql9);
@@ -132,7 +127,7 @@ if(isset($_GET['cust_id'])){
 			FROM `transactions` a
 			JOIN `cars` b
 			ON a.car_id = b.car_id
-			WHERE a.cust_id = '".$cust_id."' AND a.billed = 'N' AND date(a.date) BETWEEN '".$date1."' AND '".$date2."' ORDER BY date(a.date) ASC;";
+			WHERE date(a.date) BETWEEN '".$date1."' AND '".$date2."' AND a.cust_id = '".$cust_id."' AND a.billed = 'N' ORDER BY date(a.date) ASC;";
 
 			
 		}
@@ -293,9 +288,9 @@ if(isset($_GET['cust_id'])){
 			$exe1 = mysqli_query($conn, $sql1);
 
 			if ($cust_post_paid == "Y") {
-				$sql4 = "UPDATE `customers` SET `cust_outstanding` = `cust_outstanding` - '".$total."' WHERE `cust_id` = '".$cust_id."' ;";
+				$sql4 = "UPDATE `customers` SET `cust_outstanding` = `cust_outstanding` - '".$total."' , `payment_balance` = `payments_balance` + '".$grand."' WHERE `cust_id` = '".$cust_id."' ;";
 			}else{
-				$sql4 = "UPDATE `customers` SET `cust_balance` = `cust_balance` + '".$total."' WHERE `cust_id` = '".$cust_id."' ;";
+				$sql4 = "UPDATE `customers` SET `cust_balance` = `cust_balance` + '".$total."' , `payment_balance` = `payments_balance` + '".$grand."'  WHERE `cust_id` = '".$cust_id."' ;";
 			}
 			
 			$exe4 = mysqli_query($conn, $sql4);

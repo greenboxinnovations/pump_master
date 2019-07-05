@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -56,7 +56,7 @@ require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 			$('body').delegate('#login', 'click', function() {
 				  
-				var mobile_no 	= $('#mobile').text();
+				var mobile_no 	= $('input:radio[name="mobile_group"]:checked').val();
 				var otp    		= $('#otp').val();
 				var cust_id 	= $(this).attr('custid');				
 
@@ -93,37 +93,15 @@ require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 			});
 
 
-			$('body').delegate('#login_send', 'click', function(){
-				var mobile_no 	= $('#ph_no').val();								
-
-				// var url = 'exe/login_customer_otp_verify.php';
-				var method = 'post';
-				
-				$.ajax({
-					url: url,
-					type: method,
-					data:{
-						mobile_no : mobile_no,
-						cust_id : cust_id,
-						otp : otp,
-						storage : storage,
-						user_agent : user_agent,
-						verify_otp : true
-					},						
-					success: function(response) {
-						console.log(response);
-						window.location.href = c_list_url + cust_id;
-					}
-				});
-			}); 
 
 			$('body').delegate('#request_otp', 'click', function(){
-				var mobile_no 	= $('#mobile').text();
+				var mobile_no 	= $('input:radio[name="mobile_group"]:checked').val();
 
-				if(mobile_no.length != 10){
-					// alert(mobile_no.length);
-					alert("Invalid Phone Number");
+				if(mobile_no == undefined){
+					$('#feedback').show().text("Please Select Phone number and request OTP");
 				}else{
+
+					// alert('Working');
 					$.ajax({
 						url: 'exe/login_customer_otp_request.php',
 						type: 'POST',
@@ -135,7 +113,7 @@ require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 							var json = $.parseJSON(response);
 							console.log(response);
 							if (json.success) {
-								window.location.href = cust_login_url + json.cust_id;
+								window.location.href = cust_list_url + json.cust_id;
 							}else{
 								alert(json.msg);
 							}							
@@ -219,7 +197,7 @@ require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 		/*#table_holder{padding: 10px;}*/
 		table{width: 100%;border-collapse: collapse;}
-		td{
+		div{
 			/*background-color: green;*/
 			padding-top: 5px;
 			padding-bottom: 5px;
@@ -288,6 +266,7 @@ require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 			box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2);
 			transition-delay: 0s;
 		}
+		#feedback{color: rgb(196,15,24);font-weight: 700;font-size: 18px;margin-bottom: 10px;display: none;}
 
 		@media only screen and (min-width:600px){			
 			#top_header{padding-top: 5px;}
@@ -306,9 +285,8 @@ require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 <div id="padding_div">
 
-<div id="view_pager">
-	<div class="pager_single pager_active">LOGIN</div>	
-</div>
+<div class="pager_single pager_active">LOGIN</div>	
+
 
 <div id="main_container">
 	<div id="left_top"></div>
@@ -326,27 +304,34 @@ require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 		$exe = mysqli_query($conn, $sql);
 		if(mysqli_num_rows($exe) > 0){
 			while($row = mysqli_fetch_assoc($exe)) {
+
+				$phone_no = $row['cust_ph_no'];
+				$phone_list = explode("|",$phone_no);
+				$count = sizeof($phone_list);
 			
-				echo '<table>';
-				echo'<tr class="header">';
-					echo '<th class="car">Mobile No</th>';
-					echo '<th class="car">OTP</th>';
-				echo '</tr>';
 
-				echo'<tr>';
-					echo '<td id="mobile">'.$row['cust_ph_no'].'</td>';			
-					echo '<td class="fuel"><input type="number" id="otp"  value=""></input></td>';
-				echo '</tr>';
-				echo '</table>';
+				if ($count == 1) {
 
+					echo '<input  type="radio" name="mobile_group"  value="'.$phone_no.'" checked="checked">'.$phone_no;
+				}
+				else{
+					foreach ($phone_list as $value) {
+						echo '<div><input type="radio" name="mobile_group" value="'.$value.'">'.$value.'</div>';
+					}
+				}
+
+
+				echo '<div class="fuel"><input type="number" id="otp"  value="" placeholder="Enter OTP"></input></div>';
 
 				echo'<div style="text-align:center;margin-bottom:10px;">';
-					echo'<button class="mat_btn" id="request_otp" custid="'.$cust_id.'">Resend OTP</button>';
+					echo'<button class="mat_btn" id="request_otp" custid="'.$cust_id.'">Request OTP</button>';
 				echo'</div>';
 
 				echo'<div style="text-align:center;margin-bottom:10px;">';
 					echo'<button class="mat_btn" id="login" custid="'.$cust_id.'">LOGIN</button>';
 				echo'</div>';
+
+				echo '<div id="feedback">ENTER CUSTOMER NAME!</div>';
 				
 			}
 		}
@@ -355,20 +340,20 @@ require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 	// COMING FROM DESKTOP
 	else{
 
-		echo '<table>';
-		echo'<tr class="header">';
-			echo '<th class="car">Mobile No</th>';
-			echo '<th class="car">OTP</th>';
-		echo '</tr>';
+		// echo '<table>';
+		// echo'<tr class="header">';
+		// 	echo '<th class="car">Mobile No</th>';
+		// 	echo '<th class="car">OTP</th>';
+		// echo '</tr>';
 
-		echo'<tr>';
-			echo '<td id="mobile"><input type="number" id="ph_no"></input></td>';			
-		echo '</tr>';
-		echo '</table>';
+		// echo'<tr>';
+		// 	echo '<div id="mobile"><input type="number" id="ph_no"></input></div>';			
+		// echo '</tr>';
+		// echo '</table>';
 
-		echo'<div id="login_desktop" style="text-align:center;margin-bottom:10px;">';
-			echo'<button class="mat_btn" id="request_otp">Request OTP</button>';
-		echo'</div>';
+		// echo'<div id="login_desktop" style="text-align:center;margin-bottom:10px;">';
+		// 	echo'<button class="mat_btn" id="request_otp">Request OTP</button>';
+		// echo'</div>';
 	}
 
 	?>

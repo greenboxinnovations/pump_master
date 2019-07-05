@@ -2,7 +2,7 @@
 if(!isset($_SESSION)) {
 	session_start();
 }
-require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 
 function sortPostPre(&$post_paid_arr, &$pre_paid_arr){
@@ -42,20 +42,23 @@ function sortByName($a, $b) {
 	return strcmp(strtolower($a["display_name"]), strtolower($b["display_name"]));
 }
 
-function renderTable($array) {
+function renderTable($array,$postpaid) {
 	$i = 1;
 	echo '<table id="header-fixed"></table>';
 	echo '<table id="table-2">';
 
 	echo '<thead>';
 		echo '<tr style="border:1px solid rgb(207,216,220);">';
-			echo '<th>Sr No</th>';
+			echo '<th>#</th>';
 			echo '<th>Customer Name</th>';
-			echo '<th>Phone</th>';
-			// echo '<th>Pump ID</th>';
+			
+			if ($postpaid) {
+				echo '<th class="right_num">Outstanding</th>';
+			}else{
+				echo '<th class="right_num">Balance</th>';
+			}
+			echo '<th>Previous Balance</th>';
 
-			echo '<th class="right_num">Outstanding</th>';
-			// echo '<th>Outstanding</th>';
 			echo '<th>Last Updated</th>';
 			if ($_SESSION['role'] == "admin") {
 					echo '<th ></th>';
@@ -82,6 +85,7 @@ function renderTable($array) {
 		$cust_credit_limit	 = $row["cust_credit_limit"];
 		$cust_outstanding	 = $row["cust_outstanding"];
 		$cust_last_updated	 = $row["cust_last_updated"];
+		$cust_payment_balance	 = $row["payment_balance"];
 		$cust_last_updated = date("M-d, g:i a", strtotime($cust_last_updated));
 
 		if ($cust_credit_limit == 0) {
@@ -113,16 +117,16 @@ function renderTable($array) {
 			echo '<tr custid="'.$cust_id.'" class="highlight">';
 		}
 
-				echo '<td>'.$i.'</td>';
-				echo '<td>'.$cust_dis_name.'</td>';
-				echo '<td>'.$cust_ph_no.'</td>';
-				// echo '<td>'.$cust_pump_id.'</td>';
-				// echo '<td>'.$cust_post_paid	.'</td>';
+				echo '<td style=" min-width: 20px;">'.$i.'</td>';
+				echo '<td style=" min-width: 300px;">'.$cust_dis_name.'</td>';
+
 				if ($payment == 0) {
 					echo '<td class="right_num">'.$cust_balance.'</td>';
 				}else{
 					echo '<td class="right_num">'.$cust_outstanding.'</td>';
 				}
+
+				echo '<td>'.$cust_payment_balance.'</td>';
 				
 				echo '<td>'.$cust_last_updated.'</td>';
 				if ($_SESSION['role'] == "admin") {
@@ -167,7 +171,7 @@ else{
 		echo "<h3>Prepaid Accounts</h3>";
 		echo "<br/>";
 
-		renderTable($pre_paid_arr);
+		renderTable($pre_paid_arr,false);
 	}
 	else{
 		echo "<h3>No Prepaid Accounts Added</h3>";
@@ -185,7 +189,7 @@ else{
 		echo "<h3>Postpaid Accounts</h3>";
 		echo "<br/>";
 
-		renderTable($post_paid_arr);
+		renderTable($post_paid_arr,true);
 	}
 	else{
 		echo "<h3>No Postpaid Accounts Added</h3>";

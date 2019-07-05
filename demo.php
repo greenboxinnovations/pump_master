@@ -1,6 +1,6 @@
 <?php
-require_once 'exe/lock.php';
-require_once __DIR__.'/query/conn.php';
+require 'exe/lock.php';
+require __DIR__.'/query/conn.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -252,7 +252,7 @@ require_once __DIR__.'/query/conn.php';
 <div id="padding_div">
 
 <?php
-require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 
 

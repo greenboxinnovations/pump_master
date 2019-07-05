@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__.'/query/conn.php';
+require __DIR__.'/query/conn.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -225,7 +225,7 @@ require_once __DIR__.'/query/conn.php';
 <div id="padding_div">
 
 <?php
-require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 if(isset($_GET['t'])){
 	$trans_string = $_GET['t'];
@@ -300,6 +300,11 @@ if(isset($_GET['t'])){
 					echo '<div class="title inline">T-ID</div>';  echo '<div class="val inline">'.($row['trans_id']+100000).'</div>';
 				echo '</div>';
 
+				if ($row['receipt_no'] != 0) {
+						echo'<div class="container" >';
+							echo '<div class="title inline">Receipt Number</div>';  echo '<div class="val inline">'.($row['receipt_no']).'</div>';
+						echo '</div>';
+				}			
 
 				echo'<div class="container" >';
 					echo '<div class="title inline">Fuel</div>';  echo '<div class="val inline">'.ucwords($row['fuel']).'</div>';

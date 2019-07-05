@@ -1,14 +1,13 @@
 <?php
 
-require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
-
-
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+ 
 function sendMSG($car_no_plate, $phone_no){
 
 	$message = "Hi, Yor vehicle no ".$car_no_plate." has been assigned a QR code";
     $encodedMessage = urlencode($message);
 
-    $api = Globals::msgString($encodedMessage, $phone_no, true);
+    $api = Globals::msgString($encodedMessage, $phone_no, false);
     // $api = "https://www.fast2sms.com/dev/bulk?authorization=CbSpQve5NE&sender_id=SLAUTO&message=" . $encodedMessage . "&language=english&route=t&numbers=".trim($phone_no)."&flash=0"; 
 
     // Get cURL resource
@@ -24,27 +23,6 @@ function sendMSG($car_no_plate, $phone_no){
 	// Close request to clear up some resources
 	curl_close($curl);
 }
-
-
-
- 
-// function updateSyncTable($table_name){ 
-// 	Global $conn;
-	
-// 	date_default_timezone_set("Asia/Kolkata");
-// 	$date = date("Y-m-d H:i:s");
-// 	$unix = strtotime($date);
-
-// 	$upload_dir =  realpath(__DIR__ . '/../mysql_uploads');
-// 	$filename = $upload_dir ."/".$table_name.'.sql';
-// 	$db_name = "pump_master";
-	
-// 	// exec("/usr/bin/mysqldump -u\"pump_master_user\" --password=\"pump_master_user123!@#\" \"".$db_name."\" \"".$table_name."\" > ".$filename);
-// 	exec(Globals::MYSQLDUMP_PATH." -u\"".Globals::DB_USER_NAME."\" --password=\"".Globals::DB_PASSWORD."\" \"".Globals::DB_NAME."\" \"".$table_name."\" > ".$filename);
-
-// 	$sql = "UPDATE `sync` SET `last_updated`= '".$unix."' WHERE `table_name` = '".$table_name."';";
-// 	$exe = mysqli_query($conn, $sql);
-// }
 
 if($_SERVER['REQUEST_METHOD'] == "POST"){
 
@@ -70,16 +48,15 @@ if($_SERVER['REQUEST_METHOD'] == "POST"){
 
 		if ($count == 1) {
 			
-			$sql = "SELECT * FROM `cars` WHERE `car_qr_code` = '".$qr_code."' ;";
-			$exe = mysqli_query($conn, $sql);
-			$count = mysqli_num_rows($exe);
+			$sql1 = "SELECT * FROM `cars` WHERE `car_qr_code` = '".$qr_code."' ;";
+			$exe1 = mysqli_query($conn, $sql1);
+			$count1 = mysqli_num_rows($exe1);
 
-			if ($count == 0) {
+			if ($count1 == 0) {
 
 				$sql5 = "UPDATE `cars` SET `car_qr_code` = '".$qr_code."'  WHERE `car_id` = '".$car_id."' ;";
 				$exe5 = mysqli_query($conn, $sql5);
 
-				date_default_timezone_set("Asia/Kolkata");
 				$date_new = date("Y-m-d H:i:s");
 				$unix = strtotime($date_new);
 
@@ -110,9 +87,9 @@ if($_SERVER['REQUEST_METHOD'] == "POST"){
 					$car_no_plate = str_replace(' ','',$car_no_plate);
 					$msg_string = $car_no_plate." ".$cust_name;
 					$json['msg']  = "QR Added Succesfully";
-					if(Globals::SEND_MSG){
-						sendMSG($msg_string, 9762230207);	
-					}
+					// if(Globals::SEND_MSG){
+					// 	sendMSG($msg_string, 9762230207);	
+					// }
 					
 					// updateSyncTable("cars");
 					Globals::updateSyncTable("cars", "car_id", $unix);

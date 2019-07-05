@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 date_default_timezone_set("Asia/Kolkata");
 
 if(isset($_GET['date1'])){
@@ -94,7 +94,7 @@ if(mysqli_num_rows($exe) > 0){
 		}
 		
 
-		if($trans_time != null){
+		if($trans_string != null){
 			echo '<tr class="hide highlight '.$cust_id.'" transstring="'.$trans_string.'">';
 		}else{
 			echo '<tr class="hide '.$cust_id.'">';

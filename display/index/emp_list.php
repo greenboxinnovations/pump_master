@@ -4,7 +4,7 @@
 if(!isset($_SESSION)) {
 	session_start();
 }
-require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 
 

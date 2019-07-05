@@ -199,7 +199,7 @@ if(isset($_GET['cust_id'])){
 		FROM `transactions` a
 		JOIN `cars` b
 		ON a.car_id = b.car_id
-		WHERE a.cust_id = '".$cust_id."' AND a.billed = 'N' AND date(a.date) BETWEEN '".$date1."' AND '".$date2."' ORDER BY date(a.date) ASC;";
+		WHERE date(a.date) BETWEEN '".$date1."' AND '".$date2."' AND a.cust_id = '".$cust_id."' AND a.billed = 'N'  ORDER BY date(a.date) ASC;";
 		
 
 		$sql2 = "SELECT * FROM `pumps` WHERE `pump_id` = '".$cust_pump_id."';";

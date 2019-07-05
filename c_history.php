@@ -156,6 +156,24 @@ require __DIR__.'/query/conn.php';
 
 		.show_headers{font-family: 'Open Sans';display: none;font-weight: 700;margin-left: 6px;color: rgba(0,0,0,0.84);margin-bottom: 12px;}
 
+		/*snackbar*/
+#snackbar{
+	/*display: none;*/
+	position: fixed;
+	/*font-weight: 600;*/
+	bottom: -50px;
+	/*bottom: 0px;*/
+	width: 400px;
+	height: 50px;
+	background-color: #263238;
+	color: rgb(221,222,217);
+	right: 0;
+	margin-right: 40px;
+	line-height: 50px;
+	padding-left: 24px;
+	border-radius: 4px;
+}
+
 		@media only screen and (min-width:600px){
 
 			#left_top{display: none;}
@@ -180,11 +198,14 @@ require __DIR__.'/query/conn.php';
 				cursor: pointer;
 			}
 			.show_headers{display: block;font-family: }
+
 		}
 	</style>
 
 	<script type="text/javascript" src="js/user_agent.js"></script>
 	<script type="text/javascript" src="js/jquery.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
 	<script type="text/javascript">
 		$(document).ready(function(){
 
@@ -197,6 +218,18 @@ require __DIR__.'/query/conn.php';
 
 			var msg_url        = <?php echo json_encode(Globals::URL_MSG_VIEW);?>;
 			var cust_login_url = <?php echo json_encode(Globals::URL_CUST_LOGIN);?>;
+
+			$('.date1_h').datepicker({ dateFormat: 'dd-mm-yy' });
+			$('.date2_h').datepicker({ dateFormat: 'dd-mm-yy' });
+
+			function showSnackBar(message) {
+				$('#snackbar').text(message);
+				$('#snackbar').animate({'bottom':'0'},function() {
+					setTimeout(function(){
+						$('#snackbar').animate({'bottom':'-50px'});           
+					},2000);
+				});
+			}
 
 
 			function getWidth(){
@@ -274,30 +307,30 @@ require __DIR__.'/query/conn.php';
 			});
 
 
-			$('.pager_single').on('click', function(){
-				if(!$(this).hasClass('pager_active')){
+			$('body').delegate('#search', 'click', function(){
+				var cust_id 		= $(this).attr('custid');
 
-					if($(this).text() == "TRANSACTIONS"){
-						$('#main_container').css("border-top-right-radius","7px");
-						$('#main_container').css("border-top-left-radius","0px");
-						$('#left_top').hide();
-						$('#right_top').show();
-						$('#table_holder_invoices').hide();
-						$('#table_holder_trans').show();
-					}
-					else{
-						$('#main_container').css("border-top-right-radius","0px");
-						$('#main_container').css("border-top-left-radius","7px");
-						$('#left_top').show();
-						$('#right_top').hide();
-						$('#table_holder_invoices').show();
-						$('#table_holder_trans').hide();
-					}
+				var date1 			= $(".date1_h").datepicker("option", "dateFormat", "yy-mm-dd" ).val();
+				var date2 			= $(".date2_h").datepicker("option", "dateFormat", "yy-mm-dd" ).val();
 
-					$('.pager_single').removeClass('pager_active');
-					$(this).addClass('pager_active');
+				$('.date1_h').datepicker({ dateFormat: 'dd-mm-yy' });
+				$('.date2_h').datepicker({ dateFormat: 'dd-mm-yy' });
+
+				if ((date1 != "")&&(date2 != "")) {
+					if (date1 <= date2) {
+						window.location.href= "c_history.php?cust_id="+cust_id+"&date1="+date1+"&date2="+date2;
+						// alert("working");
+					}else{
+						// showSnackBar("Date 1 should be Smaller");
+						alert("Date 1 should be Smaller");
+					}
+				}else{
+					alert("Please enter both dates!");
+					// showSnackBar("Please enter both dates!");
 				}
-			})
+
+
+			});
 
 		});
 	</script>
@@ -314,8 +347,8 @@ require __DIR__.'/query/conn.php';
 <div id="padding_div">
 
 <div id="view_pager">
-	<div class="pager_single pager_active">TRANSACTIONS</div>
-	<div class="pager_single">INVOICES</div>	
+	<div class="pager_single pager_active">HISTORY</div>
+	<div class="pager_single"></div>	
 </div>
 
 <div id="main_container">
@@ -327,6 +360,33 @@ require __DIR__.'/query/conn.php';
 
 	if(isset($_GET['cust_id'])){
 		$cust_id = $_GET['cust_id'];
+
+		if (isset($_GET['date1'])) {
+			$date1 = $_GET['date1'];
+			$date2 = $_GET['date2'];
+		}else{
+			$date2 = date("Y-m-d");
+			$date1 = date('Y-m-d', strtotime("-3 months", strtotime($date2)));
+		}
+
+
+		$date11 = date("d-m-Y",strtotime($date1));
+		$date22 = date('d-m-Y',strtotime($date2));
+
+
+		echo'<div style="display:inline-block;margin-right:10px;">From<br>';
+		// echo' <input type="date" id="date1" value="'.$date1.'"></input>';
+			echo' <input type="text" class="date1_h" value="'.$date11.'"></input>';
+		echo'</div>';
+
+		echo'<div style="display:inline-block;margin-right:10px;">To<br>';
+			// echo'<input type="date" id="date2" value="'.$date2.'"></input>';
+			echo' <input type="text" class="date2_h" value="'.$date22.'"></input>';
+		echo'</div>';
+
+		echo'<div style="display:inline-block;margin-right:10px;"><br>';
+			echo'<button id="search" custid="'.$cust_id.'">Search</button>';
+		echo'</div>';
 		
 		// prepared statement
 		// $sql = "SELECT * FROM `transactions` WHERE `trans_string` = ?";
@@ -342,7 +402,10 @@ require __DIR__.'/query/conn.php';
 				ON b.cust_id = a.cust_id
 				JOIN `cars` c
 				ON a.car_id = c.car_id
-				WHERE a.cust_id = '".$cust_id."' AND a.billed = 'N' ;";
+				WHERE date(a.date) BETWEEN '".$date1."' AND '".$date2."' AND a.cust_id = '".$cust_id."' AND a.billed = 'Y' ;";
+
+
+
 
 
 		$exe = mysqli_query($conn, $sql);
@@ -368,7 +431,7 @@ require __DIR__.'/query/conn.php';
 					// echo'<br/>';
 
 					echo '<div id="table_holder_trans">';
-					echo '<div class="show_headers">TRANSACTIONS</div>';
+					echo '<div class="show_headers">History</div>';
 					echo '<table>';
 					echo'<tr class="header">';
 						echo '<th class="sr">#</th>';
@@ -414,53 +477,14 @@ require __DIR__.'/query/conn.php';
 		}else{
 			echo '<div><h2>No Transactions</h2></div>';
 		}
-
-
-
-		$sql = "SELECT * FROM `invoices` WHERE `cust_id` = '".$cust_id."' ORDER BY `in_id` DESC;";
-		$exe = mysqli_query($conn, $sql);
-		if(mysqli_num_rows($exe) > 0){
-			$i=0;
-			while($row = mysqli_fetch_assoc($exe)) {
-
-				if ($i == 0) {
-					$display_name 	= ucwords($display_name);
-											
-					echo '<div id="table_holder_invoices">';
-					echo '<div class="show_headers">INVOICES</div>';
-					echo '<table>';
-					echo'<tr class="header">';
-						echo '<th class="sr">#</th>';
-						echo '<th class="from">FROM</th>';
-						echo '<th class="to">TO</th>';
-						echo '<th class="issued">ISSUED</th>';
-						echo '<th class="right_text in_amount">AMOUNT</th>';
-					echo '</tr>';
-				}
-				$i++;					
-
 		
-				echo'<tr redirect=invoice t="'.$row['invoice_no'].'">';
-					echo '<td class="sr">'.$i.'</td>';  
-					echo '<td>'.date('M j',strtotime($row['from'])).'</td>';
-					echo '<td class="">'.date('M j',strtotime($row['to'])).'</td>';  
-					
-					// echo '<td>'.date('d-m-Y',strtotime($row['date'])).'</td>'; 
-					echo '<td class="issued">'.date('M j',strtotime($row['date'])).'</td>';
-					echo '<td class="right_text in_amount">'.$row['amount'].'</td>';
-
-				echo '</tr>';
-			}
-			echo '</table>';
-			echo '</div>'; // id="table_holder_invoices"
-		}else{
-			echo '<div><h2>No Invoices</h2></div>';
-		}
-		echo '<div><h3><a href="c_history.php?cust_id='.$cust_id.'">View History</a></h3></div>';
 	}
 	?>
 </div>
 
 </div><!-- padding div -->
+
+<!-- snackbar -->
+<div id="snackbar"></div>
 </body>
 </html>

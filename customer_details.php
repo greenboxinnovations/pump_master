@@ -1,5 +1,5 @@
 <?php
-require_once 'exe/lock.php';
+require 'exe/lock.php';
 ?>
 <!DOCTYPE html> 
 <html>
@@ -108,6 +108,7 @@ require_once 'exe/lock.php';
 		}
 
 		.highlight:hover{background-color: rgb(29,182,167);cursor: pointer;}
+		.fy_hide{display: none;}
 		
 		#fab:hover .tooltiptext {
 		    visibility: visible;
@@ -117,6 +118,12 @@ require_once 'exe/lock.php';
 			  display: flex;
 		}
 
+		.right{text-align: right;}
+
+		td.new_pay{background: url('css/icons/ic_edit.png');background-repeat: no-repeat;}
+		.delete_invoice:hover, .new_pay:hover{cursor: pointer;background-color: #607d8b;}
+
+		td a{color: green;}
 		.change_this{width:300px;}
 		/*table{min-width: 900px;}*/
 		/*change_this*/
@@ -270,6 +277,14 @@ require_once 'exe/lock.php';
 						$('#date2').datepicker({ dateFormat: 'dd-mm-yy' });
 						$('#date_invoice').datepicker({ dateFormat: 'dd-mm-yy' });
 						break;
+					case 'HISTORY':
+						$('.date1_h').datepicker({ dateFormat: 'dd-mm-yy' });
+						$('.date2_h').datepicker({ dateFormat: 'dd-mm-yy' });
+						break;
+					case 'STATEMENT':
+						$('.date1_s').datepicker({ dateFormat: 'dd-mm-yy' });
+						$('.date2_s').datepicker({ dateFormat: 'dd-mm-yy' });
+						break;
 				}
 			}
 
@@ -401,19 +416,24 @@ require_once 'exe/lock.php';
 						break;
 					case "payments":
 						$('#pager_content').load('display/cust_payments.php?cust_id='+cust_id);
-						$('#fab span').text('ADD PAYMENT');
-						$('#fab .tooltiptext').css('width','100px');
+						   $('#fab').hide();
 						break;
 					case "invoices":
 						$('#pager_content').load('display/cust_invoices.php?cust_id='+cust_id, scrollInit);
-							// $('#fab span').text('ADD PAYMENT');
-							// $('#fab .tooltiptext').css('width','100px');
 							$('#fab').hide();
 						break;
 					case "receipt_book":
 						$('#pager_content').load('display/cust_rbooks.php?cust_id='+cust_id, scrollInit);
 						$('#fab span').text('ADD RECEIPT-BOOK');
 						$('#fab .tooltiptext').css('width','130px');
+						break;
+					case "history":
+						$('#pager_content').load('display/cust_transactions_history.php?cust_id='+cust_id, scrollInit);
+						$('#fab').hide();
+						break;
+					case "statement":
+						$('#pager_content').load('display/cust_statement.php?cust_id='+cust_id, scrollInit);
+						$('#fab').hide();
 						break;
 				}
 			});
@@ -603,7 +623,6 @@ require_once 'exe/lock.php';
 				var date_invoice = '';
 				var type = invoice_no;
 				window.open('exe/report.php?cust_id='+cust_id+'&date1='+from+'&date2='+to+'&type='+type+'&date_invoice='+date_invoice+'&invoice_no='+invoice_no, '_blank');	
-				
 			});
 
 			$('body').delegate('.delete_invoice', 'click', function(e) {
@@ -636,28 +655,68 @@ require_once 'exe/lock.php';
 				}
 			});
 
- 
-			// ----------------- PAYMENTS ---------------------//			
-			// cancel payment
-			$('body').delegate('#btn_cancel_payment', 'click', function(){
-				$('#pager_content').load('display/cust_payments.php?cust_id='+cust_id, scrollInit);
-				$("#fab").show();
-			});
-
-			// cancel payment
-			$('body').delegate('.view_comment', 'click', function(){
-
-				var comment = $(this).attr('comment');
-				$('#notes').text(comment);
-				$('#notes').show();
+			$('body').delegate('.fy_btn', 'click', function(){
+				fy_year = $(this).attr('fybtn');
+				if($('[fy='+fy_year+']').is(':hidden')){
+					$('[fy='+fy_year+']').show();	
+				}
+				else{
+					$('[fy='+fy_year+']').hide();
+				}
 				
 			});
+
+			// Alert Input Box
+			// $('body').delegate('.new_pay', 'click', function(e){
+			// 	e.stopPropagation(); 
+			// 	var invoice_no = $(this).attr('invoiceno');
+			// 	var invoice_amount = $(this).attr('invoiceamount');
+			// 	var payment_value = window.prompt("Enter Payment Amount", "");
+			// 	if (payment_value != null) {	
+
+			// 		if (payment_value.match(/^\d+$/)) {
+			// 			alert(payment_value);
+			// 		}else{
+			// 			alert("Please Enter Numeric Value Only");
+			// 		}
+			// 	}
+			
+			// });
+
+			$('body').delegate('.new_pay', 'click', function(e){
+				e.stopPropagation(); 
+				var invoice_no = $(this).attr('invoiceno');
+				var invoice_amount = $(this).attr('invoiceamount');
+				
+				$('#pager_content').load('forms/add_payment.php?cust_id='+cust_id+'&invoice_amount='+invoice_amount+'&invoice_no='+invoice_no);
+			
+			});
+
+			// cancel payment
+			$('body').delegate('#btn_cancel_payment', 'click', function(){
+				$('#pager_content').load('display/cust_invoices.php?cust_id='+cust_id, scrollInit);
+			});
+			
+ 
+			// ----------------- PAYMENTS ---------------------//			
+			
+			$('body').delegate('.view_comment', 'click', function(){
+			
+		  		var comment = $(this).attr('comment');
+				$('#notes').text(comment);
+				$('#notes').show();
+			
+			});
+
+	
 
 			// confirm payment
 			$('body').delegate('#btn_confirm_payment', 'click', function(){
 				var payment_amount 	= $('#payment_amount').val();
 				var payment_date 	= $('#payment_date').val();
 				var payment_comment = $('#payment_comment').val();
+				var invoice_no 		= $(this).attr('invoiceno');
+				var invoice_amount 		= $(this).attr('invoiceamount');
 
 				// console.log(payment_comment);
 
@@ -670,13 +729,15 @@ require_once 'exe/lock.php';
 					myObject.payment_amount = payment_amount;
 					myObject.cust_id 		= cust_id;
 					myObject.payment_date 	= payment_date;
-					myObject.payment_comment = payment_comment;
+					myObject.payment_comment= payment_comment;
+					myObject.invoice_no 	= invoice_no;
+					myObject.invoice_amount = invoice_amount;
 
 					json_string = JSON.stringify(myObject);
 
 					var url = 'api/payments';
 
-					// console.log(json_string);
+					console.log(json_string);
 
 					$.ajax({
 						url: url,
@@ -686,7 +747,8 @@ require_once 'exe/lock.php';
 						success: function(response){
 							$('#display').load('display/cust_details.php?cust_id='+cust_id);
 							$('#pager_content').load('display/cust_payments.php?cust_id='+cust_id, scrollInit);
-							$('#fab').show();
+							$('.tab').removeClass('tab_active');
+							$('#payments').addClass('tab_active');
 							clicked = false;
 						},
 						error: function(data, errorThrown){
@@ -851,6 +913,52 @@ require_once 'exe/lock.php';
 				else{
 					showSnackBar('Invalid Input!');
 				}
+			});
+
+			//----------------------HISTORY------------------------------//
+			$('body').delegate('#search', 'click', function(){
+				var cust_id = $(this).attr('custid');
+
+				var date1 			= $(".date1_h").datepicker("option", "dateFormat", "yy-mm-dd" ).val();
+				var date2 			= $(".date2_h").datepicker("option", "dateFormat", "yy-mm-dd" ).val();
+
+				// $('.date1_h').datepicker({ dateFormat: 'dd-mm-yy' });
+				// $('.date2_h').datepicker({ dateFormat: 'dd-mm-yy' });
+
+				if ((date1 != "")&&(date2 != "")) {
+					if (date1 <= date2) {
+						$('#pager_content').load('display/cust_transactions_history.php?cust_id='+cust_id+'&date1='+date1+'&date2='+date2, scrollInit);
+					}else{
+						showSnackBar("Make sure FROM date is lower than or equal to TO date");
+					}
+				}else{
+					showSnackBar("Please enter both dates!");
+				}
+
+
+			});
+
+			//----------------------STATEMENT------------------------------//
+			$('body').delegate('#search_s', 'click', function(){
+				var cust_id 		= $(this).attr('custid');
+
+				var date1 			= $(".date1_s").datepicker("option", "dateFormat", "yy-mm-dd" ).val();
+				var date2 			= $(".date2_s").datepicker("option", "dateFormat", "yy-mm-dd" ).val();
+
+				// $('.date1_h').datepicker({ dateFormat: 'dd-mm-yy' });
+				// $('.date2_h').datepicker({ dateFormat: 'dd-mm-yy' });
+
+				if ((date1 != "")&&(date2 != "")) {
+					if (date1 <= date2) {
+						$('#pager_content').load('display/cust_statement.php?cust_id='+cust_id+'&date1='+date1+'&date2='+date2, scrollInit);
+					}else{
+						showSnackBar("Make sure FROM date is lower than or equal to TO date");
+					}
+				}else{
+					showSnackBar("Please enter both dates!");
+				}
+
+
 			});
 
 
@@ -1075,7 +1183,7 @@ require_once 'exe/lock.php';
 
 <?php 
 	$active_page = 'customers';
-	require_once 'nav.php';
+	require 'nav.php';
 ?>
 
 
@@ -1092,6 +1200,8 @@ require_once 'exe/lock.php';
 				<div id="invoices" class="tab">INVOICES</div>
 				<div id="payments" class="tab">PAYMENTS</div>
 				<div id="receipt_book" class="tab">RECEIPT-BOOKS</div>
+				<div id="history" class="tab">HISTORY</div>
+				<div id="statement" class="tab">STATEMENT</div>
 			</div>
 			<div id="pager_content" style="padding-top: 20px;margin-bottom: 50px;"></div>
 		</div>

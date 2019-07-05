@@ -1,9 +1,5 @@
 <?php
-if(!isset($_SESSION))
-{
-	session_start();
-}
-require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 $user_id = $_SESSION['user_id'];
 
 // $date1 = date("Y-m-01",strtotime("this month"));

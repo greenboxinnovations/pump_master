@@ -1,3 +1,6 @@
+<?php
+require __DIR__.'/query/conn.php';
+?>
 <!DOCTYPE html>
 <html>
 <head>

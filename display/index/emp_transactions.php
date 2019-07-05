@@ -4,7 +4,7 @@
 if(!isset($_SESSION)) {
 	session_start();
 }
-require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 
 if(isset($_GET['emp_id'])){
@@ -48,7 +48,7 @@ if(isset($_GET['emp_id'])){
 			FROM `transactions` a
 			JOIN `customers` b
 			ON a.cust_id = b.cust_id
-			WHERE a.user_id = '".$emp_id."' AND a.shift = '".$shift."' AND date(a.date) = '".$date."' ORDER BY a.receipt_no ASC;";
+			WHERE date(a.date) = '".$date."' AND a.user_id = '".$emp_id."' AND a.shift = '".$shift."'  ORDER BY a.receipt_no ASC;";
 	$exe = mysqli_query($conn, $sql);
 
 	$count = mysqli_num_rows($exe);

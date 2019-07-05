@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 date_default_timezone_set("Asia/Kolkata");
 
 if(isset($_GET['date1'])){
@@ -26,7 +26,7 @@ if(($date1=="")||($date2 == "")){
 	$sql = "SELECT b.cust_company,b.cust_f_name,b.cust_l_name, count(a.cust_id) as total, a.cust_id 	FROM `transactions` a
 		JOIN `customers` b
 		ON a.cust_id = b.cust_id
-		WHERE `trans_string` != '' AND date(a.date) = '".$date." 'GROUP BY a.cust_id";
+		WHERE date(a.date) = '".$date."' AND `trans_string` != '' GROUP BY a.cust_id";
 }
 else if(($date1!="")&&($date2 != "")){
 	// find which one is greater
@@ -39,7 +39,7 @@ else if(($date1!="")&&($date2 != "")){
 	$sql = "SELECT b.cust_company,b.cust_f_name,b.cust_l_name, count(a.cust_id) as total, a.cust_id 	FROM `transactions` a
 		JOIN `customers` b
 		ON a.cust_id = b.cust_id
-		WHERE `trans_string` != '' AND date(a.date) BETWEEN '".$date1."' AND '".$date2."' GROUP BY a.cust_id";
+		WHERE date(a.date) BETWEEN '".$date1."' AND '".$date2."' AND `trans_string` != '' GROUP BY a.cust_id";
 
 }
 

@@ -1,6 +1,6 @@
 <?php
 date_default_timezone_set("Asia/Kolkata");
-require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 $time = date("Y-m-d H:i:s");
 $json = array();

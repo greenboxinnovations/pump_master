@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 date_default_timezone_set("Asia/Kolkata"); 
 
 // function resizeImage($filename, $max_width, $max_height)

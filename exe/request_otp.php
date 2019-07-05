@@ -1,7 +1,7 @@
 <?php
 date_default_timezone_set("Asia/Kolkata");
 
-require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 $json = file_get_contents('php://input');
 $obj = json_decode($json,true);

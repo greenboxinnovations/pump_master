@@ -1,6 +1,6 @@
 <?php
 
-require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 date_default_timezone_set("Asia/Kolkata");
 $date = date("Y-m-d");
 $time = date("Y-m-d H:i:s");

@@ -1,6 +1,6 @@
 <?php
 
-require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 $counter = 0;
 // $sql = "SELECT * FROM `transactions` WHERE 1";
 
@@ -73,7 +73,11 @@ while($row = mysqli_fetch_assoc($exe)){
 		$display_date = date("M d", $unix_tstamp);		// Sep 11, Aug 20
 	}
 	
-	echo '<tr >';
+	if ($row["trans_string"] != NULL) {
+		echo '<tr class="highlight view_transaction" transstring="'.$row["trans_string"].'" >';
+	}else{
+		echo '<tr >';
+	}
 		echo '<td class="c_id">'.$trans_id.'</td>';
 		echo '<td class="c_receipt" style="text-align:right;">'.$row['receipt_no'].'</td>';
 		echo '<td class="c_trans_id" style="text-align:left;">'.$trans_id_disp.'</td>';

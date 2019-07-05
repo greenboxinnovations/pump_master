@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__.'/query/conn.php';
+require __DIR__.'/query/conn.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -74,25 +74,27 @@ require_once __DIR__.'/query/conn.php';
 			$('body').delegate('#login', 'click', function(e) {
 				e.stopPropagation(); 
 
-				var mobile_no = $(this).attr('mobile');
+				var cust_id = $(this).attr('custid');
 
-				$.ajax({
-					url: 'exe/login_customer_otp_request.php',
-					type: 'POST',
-					data:{
-						mobile_no : mobile_no,
-						request_otp: true
-					},
-					success: function(response) {
-						var json = $.parseJSON(response);
-						console.log(response);
-						if (json.success) {
-							window.location.href = cust_login_url + json.cust_id;
-						}else{
-							alert(json.msg);
-						}	
-					}
-				});
+				window.location.href = cust_login_url + cust_id;
+
+				// $.ajax({
+				// 	url: 'exe/login_customer_otp_request.php',
+				// 	type: 'POST',
+				// 	data:{
+				// 		mobile_no : mobile_no,
+				// 		request_otp: true
+				// 	},
+				// 	success: function(response) {
+				// 		var json = $.parseJSON(response);
+				// 		console.log(response);
+				// 		if (json.success) {
+				// 			window.location.href = cust_login_url + json.cust_id;
+				// 		}else{
+				// 			alert(json.msg);
+				// 		}	
+				// 	}
+				// });
 			 
 			});
 		});
@@ -225,7 +227,7 @@ require_once __DIR__.'/query/conn.php';
 <div id="padding_div">
 
 <?php
-require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 
 if(isset($_GET['t'])){
@@ -284,7 +286,7 @@ if(isset($_GET['t'])){
 
 				echo '<button custid="'.$row['cust_id'].'" style="display:none;" id="view_all" ><a href="'.$url.'">VIEW ALL</a></button>';
 			
-				echo '<button custid="'.$row['cust_id'].'" style="display:none;" id="login" mobile="'.$row['cust_ph_no'].'" ><a >LOGIN</a></button>';
+				echo '<button custid="'.$row['cust_id'].'" style="display:none;" id="login" custid="'.$row['cust_id'].'" ><a >LOGIN</a></button>';
 				
 
 
@@ -302,6 +304,11 @@ if(isset($_GET['t'])){
 					echo '<div class="title inline">T-ID</div>';  echo '<div class="val inline">'.($row['trans_id']+100000).'</div>';
 				echo '</div>';
 
+				if ($row['receipt_no'] != 0) {
+						echo'<div class="container" >';
+							echo '<div class="title inline">Receipt Number</div>';  echo '<div class="val inline">'.($row['receipt_no']).'</div>';
+						echo '</div>';
+				}	
 
 				echo'<div class="container" >';
 					echo '<div class="title inline">Fuel</div>';  echo '<div class="val inline">'.ucwords($row['fuel']).'</div>';

@@ -122,12 +122,17 @@
 							$('#password_input').val("");			// remove password text (incase backpressed)
 							window.location.href = 'index.php';
 						}
+						if (json.message == 'Authentication Demo') {
+							setCookie("username", name, 14);
+							$('#password_input').val("");			// remove password text (incase backpressed)
+							window.location.href = 'demo.php';
+						}
 						if (json.message == 'Authentication Error') {
 							setCookie("username","jiggy",-14);
 							showErrorMessage("Something went wrong!");
 						}
 				    }	
-				});
+				}); 
 
 
 

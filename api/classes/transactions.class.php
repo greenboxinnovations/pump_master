@@ -1,7 +1,6 @@
 <?php
 date_default_timezone_set("Asia/Kolkata");
 
-
 class Transactions
 {
 	private $_db;
@@ -62,7 +61,6 @@ class Transactions
 			else if ($this->_getParams[0] == 'print')
 			{
 				$this->printReceipt(8183);
-				//trigger_error("test");
 			}
 
 
@@ -320,6 +318,14 @@ class Transactions
 
 		$pump_code      = trim($postParams['pump_code']);	
 
+
+		//DUPLICATE RECEIPT_NO TEMPORARY FIX
+		$sql = "SELECT `receipt_no` FROM `transactions` WHERE `receipt_no` = '".$receipt_no."';";	
+		$this->_db->query($sql);
+		$this->_db->execute();
+		if($this->_db->rowCount() > 0){
+			$receipt_no	 = 0;
+		}
 
 
 		$sql = "SELECT `trans_string` FROM `cameras` WHERE `cam_qr_code` = '".$pump_code."';";		
@@ -655,10 +661,9 @@ class Transactions
 
 				$ph_no = str_replace("|", ",", $ph_no);
 				if (Globals::SEND_MSG) {
-					$this->sendMSG($car_no_plate, $row['fuel'], $row['amount'], $url, $ph_no);
+					$this->sendMSG($car_no_plate, $row['fuel'], $row['amount'], $url, $ph_no, $row['car_id']);
 				}
 				
-
 				$d = true;
 
 			}
@@ -680,7 +685,7 @@ class Transactions
 		}
 	}
 
-	private function sendMSG($car_no_plate, $fuel, $amount, $url, $phone_no){
+	private function sendMSG($car_no_plate, $fuel, $amount, $url, $phone_no, $i){
 
 	    date_default_timezone_set("Asia/Kolkata");
 		$timestamp = date("d/m/Y H:i:s");
@@ -691,8 +696,8 @@ class Transactions
 		$message = "SELECT AUTOMOBILES".$newline."Karve Road".$newline.$newline.$car_no_plate.$newline."Rs.".$amount.$newline.strtoupper($fuel).$newline.$timestamp.$newline.$newline.$url;
 		$encodedMessage = urlencode($message);
 
-		$api = Globals::msgString($encodedMessage,$phone_no, true);
-
+		$api = Globals::msgString($encodedMessage,$phone_no, false);
+		
 	    // Get cURL resource
 		$curl = curl_init();
 		// Set some options - we are passing in a useragent too here

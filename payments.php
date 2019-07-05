@@ -1,5 +1,5 @@
 <?php
-require_once 'exe/lock.php';
+require 'exe/lock.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -44,7 +44,7 @@ require_once 'exe/lock.php';
 		th{text-align: left;}
 		th.th_num{text-align: right;padding-left: 10px;}
 		/*tr:nth-child(odd){background-color: rgb(207,216,220);}*/
-		tr:nth-child(odd){background-color: rgb(222,228,231);}
+		.odd,th{background-color: rgb(222,228,231);}
 		/*tr:nth-child(odd){background-color: rgb();}*/
 
 		/*.td_num{text-align: right;}*/
@@ -71,13 +71,40 @@ require_once 'exe/lock.php';
 		.cars_fab{background: url('css/icons/ic_car.png') no-repeat center center;}
 		.payments_fab{background: url('css/icons/ic_pay.png') no-repeat center center;}
 
+		td a{color: green;}
+
+		.change_this{width:300px;}
+
+		.new_pay{background: url('css/icons/ic_edit.png');background-repeat: no-repeat;padding-left: 18px;padding-right: 18px;}
+		.new_pay:hover{cursor: pointer;background-color: #607d8b;}
+
+		
+		#wrapper_content{margin-left: 65px;margin-right: 65px;}
 
 
-		 .change_this{width:300px;}
+#grand_total{color:#930a0a;font-size: 22px;margin-bottom: 10px; }
+
+.cust_disp_name{min-width:300px;padding-right: 12px;}
+.date_range{color: rgba(0,0,0,0.5);}
+.invoice_no{text-align:right;}
+.amount_paid{text-align:right;min-width: 50px;padding-right: 15px;}
+.invoice_amount{text-align:right;min-width: 150px;padding-right: 15px;}
+.invoice_pending{text-align:right;}
+.total_text{text-align: right; color: #930a0a;}
+.total_r{text-align: right; color: #930a0a;}
+.prev_balance{text-align: right; color: #930a0a;padding-right: 15px;}
+.prev_b_val{text-align: right; color: #930a0a;padding-right: 15px;}
+
+#total_table td{color: #930a0a;}
+
+td{padding-top: 10px;padding-bottom: 10px;}
+
 
 		/*change_this*/
 		@media only screen and (max-width: 1360px) {			
-			.change_this{width: 200px;}
+			/*body{background-color: black;}*/
+			.invoice_amount{min-width: 10px;}
+			.cust_disp_name{min-width: 10px;width:250px;padding-right: 12px;}
 		}
 	</style>
 
@@ -112,18 +139,116 @@ require_once 'exe/lock.php';
 			}
 
 			function init(){
-				$('#display').load('display/view_payments.php', scrollInit);
+				$('#display').load('display/view_payments.php?year=0&month=0', scrollInit);
+			}
+
+			function showSnackBar(message) {
+				$('#snackbar').text(message);
+				$('#snackbar').animate({'bottom':'0'},function() {
+					setTimeout(function(){
+						$('#snackbar').animate({'bottom':'-50px'});           
+					},2000);
+				});
 			}
 
 			// globals
 			init();
 			var scrollFunc = false;
 			var tableOffset, $header, $fixedHeader;
+			var clicked = false;
+			var cust_id = 0;
+			var month = $('#month').val();
+
+
 
 			// window 
 			$(window).bind("scroll", windowScroll);
 
-			// click functions
+			// invoice view
+			$('body').delegate('.new_pay', 'click', function(){
+				var invoice_no = $(this).attr('invoiceno');
+				var invoice_amount = $(this).attr('invoiceamount');
+				$('#display').load('forms/add_payment.php?invoice_amount='+invoice_amount+'&invoice_no='+invoice_no);
+				cust_id = $(this).attr('custid');
+			});
+
+
+			// cancel payment
+			$('body').delegate('#btn_cancel_payment', 'click', function(){
+				if (month != "") {
+					var split = month.split('-');
+					$('#display').load('display/view_payments.php?year='+split[0]+'&month='+split[1], scrollInit);
+				}
+			});
+
+			// confirm payment
+			$('body').delegate('#btn_confirm_payment', 'click', function(){
+				var payment_amount 	= $('#payment_amount').val();
+				var payment_date 	= $('#payment_date').val();
+				var payment_comment = $('#payment_comment').val();
+				var invoice_no 		= $(this).attr('invoiceno');
+				var invoice_amount 	= $(this).attr('invoiceamount');
+				
+
+
+				// alert(cust_id);
+				// console.log(payment_comment);
+
+				if((payment_amount > 0) &&(cust_id != 0)&& (payment_date != "") &&(!clicked)){
+					// add ph_no validation here
+
+					clicked = true;
+
+					var myObject = {};
+					myObject.payment_amount = payment_amount;
+					myObject.cust_id 		= cust_id;
+					myObject.payment_date 	= payment_date;
+					myObject.payment_comment= payment_comment;
+					myObject.invoice_no 	= invoice_no;
+					myObject.invoice_amount = invoice_amount;
+
+					json_string = JSON.stringify(myObject);
+
+					var url = 'api/payments';
+
+					console.log(json_string);
+
+					$.ajax({
+						url: url,
+						type: 'POST',
+						contentType: "application/json",
+						data:json_string,
+						success: function(response){
+							if (month != "") {
+								var split = month.split('-');
+								$('#display').load('display/view_payments.php?year='+split[0]+'&month='+split[1], scrollInit);
+							}
+							clicked = false;
+						},
+						error: function(data, errorThrown){
+							showSnackBar(errorThrown);
+							clicked = false;
+						}
+					});
+				}
+				else{
+					console.log('invalid amount or date');
+					showSnackBar('INVALID AMOUNT OR DATE');
+					clicked = false;
+				}
+			});
+ 
+			//on month change
+			$('body').delegate('#month', 'change', function(){
+				month = $(this).val();
+				if (month != "") {
+					var split = month.split('-');
+					
+					$('#display').load('display/view_payments.php?year='+split[0]+'&month='+split[1], scrollInit);
+				}
+							
+			});
+
 		});
 	</script>
 </head>
@@ -140,12 +265,15 @@ require_once 'exe/lock.php';
 <!-- side nav -->
 <?php 
 	$active_page = 'customers';
-	require_once 'nav.php';
+	require 'nav.php';
 ?>
 
 
 <!-- wrapper -->
 <div id="wrapper">
+	<div id="date_div" style="margin-top: 80px; margin-left: 65px;">
+		<input id="month" type="month" value="<?php echo date("Y-m");?>">
+	</div>
 	<div id="wrapper_content">
 		<div id="display"></div>		
 	</div>

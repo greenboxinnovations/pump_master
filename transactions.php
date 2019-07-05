@@ -1,14 +1,5 @@
 <?php
-if(!isset($_SESSION))
-{
-    session_start();
-}
-
-if (!isset($_SESSION['role'])) 
-{
-    header("location: login.php");
-}
-require_once 'exe/lock.php';
+require 'exe/lock.php';
 ?>
 <!DOCTYPE html>
 <html> 
@@ -54,6 +45,8 @@ require_once 'exe/lock.php';
 	<script type="text/javascript" src="js/main.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function(){
+
+			var msg_url        = <?php echo json_encode(Globals::URL_MSG_VIEW);?>;
 
 			// functions
 			function windowScroll(){
@@ -328,6 +321,11 @@ require_once 'exe/lock.php';
 
 			// window 
 			$(window).bind("scroll", windowScroll);
+
+			$('body').delegate('.view_transaction', 'click', function(){
+				var trans_string = $(this).attr('transstring');
+				window.open( msg_url + trans_string, '_blank');	
+			});
 
 			// ----------------- MANUAL TRANSACTIONS ---------------------//
 			// fab click
@@ -921,7 +919,7 @@ require_once 'exe/lock.php';
 <!-- side nav -->
 <?php 
 	$active_page = 'transactions';
-	require_once 'nav.php';
+	require 'nav.php';
 ?>
  
 

@@ -76,7 +76,14 @@ class Customers
 
 		$cust_company	 = $postParams['cust_company'];
 		$cust_company	 = trim($cust_company);
-		if($cust_company == ""){ $cust_company == NULL; }
+		if($cust_company == ""){ 
+			$cust_company == NULL; 
+			$cust_disp_name = $cust_f_name.' '.$cust_l_name;
+		}else{
+			$cust_disp_name = $cust_company;
+		}
+
+		$cust_disp_name = ucwords($cust_disp_name);
 
 		$cust_gst	 	 = $postParams['cust_gst'];
 		$cust_gst	 	 = strtolower(trim($cust_gst));
@@ -122,8 +129,8 @@ class Customers
 
 		if($valid && ($cust_id == NULL)){
 
-			$sql = "INSERT INTO `customers` (`cust_f_name`,`cust_m_name`,`cust_l_name`,`cust_ph_no`,`cust_pump_id`,`cust_post_paid`,`cust_balance`,`cust_outstanding`,`cust_credit_limit`,`cust_app_limit`,`cust_address`,`cust_company`,`cust_gst`,`cust_acc_no`,`cust_deposit`,`cust_service`) 
-			VALUES (:field1,:field2,:field3,:field4,:field5,:field6,:field7,:field8,:field9,:field10,:field11,:field12,:field13,:field14,:field15,:field16);";
+			$sql = "INSERT INTO `customers` (`cust_f_name`,`cust_m_name`,`cust_l_name`,`cust_ph_no`,`cust_pump_id`,`cust_post_paid`,`cust_balance`,`cust_outstanding`,`cust_credit_limit`,`cust_app_limit`,`cust_address`,`cust_company`,`cust_gst`,`cust_acc_no`,`cust_deposit`,`cust_service`,`cust_disp_name`) 
+			VALUES (:field1,:field2,:field3,:field4,:field5,:field6,:field7,:field8,:field9,:field10,:field11,:field12,:field13,:field14,:field15,:field16,:field17);";
 
 			$this->_db->query($sql);
 
@@ -143,6 +150,7 @@ class Customers
 			$this->_db->bind(':field14', $account_num);
 			$this->_db->bind(':field15', $cust_deposit);
 			$this->_db->bind(':field16', $cust_service);
+			$this->_db->bind(':field17', $cust_disp_name);
 			$this->_db->execute();
 
 			date_default_timezone_set("Asia/Kolkata");
