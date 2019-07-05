@@ -79,6 +79,11 @@ def kill_program_from_out():
 	print(result.stdout.decode('utf-8'))
 
 
+def networkSelector():
+	result = subprocess.run('/opt/lampp/htdocs/pump_master/network.sh',shell=True, stdout=subprocess.PIPE)
+	print(result.stdout.decode('utf-8'))
+	root.after(60000, networkSelector)
+
 
 def check_program_status():
     global isCamUp    
@@ -202,8 +207,8 @@ def ping_camera():
                     # if msg file does not exist make one
                     # and send msg
                     if not os.path.exists(file_msg_name):
-                        send_msg(file_msg_name, hostname)
-                        # pass
+                        #send_msg(file_msg_name, hostname)
+                        pass
 
             # does NOT exists
             else:
@@ -246,7 +251,7 @@ def ping_camera():
 def send_photos():
     result = subprocess.run('/opt/lampp/bin/php /opt/lampp/htdocs/pump_master/send_photos.php',shell=True,stdout=subprocess.PIPE)
     print(result.stdout.decode('utf-8'))
-    root.after(5000, send_photos)
+    root.after(3000, send_photos)
 
 
 def sync_check():
@@ -287,6 +292,7 @@ root.after(3000, ping_camera)
 root.after(3000, check_program_status)
 
 
+root.after(10000, networkSelector)
 
 # sync_check()
 root.after(5000, sync_check)

@@ -49,17 +49,17 @@ if ($trans_string != "") {
 
 		if (file_exists($video)) {
 			$file_name = $video;
-			//trigger_error("exists".$video);
+			 //trigger_error("exists".$video);
 		}else{
 			if ($time_diff > 60*3) {
-				//trigger_error("dosent exists".$time_diff.$trans_string);
+				trigger_error("dosent exists".$time_diff.$trans_string);
 				$sql = "UPDATE `transactions` SET `video` = 'A' WHERE `trans_string` = '".$trans_string."' ;";
 				$exe = mysqli_query($conn,$sql);
 			}			
 		}
 
 	} catch (Exception $e) {
-		trigger_error('Test');
+		trigger_error($e);
 	}
 	
 	if($file_name != ""){
@@ -68,7 +68,8 @@ if ($trans_string != "") {
 		$exe = mysqli_query($conn,$sql);
 		
 		// $cmd = 'curl -F "date='.$date.'" -F "file=@'.$file_name.'" http://fuelmaster.greenboxinnovations.in/receive_videos.php -m 1200';
-		$cmd = 'curl -F "date='.$dir_date.'" -F "file=@'.$file_name.'" '.$url_main.' -m 1200';
+		//echo $cmd = 'curl -F "date='.$dir_date.'" -F "file=@'.$file_name.'" '.$url_main;
+		echo $cmd = 'curl -F "date='.$dir_date.'" -F "file=@'.$file_name.'" '.$url_main.' -m 1200';
 
 		try {
 
@@ -85,7 +86,7 @@ if ($trans_string != "") {
 
 			}else{
 
-				//echo "error";
+				trigger_error("error");
 
 				$sql = "UPDATE `transactions` SET `video` = 'N' WHERE `trans_string` = '".$trans_string."' ;";
 				$exe = mysqli_query($conn,$sql);
@@ -93,11 +94,11 @@ if ($trans_string != "") {
 			}
 		} catch (Exception $e) {
 
-			//print_r($e);
+			print_r($e);
 
 			trigger_error($e);
 
-			$sql = "UPDATE `transactions` SET `video` = 'N' WHERE `trans_string` = '".$trans_string."' ;";
+			$sql = "UPDATE `transactions` SET `video` = 'E' WHERE `trans_string` = '".$trans_string."' ;";
 			$exe = mysqli_query($conn,$sql);
 		}
 	}

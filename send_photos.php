@@ -60,24 +60,37 @@ foreach ($dirs as $key => $path) {
 			$data = explode("_", $file);
 			if ($data[1]=="stop.jpeg") {
 
+				// check if both files exist
+
 				if (file_exists($path.'/'.$files_name[$i])){
-					$file1 = $path.'/'.$data[0].'_start.jpeg';
-					$file2 = $path.'/'.$data[0].'_stop.jpeg';
 
-					if((file_exists($file1)) && (file_exists($file2))){
+					$send = true;
 
-						$t1 = date("Y-m-d H:i:s",filemtime($file1));
-					    $t2 = date("Y-m-d H:i:s",filemtime($file2));
+					// $file1 = $path.'/'.$data[0].'_start.jpeg';
+					// $file2 = $path.'/'.$data[0].'_stop.jpeg';
 
-					    $interval = (new DateTime($t1))->diff(new DateTime($t2));
-					    $time_diff =  $interval->format('%H:%I:%S');
+					// if((file_exists($file1)) && (file_exists($file2))){
+
+					// 	$t1 = date("Y-m-d H:i:s",filemtime($file1));
+					//     $t2 = date("Y-m-d H:i:s",filemtime($file2));
+
+					  
+					//     $interval = (new DateTime($t1))->diff(new DateTime($t2));
+					//     $time_diff =  $interval->format('%H:%I:%S');
 					    
-					    // echo $time_diff;
-					    $sql1 = "UPDATE `transactions` SET `trans_time` = '".$time_diff."'  WHERE `trans_string` = '".$data[0]."' ;";
-						$exe1 = mysqli_query($conn, $sql1);
-					}
+					//     // echo $time_diff;
+					//     $sql1 = "UPDATE `transactions` SET `trans_time` = '".$time_diff."'  WHERE `trans_string` = '".$data[0]."' ;";
+					// 	$exe1 = mysqli_query($conn, $sql1);
 
-				    $send = true;
+					// 	trigger_error($file1);
+					// 	trigger_error($t1);
+					   
+					 				    
+					//     trigger_error($file2);
+					//     trigger_error($t2);
+
+					//      trigger_error('Difference :'.$time_diff);
+					// }				    
 				}
 			}
 		}

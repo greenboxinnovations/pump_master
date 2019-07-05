@@ -52,7 +52,7 @@ if($qr != ""){
 		// no matches in cars db
 		$json['success'] = false;
 
-		$sql_c = "SELECT 1 FROM `codes` WHERE `qr_code` = '".$qr_code."' ;";
+		$sql_c = "SELECT 1 FROM `codes` WHERE `qr_code` = '".$qr."' ;";
 		$exe_c = mysqli_query($conn, $sql_c);
 		$count = mysqli_num_rows($exe_c);
 

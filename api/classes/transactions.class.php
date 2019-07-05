@@ -1,6 +1,7 @@
 <?php
 date_default_timezone_set("Asia/Kolkata");
 
+
 class Transactions
 {
 	private $_db;
@@ -61,6 +62,7 @@ class Transactions
 			else if ($this->_getParams[0] == 'print')
 			{
 				$this->printReceipt(8183);
+				//trigger_error("test");
 			}
 
 

@@ -20,6 +20,10 @@
 #include <sstream>
 
 
+#include <sys/stat.h>
+#include <time.h>
+#include <stdio.h>
+
 
 // Vlc player
 #include "VlcCap.h"
@@ -266,7 +270,8 @@ cv::Mat writeDateSecondary(Mat frame){
 	// our rectangle...
 	cv::Rect rect(x, y, width, height);			
 	// essentially do the same thing
-	cv::rectangle(frame, rect, cv::Scalar(0, 0, 0), CV_FILLED);
+	// cv::rectangle(frame, rect, cv::Scalar(0, 0, 0), CV_FILLED);
+	cv::rectangle(frame, rect, cv::Scalar(0, 0, 0), FILLED);
 
 
 	cv::putText(frame, //target image
@@ -292,7 +297,7 @@ cv::Mat writeDatePrimary(Mat frame){
 	// our rectangle...
 	cv::Rect rect(x, y, width, height);			
 	// essentially do the same thing
-	cv::rectangle(frame, rect, cv::Scalar(0, 0, 0), CV_FILLED);
+	cv::rectangle(frame, rect, cv::Scalar(0, 0, 0), FILLED);
 
 
 	cv::putText(frame, //target image
@@ -331,6 +336,64 @@ void setCamStatus(string cam_no) {
 }
 
 
+// latest file second
+void updateTransTime(const string file1,const string file2, const string trans_string){
+
+	struct stat t_stat1;	
+    stat(file1.c_str(), &t_stat1);    
+    struct tm * timeinfo1 = localtime(&t_stat1.st_ctime); // or gmtime() depending on what you want
+    
+
+    // cout << "Current Day, Date and Time is = " 
+    //      << asctime(timeinfo1)<< endl;
+
+    struct stat t_stat2;
+    stat(file2.c_str(), &t_stat2);
+    struct tm * timeinfo2 = localtime(&t_stat2.st_ctime); // or gmtime() depending on what you want
+
+
+    // cout << "Current Day, Date and Time is = " 
+    //      << asctime(timeinfo2)<< endl;
+
+    double pre_sec = std::difftime(t_stat2.st_ctime, t_stat1.st_ctime);
+
+    int total_seconds = (int)pre_sec;
+
+    // std::cout << "Wall time passed: "
+    //           << std::difftime(t_stat2.st_ctime, t_stat1.st_ctime) << " s.\n";
+
+    
+    int  hours, minutes;
+	minutes = total_seconds / 60;
+	hours = minutes / 60;
+	int seconds = int(total_seconds%60);	
+	
+	char s[25];
+	sprintf(s, "%02d:%02d:%02d", hours, minutes, seconds);
+	cout << s << endl;
+	string update_string(s);
+
+	try {
+		// housekeeping
+		driver = get_driver_instance();
+		unique_ptr<sql::Connection> con(driver->connect(HOST.c_str(), USER.c_str(), PASSWORD.c_str()));
+		con->setSchema(DB.c_str());
+		unique_ptr<sql::Statement> stmt(con->createStatement());
+
+		// string update_query = "UPDATE `versions` SET `name`= '"+update_string+"' WHERE `ver_id` = 1";
+		string update_query = "UPDATE `transactions` SET `trans_time`= '"+update_string+"' WHERE `trans_string` = '"+trans_string+"';";
+		
+		stmt->executeUpdate(update_query.c_str());
+	}
+	catch (sql::SQLException &e) {
+		cout << "# ERR: SQLException in " << __FILE__;
+		cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << endl;
+		cout << "# ERR: " << e.what();
+		cout << " (MySQL error code: " << e.getErrorCode();
+		cout << ", SQLState: " << e.getSQLState() << " )" << endl;
+	}
+}
+
 int videoThread(const int cam_no, const string trans_string, ThreadSafeVector &tsv){
 	
 	Mat big_frame;
@@ -355,7 +418,10 @@ int videoThread(const int cam_no, const string trans_string, ThreadSafeVector &t
 	string file_name = "/opt/lampp/htdocs/pump_master/videos/"+date+"/"+trans_string+".avi";
 	string file_name_mp4 = "/opt/lampp/htdocs/pump_master/videos/"+date+"/"+trans_string+".mp4";
 
-	VideoWriter writer = VideoWriter(file_name, CV_FOURCC('H','2','6','4'), 25, S2);
+	// VideoWriter writer = VideoWriter(file_name, CV_FOURCC('X','2','6','4'), 25, S2);
+	// VideoWriter writer = VideoWriter(file_name, VideoWriter::fourcc('H','2','6','4'), 25, S2);
+	
+	VideoWriter writer = VideoWriter(file_name_mp4, VideoWriter::fourcc('H','2','6','4'), 25, S2);
 
 	// dont let video record more than 20 min
 	auto start = chrono::steady_clock::now();
@@ -406,12 +472,12 @@ int videoThread(const int cam_no, const string trans_string, ThreadSafeVector &t
 	// isRecording is false
 	if(tsv.exists(trans_string)){
 		// process video
-		videoClose(file_name,file_name_mp4);
+		// videoClose(file_name,file_name_mp4);
 		tsv.remove(trans_string);
 	}
 	else{
 		// delete video
-		videoDelete(file_name);
+		videoDelete(file_name_mp4);
 	}	
 	return 0;
 }
@@ -504,6 +570,9 @@ void getCamStatus(ThreadSafeVector &tsv) {
 					}
 					else if(t_type == "stop"){
 						tsv.change(t_string, false);
+						string photo_start = "/opt/lampp/htdocs/pump_master/uploads/"+date+"/"+ t_string + "_start.jpeg";
+						string photo_stop = "/opt/lampp/htdocs/pump_master/uploads/"+date+"/"+ t_string + "_stop.jpeg";
+						updateTransTime(photo_start, photo_stop, t_string);
 					}
 
 					// reset status in cameras
@@ -531,6 +600,7 @@ void getCamStatus(ThreadSafeVector &tsv) {
 
 void camThread(const string IP) {
 
+	Mat pre_frame;
 	Mat frame;
 	VlcCap cap;
 	cap.open(IP.c_str());
@@ -544,7 +614,9 @@ void camThread(const string IP) {
 	while (1) {
 
 		// read frame
-		cap.read(frame);
+		cap.read(pre_frame);
+		cvtColor(pre_frame, frame, COLOR_RGB2BGR);
+
 		if (!frame.empty()) {			
 
 			if(IP == CAM1_IP){
