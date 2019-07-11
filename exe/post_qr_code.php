@@ -44,6 +44,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST"){
 
 		$sql = "SELECT 1 FROM `codes` WHERE `qr_code` = '".$qr_code."' ;";
 		$exe = mysqli_query($conn, $sql);
+		$row = mysqli_fetch_assoc($exe);
 		$count = mysqli_num_rows($exe);
 
 		if ($count == 1) {
@@ -103,7 +104,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST"){
 				
 				// updateSyncTable("users", "user_id", $unix);
 			}else{
-				$row = mysqli_fetch_assoc($exe);
+				
 				$car_no_plate = $row['car_no_plate'];
 				$car_no_plate = strtoupper(str_replace(' ','',$car_no_plate));
 				$json['msg']  = "Duplicate Code ".$car_no_plate;

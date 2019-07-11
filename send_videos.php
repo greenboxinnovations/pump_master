@@ -49,7 +49,7 @@ if ($trans_string != "") {
 
 		if (file_exists($video)) {
 			$file_name = $video;
-			//trigger_error("exists".$video);
+			trigger_error("exists".$video);
 		}else{
 			if ($time_diff > 60*3) {
 				//trigger_error("dosent exists".$time_diff.$trans_string);
@@ -86,7 +86,7 @@ if ($trans_string != "") {
 			}else{
 
 				//echo "error";
-
+				trigger_error("error set status to E");
 				$sql = "UPDATE `transactions` SET `video` = 'N' WHERE `trans_string` = '".$trans_string."' ;";
 				$exe = mysqli_query($conn,$sql);
 

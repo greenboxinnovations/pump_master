@@ -66,18 +66,8 @@ foreach ($dirs as $key => $path) {
 
 					if((file_exists($file1)) && (file_exists($file2))){
 
-						$t1 = date("Y-m-d H:i:s",filemtime($file1));
-					    $t2 = date("Y-m-d H:i:s",filemtime($file2));
-
-					    $interval = (new DateTime($t1))->diff(new DateTime($t2));
-					    $time_diff =  $interval->format('%H:%I:%S');
-					    
-					    // echo $time_diff;
-					    $sql1 = "UPDATE `transactions` SET `trans_time` = '".$time_diff."'  WHERE `trans_string` = '".$data[0]."' ;";
-						$exe1 = mysqli_query($conn, $sql1);
-					}
-
-				    $send = true;
+						$send = true;
+					}				    
 				}
 			}
 		}

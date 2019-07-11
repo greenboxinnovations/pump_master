@@ -3,7 +3,6 @@ if(!isset($_SESSION))
 {
 	session_start();
 } 
-
 require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 

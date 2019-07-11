@@ -935,6 +935,10 @@ require 'exe/lock.php';
 
 
 <?php 
+	if(!isset($_SESSION))
+	{
+		session_start();
+	}
 
 	if ($_SESSION['role'] != 'manager' ) {
 		// <!-- fab -->

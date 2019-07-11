@@ -75,9 +75,14 @@ def check_ping():
 
 
 def kill_program_from_out():
-	result = subprocess.run('/opt/lampp/htdocs/pump_master/program.sh kill',shell=True, stdout=subprocess.PIPE)
-	print(result.stdout.decode('utf-8'))
+    result = subprocess.run('/opt/lampp/htdocs/pump_master/program.sh kill',shell=True, stdout=subprocess.PIPE)
+    print(result.stdout.decode('utf-8'))
 
+
+def networkSelector():
+    result = subprocess.run('/opt/lampp/htdocs/pump_master/network.sh',shell=True, stdout=subprocess.PIPE)
+    print(result.stdout.decode('utf-8'))
+    root.after(60000, networkSelector)
 
 
 def check_program_status():
@@ -112,7 +117,7 @@ def start_program():
     print("starting program now")
     result = subprocess.run('/opt/lampp/htdocs/pump_master/program.sh start&',shell=True)
     isStarting = 0
-	# print(result.stdout.decode('utf-8'))
+    # print(result.stdout.decode('utf-8'))
 
 
 def send_msg(file_msg_name, hostname):
@@ -202,8 +207,8 @@ def ping_camera():
                     # if msg file does not exist make one
                     # and send msg
                     if not os.path.exists(file_msg_name):
-                        send_msg(file_msg_name, hostname)
-                        # pass
+                        #send_msg(file_msg_name, hostname)
+                        pass
 
             # does NOT exists
             else:
@@ -233,9 +238,9 @@ def ping_camera():
                     os.remove(file_msg_name)
 
     if counter==5:
-    	isCamUp = 1
+        isCamUp = 1
     else:
-    	isCamUp = 0
+        isCamUp = 0
 
     print("counter "+str(counter))
     print("ISCAMPUP "+str(isCamUp))
@@ -287,6 +292,7 @@ root.after(3000, ping_camera)
 root.after(3000, check_program_status)
 
 
+root.after(10000, networkSelector)
 
 # sync_check()
 root.after(5000, sync_check)
