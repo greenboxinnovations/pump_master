@@ -1,4 +1,8 @@
 <?php
+if(!isset($_SESSION))
+{
+	session_start();
+}
 require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 $user_id = $_SESSION['user_id'];
 
