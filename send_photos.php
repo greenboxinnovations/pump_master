@@ -87,6 +87,7 @@ else{
 	curl_setopt($ch, CURLOPT_POST,1);
 	curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_HTTPHEADER,array("Expect:100-continue"));
 
 	$result = curl_exec ($ch);
 
@@ -104,6 +105,7 @@ else{
 
 			foreach ($data as $key => $path) {
 				unlink($local_install_dir.$path);
+				//trigger_error($local_install_dir.$path);
 			}	
 
 			foreach ($dirs as $key => $dir) {
