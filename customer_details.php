@@ -1,5 +1,8 @@
 <?php
 require 'exe/lock.php';
+if(!isset($_SESSION)) {
+	session_start();
+}
 ?>
 <!DOCTYPE html> 
 <html>
