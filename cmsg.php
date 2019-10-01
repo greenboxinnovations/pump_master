@@ -30,6 +30,17 @@ require __DIR__.'/query/conn.php';
 
 	<script type="text/javascript" src="js/user_agent.js"></script>
 	<script type="text/javascript" src="js/jquery.js"></script>
+	
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-86804646-5"></script>
+		<script>
+		  window.dataLayer = window.dataLayer || [];
+		  function gtag(){dataLayer.push(arguments);}
+		  gtag('js', new Date());
+
+		  gtag('config', 'UA-86804646-5');
+	</script>
+
 	<script type="text/javascript">
 		$(document).ready(function(){
 

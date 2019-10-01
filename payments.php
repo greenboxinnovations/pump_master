@@ -78,6 +78,10 @@ require 'exe/lock.php';
 		.new_pay{background: url('css/icons/ic_edit.png');background-repeat: no-repeat;padding-left: 18px;padding-right: 18px;}
 		.new_pay:hover{cursor: pointer;background-color: #607d8b;}
 
+		.new_sms{background: url('css/icons/ic_sms.png');background-repeat: no-repeat;padding-left: 18px;padding-right: 18px;}
+		.new_sms:hover{cursor: pointer;background-color: #607d8b;}
+
+
 		
 		#wrapper_content{margin-left: 65px;margin-right: 65px;}
 
@@ -170,6 +174,49 @@ td{padding-top: 10px;padding-bottom: 10px;}
 				var invoice_amount = $(this).attr('invoiceamount');
 				$('#display').load('forms/add_payment.php?invoice_amount='+invoice_amount+'&invoice_no='+invoice_no);
 				cust_id = $(this).attr('custid');
+			});
+
+			// reminder sms
+			$('body').delegate('.new_sms', 'click', function(){
+
+				var total_r = $(this).attr('totalr');
+				var cust_id = $(this).attr('custid');
+
+				if (!clicked) {
+					
+					clicked = true;
+					var myObject = {};
+					myObject.total_r 				= total_r;
+					myObject.cust_id 				= cust_id;
+
+					json_string = JSON.stringify(myObject);
+
+					var url = 'exe/reminder_sms.php';
+					console.log(json_string);
+
+					$.ajax({
+						url: url,
+						type: 'POST',
+						contentType: "application/json",
+						data:json_string,
+						success: function(response){
+							var json = $.parseJSON(response);
+							showSnackBar(json.msg);
+							clicked = false;
+						},
+						error: function(data, errorThrown){
+							showSnackBar(errorThrown);
+							clicked = false;
+						}
+					});
+				}
+				else{
+
+					showSnackBar('Reload Page, then try!');
+					clicked = false;
+				}
+
+
 			});
 
 

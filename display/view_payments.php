@@ -79,6 +79,7 @@ function renderTable($data){
 			echo '<th colspan="2" class="invoice_pending">Remaining</th>';
 
 			echo '<th></th>';
+			echo '<th></th>';
 		echo '</tr>'; 
 	$j 					= 0; // Sr no for display
 	$display 			= false;
@@ -140,6 +141,8 @@ function renderTable($data){
 			}else{
 				$prev_balance 	= 0;
 			}
+
+			$total_r = $total_r + $prev_balance;
 		}
 
 		//multiple invoice for one customer withim same billing month reset display variables
@@ -185,15 +188,24 @@ function renderTable($data){
 			echo '<td class="amount_paid">'.money_format('%!.0n',$amount_paid).'</td>';
 			echo '<td></td>';
 			echo '<td class="invoice_pending">'.money_format('%!.0n',$invoice_pending).'</td>';	
-			echo '<td class="new_pay" invoiceno="'.$invoice_no.'" invoiceamount="'.$invoice_amount.'" custid="'.$cust_id.'"></td>';	
+
+			if ($invoice_pending > 0) {
+				echo '<td class="new_pay" invoiceno="'.$invoice_no.'" invoiceamount="'.$invoice_amount.'" custid="'.$cust_id.'"></td>';	
+				echo '<td class="new_sms" totalr="'.$total_r.'" custid="'.$cust_id.'"></td>';
+			}else{
+				echo '<td></td>';
+				echo '<td></td>';
+			}
+			
 			
 		echo '</tr>';
 
 
 		//if next row is of new customer and not new invoice no
 		if (isset($data[$i+1])){
-			if (($invoice_no != $data[$i+1]["invoice_no"])&&($cust_id != $data[$i+1]["cust_id"]) &&(($total_r  > 0)||($prev_balance > 0))) {
-				
+			// if (($invoice_no != $data[$i+1]["invoice_no"])&&($cust_id != $data[$i+1]["cust_id"]) &&(($total_r  > 0)||($prev_balance > 0))) {
+			if (($invoice_no != $data[$i+1]["invoice_no"])&&($cust_id != $data[$i+1]["cust_id"]) ) {	
+
 				if($j  % 2 == 0){
 					echo '  <tr class="odd invoice">';
 								if ($prev_balance == 0) {
@@ -207,7 +219,7 @@ function renderTable($data){
 								}							
 								echo'<td class="total_text">Receivable </td>
 								<td class="total_r">'.money_format('%!.0n',$total_r).'</td>
-								<td></td>
+								<td></td><td></td>
 							</tr>';
 				}
 				else{
@@ -223,7 +235,7 @@ function renderTable($data){
 								}							
 								echo'<td class="total_text">Receivable </td>
 								<td class="total_r">'.money_format('%!.0n',$total_r).'</td>
-								<td></td>
+								<td></td><td></td>
 							</tr>';
 				}
 				$total_r = 0;	
@@ -232,8 +244,6 @@ function renderTable($data){
 		}
 		//last row display 
 		else{
-			
-	
 				if($j  % 2 == 0){
 					echo '  <tr class="odd invoice">';
 								if ($prev_balance == 0) {
@@ -247,7 +257,7 @@ function renderTable($data){
 								}							
 								echo'<td class="total_text">Receivable </td>
 								<td class="total_r">'.money_format('%!.0n',$total_r).'</td>
-								<td></td>
+								<td></td><td></td>
 							</tr>';
 				}
 				else{
@@ -263,7 +273,7 @@ function renderTable($data){
 								}							
 								echo'<td class="total_text">Receivable </td>
 								<td class="total_r">'.money_format('%!.0n',$total_r).'</td>
-								<td></td>
+								<td></td><td></td>
 							</tr>';
 				}
 				$total_r = 0;	
