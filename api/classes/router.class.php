@@ -73,6 +73,11 @@ class Router
             case 'test':
                 $test1 = new Test($db, $this->_method, $this->_getParams, $this->_postParams);
                 break;
+
+            // api switch case
+            case 'admin':
+                $admin = new Admin($db, $this->_method, $this->_getParams, $this->_postParams);
+                break;
             
             default:
                 echo "Please don't do stupid stuff";

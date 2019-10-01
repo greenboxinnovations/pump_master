@@ -1,136 +1,80 @@
 <?php
 
 require_once __DIR__.'/query/conn.php';
-// echo date('Y-m-d');
 
-// $cur_year = 0;
-$cur_fin_year = 0;
+	// Set timezone
+date_default_timezone_set('UTC');
 
-function findFinancialYear($date) {	
-
-	$time 	= strtotime($date);
-	$month 	= date("n", $time);
-	$year 	= date("Y", $time);
-
-	if($month > 3){
-		$fin_year = $year;
-	}
-	else{
-		$fin_year = $year - 1;	
-	}
-
-	// echo 'FY'.$cur_fin_year.'-'.($cur_fin_year+1);
-	// echo '<br>';	
-	return $fin_year;
-}
-
-// findFinancialYear(date('Y-m-d'));
-// findFinancialYear('2019-5-1');
-// findFinancialYear('2019-4-1');
-// findFinancialYear('2019-3-1');
-// findFinancialYear('2019-2-1');
-// findFinancialYear('2016-1-1');
+	// Start date
+$date = '2019-06-01';
+	// End date
+$end_date = '2019-09-30';
 
 
-// $sql = "SELECT `from` FROM `invoices` WHERE `cust_id` ='15' AND `status` = 'Y' ORDER BY `invoice_no` DESC";
-// $exe = mysqli_query($conn, $sql);
-// $count = mysqli_num_rows($exe);
-// if ($count > 0) {
-// 	while($row = mysqli_fetch_assoc($exe)){
-// 		echo $row['from'];
-// 		echo ' ';
-// 		findFinancialYear($row['from']);
-// 		// echo '<br>';
-// 	}	
-// }
-
-$sql = "SELECT * FROM `invoices` WHERE `cust_id` ='15' AND `status` = 'Y' ORDER BY `invoice_no` DESC";
-$exe = mysqli_query($conn, $sql);
-$count = mysqli_num_rows($exe);
-if ($count > 0) {
-
-	echo '<table id="header-fixed"></table>';
-	echo '<table id="table-1">';
-	echo '<thead>';
-	echo '<tr style="border:1px solid rgb(207,216,220);">';
-	echo '<th>#</th>';
-	echo '<th>Invoice No</th>';
-	echo '<th>From</th>';
-	echo '<th>To</th>';
-
-	echo '<th>Generated</th>';
-	echo '<th>Amount</th>';
-
-	echo '<th>Paid</th>';
-	echo '<th>Balance</th>';
-	echo '<th></th>';
-	// if ($_SESSION['role'] == "admin") {
-	// 	echo '<th></th>';
-	// }
-	echo '</tr>';
-	echo '</thead>';
 
 
-	echo '<tbody>';
-	$i=1;
-	$payable = 0;
-	while($row = mysqli_fetch_assoc($exe)){
+$main_array = array();
 
 
-		$sql1 = "SELECT SUM(`amount_paid`) as paid FROM `payments` WHERE `cust_id` ='15' AND `invoice_no` = '".$row["invoice_no"]."'";
-		$exe1 = mysqli_query($conn, $sql1);
-		$count1 = mysqli_num_rows($exe1);
-		$paid = 0;
-
-		if ($count1 >0) {
-			$row1 = mysqli_fetch_assoc($exe1);
-			$paid = $row1['paid'];
-		}
-
-		$balance = $row['amount'] - $paid;
-		$payable = $payable + $balance;
+while (strtotime($date) <= strtotime($end_date)) {
+	// echo "$date\n\n";
+	$date = date ("Y-m-d", strtotime("+1 day", strtotime($date)));
 
 
-		$inv_f_year = findFinancialYear($row['from']);
-		if($inv_f_year != $cur_fin_year){
-			echo '<tr><td>Jiggy</td><tr>';
-			$cur_fin_year = $inv_f_year;
+	//get cust type
+	$sql = "SELECT * FROM `transactions` WHERE date(`date`) = '$date' AND `trans_string` IS NOT NULL;";		
+	$exe = mysqli_query($conn,$sql);
+
+	// transaction videos
+	$video_dir = 'videos';
+
+	while ( $r = mysqli_fetch_assoc($exe)) {
+
+		$trans_string = $r['trans_string'];
+
+		$vid_path = $video_dir."/".$date."/".$trans_string.".mp4";
+
+		// transaction videos		
+		if(!file_exists($vid_path)){			
+			$new = array('date' => $date, 't_string' => $trans_string,'items' => array('V'));
+			array_push($main_array, $new);
 		}
 
 
-		echo '<tr class="highlight invoice" custid=15>';
-		echo '<td >'.$i.'</td>';
-		echo '<td class="invoice_no">'.$row["invoice_no"].'</td>';
-		echo '<td class="from">'.$row["from"].'</td>';
-				// echo '<td>'.date("d-m-Y", strtotime($row['from'])).'</td>';
-		echo '<td class="to">'.$row["to"].'</td>';
-				// echo '<td>'.date("d-m-Y", strtotime($row['to'])).'</td>';
+		// transaction photos
+		$upload_dir = 'uploads';
 
-		echo '<td>'.date("M-d, g:i a", strtotime($row['date'])).'</td>';
-		echo '<td >'.$row["amount"].'</td>';
+		$check 			= ['_start.jpeg','_start_top.jpeg','_stop.jpeg','_stop_top.jpeg'];
+		$description 	= ['Zero Photo','Zero Overhead Photo','Completion Photo','Completed Overhead Photo'];
 
-		echo '<td style="text-align:right">'.$paid.'</td>';
+		foreach ($check as $i => $extention) {
 
-		echo '<td style="text-align:right">'.$balance.'</td>';
+			$file_path = $upload_dir."/".$date."/".$trans_string.$extention;
 
-		echo '<td class="new_pay" invoiceno="'.$row["invoice_no"].'" invoiceamount="'.$row["amount"].'"></td>';	
-		// if (($_SESSION['role'] == "admin")&&($i == 1)) {
-		// 	echo '<td class="delete_invoice" id="'.$row['in_id'].'"></td>';	
-		// }else if(($_SESSION['role'] == "admin")&&($i != 1)){
-		// 	echo '<td></td>';
-		// }
-		echo '<td></td>';
-		echo '</tr>';
-		$i++;
+			if(!file_exists($file_path)) {
+				// check if exists
+				$key = array_search($trans_string, array_column($main_array, 't_string'));
+
+				if(!is_bool($key)){
+					// found
+					// print_r($main_array[$key]);
+					array_push($main_array[$key]["items"], $extention);
+				}
+				else{
+					$new = array('date' => $date, 't_string' => $trans_string,'items' => array($extention));
+					array_push($main_array, $new);
+				}
+			}
+			
+		}			
 	}
-	echo'<tr style="text-align:right"><td colspan=7 > Total Payable</td ><td>'.$payable.'</td><td></td>';
-	// if(($_SESSION['role'] == "admin")&&($i != 1)){
-	// 	echo '<td></td>';
-	// }
-	echo'</tr>';
-
-	echo '</tbody>';
-	echo '</table>';
 }
+
+echo '<pre>';
+//echo count($main_array);
+print_r($main_array);
+
+echo '</pre>';
+
 
 ?>
