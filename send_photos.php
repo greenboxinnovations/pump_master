@@ -1,3 +1,4 @@
+
 <?php
 date_default_timezone_set("Asia/Kolkata");
 // require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
@@ -27,6 +28,7 @@ set_error_handler('myErrorHandler');
 
 // multiple images
 $dirs = array_filter(glob($local_install_dir.'uploads/*'), 'is_dir');
+//$dirs = array_filter(glob($local_install_dir.'uploads/2019-08-0'), 'is_dir');
 
 // $url_main = 'http://fuelmaster.greenboxinnovations.in'; 
 $url_main = Globals::URL_SYNC_CHECK;
@@ -42,7 +44,6 @@ foreach ($dirs as $key => $path) {
 	try {
 		// list all files in directory
 		$files = array_values(array_diff(scandir($path), array('.', '..')));
-
 		// Create array of files to post
 		foreach ($files as $i => $file) {
 
@@ -57,18 +58,10 @@ foreach ($dirs as $key => $path) {
 
 			$files_name[$i] = $file;
 
-			$data = explode("_", $file);
-			if ($data[1]=="stop.jpeg") {
-
-				if (file_exists($path.'/'.$files_name[$i])){
-					$file1 = $path.'/'.$data[0].'_start.jpeg';
-					$file2 = $path.'/'.$data[0].'_stop.jpeg';
-
-					if((file_exists($file1)) && (file_exists($file2))){
-
-						$send = true;
-					}				    
-				}
+			if(file_exists($path.'/'.$files_name[$i])){
+				$send = true;
+				trigger_error("file sent :".$files_name[$i]);
+				break;
 			}
 		}
 	} catch (Exception $e) {
@@ -101,6 +94,9 @@ else{
 		try {
 			// response is successfull
 			$data = json_decode($result);
+			echo '<pre>';
+			print_r($data);
+			echo '</pre>';
 			echo '<div>Photos Sent</div>';
 
 			foreach ($data as $key => $path) {
