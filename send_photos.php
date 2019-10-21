@@ -36,8 +36,10 @@ $url_main = Globals::URL_SYNC_CHECK;
 $send = false;
 $index = 0;
 $postData = array();
+$array_count =0;
 
-$files_name = array();
+
+$prev_trans_string = "";
 
 foreach ($dirs as $key => $path) {
 
@@ -46,6 +48,8 @@ foreach ($dirs as $key => $path) {
 		$files = array_values(array_diff(scandir($path), array('.', '..')));
 		// Create array of files to post
 		foreach ($files as $i => $file) {
+
+			$array_count++;
 
 			$postData['file[' . $index . ']'] = curl_file_create(
 					realpath($path.'/'.$file),
@@ -56,11 +60,17 @@ foreach ($dirs as $key => $path) {
 				$postData['path[' . $index . ']'] = $path;
 				$index++;
 
-			$files_name[$i] = $file;
+			$data = explode("_", $file);
 
-			if(file_exists($path.'/'.$files_name[$i])){
+			$trans_string = $data[0];
+			
+			if ($prev_trans_string == "") {
+				$prev_trans_string = $data[0];
+			}
+			
+			if (($trans_string == $prev_trans_string)&&($array_count > 3)) {
 				$send = true;
-				trigger_error("file sent :".$files_name[$i]);
+				trigger_error("file sent :".$file);
 				break;
 			}
 		}
