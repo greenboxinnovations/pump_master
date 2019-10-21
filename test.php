@@ -8,7 +8,8 @@ date_default_timezone_set('UTC');
 	// Start date
 $date = '2019-06-01';
 	// End date
-$end_date = '2019-09-30';
+//$end_date = '2019-09-30';
+$end_date = date('Y-m-d');
 
 
 
