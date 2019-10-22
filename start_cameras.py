@@ -11,6 +11,10 @@ import requests
 from requests.packages.urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
  
+from urllib3.util.retry import Retry
+import requests
+from requests.adapters import HTTPAdapter
+import json
 
 
 isCamUp = 1
@@ -155,6 +159,63 @@ def send_msg(file_msg_name, hostname):
         pass
 
 
+# function required by send_fcm
+def retry_session(retries, session=None, backoff_factor=0.3, status_forcelist=(500, 502, 503, 504)):
+    session = session or requests.Session()
+    retry = Retry(
+        total=retries,
+        read=retries,
+        connect=retries,
+        backoff_factor=backoff_factor,
+        status_forcelist=status_forcelist,
+        )
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
+    return session
+
+
+def send_fcm(file_msg_name, hostname):
+
+    now = time.strftime("%H:%M", time.localtime(time.time()))
+    urgent_msg = "CAMERA " +hostname+ " DOWN:- " + str(now)
+
+    title = "Camera Down"
+    # message = "Different message"
+
+    x = {
+        "to": "/topics/weather",
+        "data": {
+            "title" : title,
+            "message" : urgent_msg,
+        }
+    }
+
+    json_data = json.dumps(x)
+
+
+    headers={
+        "Accept": "*/*",
+        "Accept-Encoding": "gzip, deflate",
+        "Authorization": "key=AAAA8hRkI-s:APA91bGcsslrbZZPyB-9Pt0gg8U5kVMPiqBDHiQy-aTLj2hjZ1Q1pebbFEqZjhK9WHGDGnv1Pd9H6Vb-P9e-qt-BIcdw3RB_noLkzPGrsCQNbGrjEDJiP-W_lGul_6ACxPxQ1EcoSCrd",
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
+        "Content-Length": str(len(json_data)),
+        "Content-Type": "application/json",
+        "Host": "fcm.googleapis.com",       
+        "cache-control": "no-cache"
+    }
+
+    endpoint = "https://fcm.googleapis.com/fcm/send"
+    session = retry_session(retries=5)
+    # session.post(url=endpoint, data=json.dumps(x), headers=headers)
+    session.post(url=endpoint, data=json_data, headers=headers)
+
+    # write to msg_file
+    with open(file_msg_name, 'a') as msg_file:
+        msg_file.write(str(time.time()))
+
+
 # def ping_camera():
 #     global isCamUp
 #     hostname = "192.168.0.128"
@@ -208,7 +269,8 @@ def ping_camera():
                     # and send msg
                     if not os.path.exists(file_msg_name):
                         # send_msg(file_msg_name, hostname)
-                        pass
+                        send_fcm(file_msg_name, hostname)
+                        # pass
 
             # does NOT exists
             else:
