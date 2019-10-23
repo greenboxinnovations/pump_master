@@ -1,8 +1,8 @@
-
 <?php
+require __DIR__.'/query/conn.php';
 date_default_timezone_set("Asia/Kolkata");
 // require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
-require __DIR__.'/query/conn.php';
+
 
 $url_main = Globals::URL_SYNC_CHECK;
 

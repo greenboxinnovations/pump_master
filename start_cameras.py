@@ -354,7 +354,7 @@ root.after(3000, ping_camera)
 root.after(3000, check_program_status)
 
 
-root.after(10000, networkSelector)
+# root.after(10000, networkSelector)
 
 # sync_check()
 root.after(5000, sync_check)
