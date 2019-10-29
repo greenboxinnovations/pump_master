@@ -5,6 +5,7 @@
 *.mp4
 *.zip
 *.log
+!css/*.png
 sync_check.log
 send_photos.log
 send_videos.log
