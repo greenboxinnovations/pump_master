@@ -67,12 +67,30 @@ if ($trans_string != "") {
 		$sql = "UPDATE `transactions` SET `video` = 'U' WHERE `trans_string` = '".$trans_string."' ;";
 		$exe = mysqli_query($conn,$sql);
 		
-		// $cmd = 'curl -F "date='.$date.'" -F "file=@'.$file_name.'" http://fuelmaster.greenboxinnovations.in/receive_videos.php -m 1200';
-		$cmd = 'curl -F "date='.$dir_date.'" -F "file=@'.$file_name.'" '.$url_main.' -m 1200';
 
 		try {
 
-			$output = json_decode(shell_exec($cmd),true);
+			$postData['file'] = curl_file_create(
+				realpath($file_name),
+				mime_content_type($file_name),
+				basename($file)
+			);
+
+			$postData['date'] = $dir_date;
+
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL,$url_main);
+			curl_setopt($ch, CURLOPT_POST,1);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_HTTPHEADER,array("Expect:100-continue"));
+
+			echo $result = curl_exec ($ch);
+
+			$response = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+			curl_close ($ch);
+
+			$output = json_decode($result,true);
 
 			if($output['success']){
 
@@ -93,7 +111,7 @@ if ($trans_string != "") {
 			}
 		} catch (Exception $e) {
 
-			//print_r($e);
+			print_r($e);
 
 			trigger_error($e);
 
