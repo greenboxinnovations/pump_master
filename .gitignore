@@ -7,6 +7,7 @@
 *.log
 !css/*.png
 !css/icons/*.png
+!print/*.png
 sync_check.log
 send_photos.log
 send_videos.log
