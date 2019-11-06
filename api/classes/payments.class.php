@@ -145,9 +145,9 @@ class Payments
 
 		// Globals::updateSyncTable($table_name,$id,$unix);
 
-		if (Globals::SEND_MSG) {
-			$this->sendMSG($ph_no,$invoice_no,$invoice_amount,$amount_paid,$payment_balance);
-		}
+		//if (Globals::SEND_MSG) {
+		//	$this->sendMSG($ph_no,$invoice_no,$invoice_amount,$amount_paid,$payment_balance);
+	//	}
 
 	}
 
@@ -161,7 +161,7 @@ class Payments
 		$message = "Dear Customer".$newline."Your Payment of Rs ".$amount_paid." against Invoice no ".$invoice_no." of Invoice amount ".$invoice_amount." has been received.".$newline."Your total payable amount is ".$payment_balance.$newline.$timestamp;
 		$encodedMessage = urlencode($message);
 
-		$api = Globals::msgString($encodedMessage,$ph_no, true);
+		$api = Globals::msgString($encodedMessage,$ph_no, false);
 
 	    // Get cURL resource
 		$curl = curl_init();
