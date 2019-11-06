@@ -421,7 +421,10 @@ int videoThread(const int cam_no, const string trans_string, ThreadSafeVector &t
 	// VideoWriter writer = VideoWriter(file_name, CV_FOURCC('X','2','6','4'), 25, S2);
 	// VideoWriter writer = VideoWriter(file_name, VideoWriter::fourcc('H','2','6','4'), 25, S2);
 	
-	VideoWriter writer = VideoWriter(file_name_mp4, VideoWriter::fourcc('H','2','6','4'), 25, S2);
+	// VideoWriter writer = VideoWriter(file_name_mp4, VideoWriter::fourcc('X','2','6','4'), 25, S2);
+
+	// VideoWriter writer = VideoWriter(file_name_mp4, VideoWriter::fourcc('a','v','c','1'), 25, S2);
+	VideoWriter writer = VideoWriter(file_name, VideoWriter::fourcc('M','J','P','G'), 25, S2);
 
 	// dont let video record more than 20 min
 	auto start = chrono::steady_clock::now();
@@ -472,7 +475,7 @@ int videoThread(const int cam_no, const string trans_string, ThreadSafeVector &t
 	// isRecording is false
 	if(tsv.exists(trans_string)){
 		// process video
-		// videoClose(file_name,file_name_mp4);
+		videoClose(file_name,file_name_mp4);
 		tsv.remove(trans_string);
 	}
 	else{
@@ -640,6 +643,7 @@ void camThread(const string IP) {
 				first5 = true;
 			}
 		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(40));
 	}
 }
 

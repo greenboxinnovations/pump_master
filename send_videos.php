@@ -73,7 +73,7 @@ if ($trans_string != "") {
 			$postData['file'] = curl_file_create(
 				realpath($file_name),
 				mime_content_type($file_name),
-				basename($file)
+				basename($file_name)
 			);
 
 			$postData['date'] = $dir_date;

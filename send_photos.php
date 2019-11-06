@@ -71,15 +71,15 @@ function sendPhotos($postData,$local_install_dir){
 
 			foreach ($data as $key => $path) {
 				unlink($local_install_dir.$path);
-				trigger_error($local_install_dir.$path);
+				//trigger_error($local_install_dir.$path);
 			}	
 
-			foreach ($dirs as $key => $dir) {
+			//foreach ($dirs as $key => $dir) {
 
-				if ($dir != $local_install_dir."uploads/".date("Y-m-d")) {
-					rmdir($dir);		
-				}
-			}	
+			//	if ($dir != $local_install_dir."uploads/".date("Y-m-d")) {
+			//		rmdir($dir);		
+			//	}
+			//}	
 		} catch (Exception $e) {
 			trigger_error('Test');
 		}		

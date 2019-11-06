@@ -197,7 +197,7 @@ def send_fcm(file_msg_name, hostname):
     headers={
         "Accept": "*/*",
         "Accept-Encoding": "gzip, deflate",
-        "Authorization": "key=AAAA8hRkI-s:APA91bGcsslrbZZPyB-9Pt0gg8U5kVMPiqBDHiQy-aTLj2hjZ1Q1pebbFEqZjhK9WHGDGnv1Pd9H6Vb-P9e-qt-BIcdw3RB_noLkzPGrsCQNbGrjEDJiP-W_lGul_6ACxPxQ1EcoSCrd",
+        "Authorization": "key=AAAASovyhrg:APA91bHMAD2X0uNzJ_ppkY7GS2M7IgVmZbaXJHvECfa86OfOml1KB5FXR5D35tjQ7lIg3Fs0imk9kzlpsI7w1UbFWUHTJjs-cNdYdkvcnZ8JnMY02cg_bBnNo5VWkkkO6TnIeWS0AXGv",
         "Cache-Control": "no-cache",
         "Connection": "keep-alive",
         "Content-Length": str(len(json_data)),
@@ -234,11 +234,11 @@ def send_fcm(file_msg_name, hostname):
 def ping_camera():
     global isCamUp
     # wait time before msg is sent after ping loss
-    msg_diff = 1*60
-    # msg_diff = 10
+    # msg_diff = 1*60
+    msg_diff = 10
     # wait time before msg is resent after fist msg
-    msg_interval = 5*60
-    # msg_interval = 30
+    # msg_interval = 5*60
+    msg_interval = 45
 
     counter = 0
 
