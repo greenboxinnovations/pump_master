@@ -82,10 +82,10 @@ function queryServer(){
 					}
 				}
 				else if($table_name == 'transactions'){
-					if($row['id'] != $id){
-						$sql = "UPDATE `sync` SET `id` = '".$id."' WHERE `table_name` = 'transactions';";
-						$exe = mysqli_query($conn, $sql);	
-					}
+					// if($row['id'] != $id){
+					// 	$sql = "UPDATE `sync` SET `id` = '".$id."' WHERE `table_name` = 'transactions';";
+					// 	$exe = mysqli_query($conn, $sql);	
+					// }
 				}
 				else{
 					if($row['last_updated'] != $last_updated){
@@ -258,6 +258,7 @@ function downloadTable($table_name, $last_updated){
 		}
 		else{
 			trigger_error('Test'.$http_code);
+			trigger_error('Test'.$table_name);
 		}
 	}	
 	curl_close($ch);

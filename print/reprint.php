@@ -106,7 +106,7 @@ if ((isset($_GET['trans_id']))&&($p)) {
 	$date = date('l jS F Y h:i:s A',strtotime($row['date']));
 	$date1 = date('Y-m-d',strtotime($row['date']));
 
-	$t_id 	= $row['trans_id'] + 100000;
+	$t_id 	= $row['transaction_no'];
 	$vh_no 	= str_replace(" ", "-",  $row['car_no_plate']);
 	$fuel 	= $row['fuel'];
 	$ltr 	= $row['liters'];

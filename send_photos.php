@@ -123,6 +123,8 @@ foreach ($dirs as $key => $path) {
 			if ($trans_string == $prev_trans_string) {
 				if ($array_count > 3) {
 
+					trigger_error('Sent : '.$trans_string);
+
 					sendPhotos($postData,$local_install_dir);
 					$postData = NULL;
 					$index = 0;

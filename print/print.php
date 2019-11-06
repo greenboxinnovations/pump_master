@@ -104,7 +104,7 @@ if ((isset($_GET['trans_id']))&&($p)) {
 	$line = "";
 
 	while ($row = mysqli_fetch_assoc($result0)) {
-		$t_id 	= $row['max'] + 100000 +1;
+		$t_id 	= $row['transaction_no'];
 		$vh_no 	= str_replace(" ", "-",  $row['car_no_plate']);
 		$fuel 	= $row['fuel'];
 		$ltr 	= $row['liters'];

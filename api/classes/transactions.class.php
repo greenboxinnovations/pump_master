@@ -225,7 +225,7 @@ class Transactions
 
 				$transaction_no = "M".$trans_id;
 
-				$sql = "UPDATE `transactions` SET `transaction_no`= '".$trans_id."' WHERE `trans_id` = '".$trans_id."';";
+				$sql = "UPDATE `transactions` SET `transaction_no`= '".$transaction_no."' WHERE `trans_id` = '".$trans_id."';";
 				$this->_db->query($sql);
 				$this->_db->execute();
 
@@ -423,7 +423,7 @@ class Transactions
 
 			$transaction_no = "S".$trans_id;
 
-			$sql = "UPDATE `transactions` SET `transaction_no`= '".$trans_id."' WHERE `trans_id` = '".$trans_id."';";
+			$sql = "UPDATE `transactions` SET `transaction_no`= '".$transaction_no."' WHERE `trans_id` = '".$trans_id."';";
 			$this->_db->query($sql);
 			$this->_db->execute();
 
