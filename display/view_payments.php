@@ -86,13 +86,12 @@ function renderTable($data){
 	$old_amount			= 0;  
 	$total_r 		    = 0;
 	$prev_balance 		= 0;
+	$first = false;
 
 	for ($i=0; $i < sizeof($data) ; $i++) { 
 		
 		$show 			= true;
 		$invoice_pending 	= 0;
-
-		$first = false;
 
 		$cust_id	 	= $data[$i]["cust_id"];
 		$cust_disp_name	= $data[$i]["cust_disp_name"];
