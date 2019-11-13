@@ -423,7 +423,7 @@ int videoThread(const int cam_no, const string trans_string, ThreadSafeVector &t
 	
 	// VideoWriter writer = VideoWriter(file_name_mp4, VideoWriter::fourcc('X','2','6','4'), 25, S2);
 
-	// VideoWriter writer = VideoWriter(file_name_mp4, VideoWriter::fourcc('H','2','6','4'), 25, S2);
+	//VideoWriter writer = VideoWriter(file_name_mp4, VideoWriter::fourcc('a','v','c','1'), 25, S2);
 	VideoWriter writer = VideoWriter(file_name, VideoWriter::fourcc('M','J','P','G'), 25, S2);
 
 	// dont let video record more than 20 min
