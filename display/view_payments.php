@@ -92,6 +92,8 @@ function renderTable($data){
 		$show 			= true;
 		$invoice_pending 	= 0;
 
+		$first = false;
+
 		$cust_id	 	= $data[$i]["cust_id"];
 		$cust_disp_name	= $data[$i]["cust_disp_name"];
 		$cust_ph_no     = $data[$i]["cust_ph_no"];
