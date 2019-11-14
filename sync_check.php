@@ -1,3 +1,5 @@
+
+application/x-httpd-php sync_check.php ( PHP script text )
 <?php
 // require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 require __DIR__.'/query/conn.php';
@@ -87,6 +89,7 @@ function queryServer(){
 					// 	$exe = mysqli_query($conn, $sql);	
 					// }
 				}
+				else if($table_name == 'local_server'){}
 				else{
 					if($row['last_updated'] != $last_updated){
 						echo 'download '.$table_name;
