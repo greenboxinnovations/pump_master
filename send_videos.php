@@ -51,11 +51,29 @@ if ($trans_string != "") {
 			$file_name = $video;
 			trigger_error("exists".$video);
 		}else{
-			if ($time_diff > 60*3) {
+
+			$video_avi = $path.'/'.$trans_string.'.avi';
+			if (file_exists($video_avi)) {
+				$cmd = "ffmpeg -i ".$video_avi." ".$video ;
+				// trigger_error("exists".$cmd);
+				try{
+					$result = shell_exec($cmd);
+					trigger_error("avi convet to mp4".$video);
+					$file_name = $video;
+					trigger_error("exists".$video);
+					if (file_exists($video_avi)) {
+						unlink($video_avi);
+					}
+					
+				}catch(Exception $e) {
+					trigger_error('conversion error'.$trans_string);
+				}
+				
+			}else{
 				//trigger_error("dosent exists".$time_diff.$trans_string);
 				$sql = "UPDATE `transactions` SET `video` = 'A' WHERE `trans_string` = '".$trans_string."' ;";
 				$exe = mysqli_query($conn,$sql);
-			}			
+			}		
 		}
 
 	} catch (Exception $e) {
@@ -107,6 +125,23 @@ if ($trans_string != "") {
 				trigger_error("error set status to E");
 				$sql = "UPDATE `transactions` SET `video` = 'N' WHERE `trans_string` = '".$trans_string."' ;";
 				$exe = mysqli_query($conn,$sql);
+
+				if (file_exists($video)) {
+					$video_new = $path.'/1.mp4';
+					$cmd = "ffmpeg -i ".$video." ".$video_new ;
+					// trigger_error("exists".$cmd);
+					try{
+						$result = shell_exec($cmd);
+						trigger_error("reconverted".$video);
+						if (file_exists($video)) {
+							unlink($video);
+						}
+						rename( $video_new, $video);
+					}catch(Exception $e) {
+						trigger_error('conversion error'.$trans_string);
+					}
+					
+				}
 
 			}
 		} catch (Exception $e) {

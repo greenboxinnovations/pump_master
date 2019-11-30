@@ -1,5 +1,3 @@
-
-application/x-httpd-php sync_check.php ( PHP script text )
 <?php
 // require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 require __DIR__.'/query/conn.php';
