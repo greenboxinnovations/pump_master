@@ -128,13 +128,14 @@ if ($trans_string != "") {
 
 				if (file_exists($video)) {
 					$video_new = $path.'/1.mp4';
+					$video_converted = $path.'/'.$trans_string.'-converted.mp4';
 					$cmd = "ffmpeg -i ".$video." ".$video_new ;
 					// trigger_error("exists".$cmd);
 					try{
 						$result = shell_exec($cmd);
 						trigger_error("reconverted".$video);
-						if (file_exists($video)) {
-							unlink($video);
+						if ((file_exists($video))&&(file_exists($video_new))) {
+							rename( $video, $video_converted);
 						}
 						rename( $video_new, $video);
 					}catch(Exception $e) {
