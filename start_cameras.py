@@ -117,7 +117,7 @@ def check_program_status():
 
 def start_program():
     isStarting = 1
-    time.sleep(10)
+    time.sleep(5)
     print("starting program now")
     result = subprocess.run('/opt/lampp/htdocs/pump_master/program.sh start&',shell=True)
     isStarting = 0
@@ -251,8 +251,6 @@ def ping_camera():
         file_name = "/opt/lampp/htdocs/pump_master/"+str(hostname) + ".txt"
         file_msg_name = "/opt/lampp/htdocs/pump_master/"+str(hostname) + "_msg.txt"
 
-
-       
         # no response
         # CAM is down
         if response != 0:
@@ -306,14 +304,14 @@ def ping_camera():
 
     print("counter "+str(counter))
     print("ISCAMPUP "+str(isCamUp))
-    root.after(12000, ping_camera)
+    root.after(30000, ping_camera)
 
 
 
 def send_photos():
     result = subprocess.run('/opt/lampp/bin/php /opt/lampp/htdocs/pump_master/send_photos.php',shell=True,stdout=subprocess.PIPE)
     print(result.stdout.decode('utf-8'))
-    root.after(3000, send_photos)
+    root.after(6000, send_photos)
 
 
 def sync_check():
@@ -324,7 +322,7 @@ def sync_check():
 def send_videos():
     result = subprocess.run('/opt/lampp/bin/php /opt/lampp/htdocs/pump_master/send_videos.php',shell=True,stdout=subprocess.PIPE)
     print(result.stdout.decode('utf-8'))
-    root.after(5000, send_videos)
+    root.after(10000, send_videos)
     #with open("send_videos.txt", "a+") as myfile:
     #    myfile.write(result.stdout.decode('utf-8'))
     #myfile.close()
@@ -351,15 +349,15 @@ time.sleep(10)
 # loops here
 
 root.after(3000, ping_camera)
-root.after(3000, check_program_status)
+root.after(5000, check_program_status)
 
 
 # root.after(10000, networkSelector)
 
 # sync_check()
-root.after(5000, sync_check)
-root.after(5000, send_photos)
-root.after(5000, send_videos)
+root.after(10000, sync_check)
+root.after(12000, send_photos)
+root.after(15000, send_videos)
 
 root.protocol("WM_DELETE_WINDOW", disable_event)
 

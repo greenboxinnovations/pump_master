@@ -27,6 +27,7 @@ set_error_handler('myErrorHandler');
 
 $trans_string = "";
 $file_name    = "";
+$dir_date     = "";
 $date = date('Y-m-d H:i:s');
 
 
@@ -80,7 +81,7 @@ if ($trans_string != "") {
 		trigger_error('Test');
 	}
 	
-	if($file_name != ""){
+	if(($file_name != "")&&($dir_date != "")){
 
 		$sql = "UPDATE `transactions` SET `video` = 'U' WHERE `trans_string` = '".$trans_string."' ;";
 		$exe = mysqli_query($conn,$sql);
@@ -155,5 +156,7 @@ if ($trans_string != "") {
 			$exe = mysqli_query($conn,$sql);
 		}
 	}
+}else{
+	echo "No Videos to upload";
 }
 ?>
