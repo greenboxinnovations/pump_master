@@ -62,7 +62,9 @@ while ( $r = mysqli_fetch_assoc($exe)) {
 
 echo '<pre>';
 //echo count($main_array);
-print_r($main_array);
+
+$json = json_encode($main_array,JSON_NUMERIC_CHECK);
+print_r($json);
 
 echo '</pre>';
 
