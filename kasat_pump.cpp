@@ -1,5 +1,9 @@
 #include <opencv2/opencv.hpp>
 
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/highgui.hpp"
+#include "opencv2/imgproc.hpp"
+
 #include <thread>
 #include <atomic>
 #include <mutex>
@@ -26,7 +30,7 @@
 
 
 // Vlc player
-#include "VlcCap.h"
+// #include "VlcCap.h"
 
 
 // database includes 
@@ -415,7 +419,7 @@ int videoThread(const int cam_no, const string trans_string, ThreadSafeVector &t
 	exec(cmd.c_str());
 
 	// make file name
-	string file_name = "/opt/lampp/htdocs/pump_master/videos/"+date+"/"+trans_string+".avi";
+	// string file_name = "/opt/lampp/htdocs/pump_master/videos/"+date+"/"+trans_string+".avi";
 	string file_name_mp4 = "/opt/lampp/htdocs/pump_master/videos/"+date+"/"+trans_string+".mp4";
 
 	// VideoWriter writer = VideoWriter(file_name, CV_FOURCC('X','2','6','4'), 25, S2);
@@ -424,7 +428,8 @@ int videoThread(const int cam_no, const string trans_string, ThreadSafeVector &t
 	// VideoWriter writer = VideoWriter(file_name_mp4, VideoWriter::fourcc('X','2','6','4'), 25, S2);
 
 	//VideoWriter writer = VideoWriter(file_name_mp4, VideoWriter::fourcc('a','v','c','1'), 25, S2);
-	VideoWriter writer = VideoWriter(file_name, VideoWriter::fourcc('M','J','P','G'), 25, S2);
+	// VideoWriter writer = VideoWriter(file_name, VideoWriter::fourcc('M','J','P','G'), 25, S2);
+	VideoWriter writer = VideoWriter(file_name_mp4, VideoWriter::fourcc('a','v','c','1'), 25, S2);       
 
 	// dont let video record more than 20 min
 	auto start = chrono::steady_clock::now();
@@ -458,14 +463,14 @@ int videoThread(const int cam_no, const string trans_string, ThreadSafeVector &t
 
 		
 
-		skip++;
-		if(skip == 9){
-			skip = 0;
+		// skip++;
+		// if(skip == 9){
+		// 	skip = 0;
 			small_frame.copyTo(big_frame(cv::Rect(1280,(1080-small_frame.rows),small_frame.cols,small_frame.rows)));			
 			date_frame = writeDatePrimary(big_frame);
 			cv::resize(date_frame, resized, S2);
 			writer.write(resized);
-		}
+		// }
 		std::this_thread::sleep_for(std::chrono::milliseconds(40));
 	}
 
@@ -475,7 +480,7 @@ int videoThread(const int cam_no, const string trans_string, ThreadSafeVector &t
 	// isRecording is false
 	if(tsv.exists(trans_string)){
 		// process video
-		videoClose(file_name,file_name_mp4);
+		//videoClose(file_name,file_name_mp4);
 		tsv.remove(trans_string);
 	}
 	else{
@@ -605,8 +610,12 @@ void camThread(const string IP) {
 
 	Mat pre_frame;
 	Mat frame;
-	VlcCap cap;
-	cap.open(IP.c_str());
+	// VlcCap cap;
+	// cap.open(IP.c_str());
+	VideoCapture cap(IP);
+    cap.set(cv::CAP_PROP_BUFFERSIZE, 1);
+
+
 	// VideoCapture video(IP);
 
 	// open and check video	
@@ -617,8 +626,9 @@ void camThread(const string IP) {
 	while (1) {
 
 		// read frame
-		cap.read(pre_frame);
-		cvtColor(pre_frame, frame, COLOR_RGB2BGR);
+		// cap.read(pre_frame);
+		cap >> frame;
+		// cvtColor(pre_frame, frame, COLOR_RGB2BGR);
 
 		if (!frame.empty()) {			
 
@@ -699,6 +709,7 @@ int main(int argc, char** argv) {
 		if (first1 && first2 && first3 && first4 && first5) {
 		// if (first4 && first5) {
 		// if (first1 && first2) {
+		// if (first1) {
 
 
 			// if(h_size == 0){
