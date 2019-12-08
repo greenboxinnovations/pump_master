@@ -23,6 +23,8 @@ import logging
 isCamUp = 1
 isStarting = 0
 
+date_ping_file = "/opt/lampp/htdocs/pump_master/logs/start_cameras.log"
+
 
 class Window(Frame):
 
@@ -80,6 +82,15 @@ def check_ping():
         kill_program_from_out()
 
 
+def writeLog(msg):
+    logging.basicConfig(filename=date_ping_file,
+                        filemode='a',
+                        format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S',                                            
+                        level=logging.DEBUG)
+    logging.info(msg)
+
+
 
 def kill_program_from_out():
     result = subprocess.run('/opt/lampp/htdocs/pump_master/program.sh kill',shell=True, stdout=subprocess.PIPE)
@@ -103,17 +114,7 @@ def check_program_status():
         if(isCamUp == 1):
             print("start program")
             if(isStarting == 0):
-                # ================================================================================
-                # curdate
-                date_ping_file = str(datetime.datetime.now().date())                
-                # write to file
-                logging.basicConfig(filename=date_ping_file,
-                                            filemode='a',
-                                            format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
-                                            datefmt='%H:%M:%S',
-                                            level=logging.DEBUG)
-                logging.info("starting program")
-                # ================================================================================
+                writeLog("starting program")
                 start_program()
                 # pass
         else:            
@@ -125,18 +126,7 @@ def check_program_status():
             
         else:
             print("kill program")
-            # ================================================================================
-            # curdate
-            date_ping_file = str(datetime.datetime.now().date())            
-            # write to file
-            logging.basicConfig(filename=date_ping_file,
-                                        filemode='a',
-                                        format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
-                                        datefmt='%H:%M:%S',
-                                        level=logging.DEBUG)
-            logging.info("killing program")
-            # ================================================================================
-            
+            writeLog("killing program")            
             kill_program_from_out()        
     root.after(5000, check_program_status) 
 
@@ -281,17 +271,7 @@ def ping_camera():
         # CAM is down
         if response != 0:
 
-            # ================================================================================
-            # curdate
-            date_ping_file = str(datetime.datetime.now().date())            
-            # write to file
-            logging.basicConfig(filename=date_ping_file,
-                                        filemode='a',
-                                        format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
-                                        datefmt='%H:%M:%S',
-                                        level=logging.DEBUG)
-            logging.info(hostname)
-            # ================================================================================
+            writeLog(hostname)
             
             # file exists
             if os.path.isfile(file_name):
