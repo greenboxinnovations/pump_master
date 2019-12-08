@@ -16,6 +16,9 @@ import requests
 from requests.adapters import HTTPAdapter
 import json
 
+# logging ping results
+import datetime
+import logging
 
 isCamUp = 1
 isStarting = 0
@@ -100,6 +103,17 @@ def check_program_status():
         if(isCamUp == 1):
             print("start program")
             if(isStarting == 0):
+                # ================================================================================
+                # curdate
+                date_ping_file = str(datetime.datetime.now().date())                
+                # write to file
+                logging.basicConfig(filename=date_ping_file,
+                                            filemode='a',
+                                            format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                                            datefmt='%H:%M:%S',
+                                            level=logging.DEBUG)
+                logging.info("starting program")
+                # ================================================================================
                 start_program()
                 # pass
         else:            
@@ -111,6 +125,18 @@ def check_program_status():
             
         else:
             print("kill program")
+            # ================================================================================
+            # curdate
+            date_ping_file = str(datetime.datetime.now().date())            
+            # write to file
+            logging.basicConfig(filename=date_ping_file,
+                                        filemode='a',
+                                        format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                                        datefmt='%H:%M:%S',
+                                        level=logging.DEBUG)
+            logging.info("killing program")
+            # ================================================================================
+            
             kill_program_from_out()        
     root.after(5000, check_program_status) 
 
@@ -255,6 +281,18 @@ def ping_camera():
         # CAM is down
         if response != 0:
 
+            # ================================================================================
+            # curdate
+            date_ping_file = str(datetime.datetime.now().date())            
+            # write to file
+            logging.basicConfig(filename=date_ping_file,
+                                        filemode='a',
+                                        format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                                        datefmt='%H:%M:%S',
+                                        level=logging.DEBUG)
+            logging.info(hostname)
+            # ================================================================================
+            
             # file exists
             if os.path.isfile(file_name):
                 # read and get time diff
@@ -304,7 +342,7 @@ def ping_camera():
 
     print("counter "+str(counter))
     print("ISCAMPUP "+str(isCamUp))
-    root.after(30000, ping_camera)
+    root.after(10000, ping_camera)
 
 
 
