@@ -1,4 +1,8 @@
 #include <opencv2/opencv.hpp>
+#include <opencv2/videoio.hpp>
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/highgui.hpp"
+#include "opencv2/imgproc.hpp"
 
 #include <thread>
 #include <atomic>
@@ -26,7 +30,7 @@
 
 
 // Vlc player
-#include "VlcCap.h"
+// #include "VlcCap.h"
 
 
 // database includes 
@@ -56,6 +60,8 @@ std::atomic<bool> first2(0);
 std::atomic<bool> first3(0);
 std::atomic<bool> first4(0);
 std::atomic<bool> first5(0);
+
+std::atomic<bool> active_transaction(0);
 
 
 
@@ -415,7 +421,7 @@ int videoThread(const int cam_no, const string trans_string, ThreadSafeVector &t
 	exec(cmd.c_str());
 
 	// make file name
-	string file_name = "/opt/lampp/htdocs/pump_master/videos/"+date+"/"+trans_string+".avi";
+	// string file_name = "/opt/lampp/htdocs/pump_master/videos/"+date+"/"+trans_string+".avi";
 	string file_name_mp4 = "/opt/lampp/htdocs/pump_master/videos/"+date+"/"+trans_string+".mp4";
 
 	// VideoWriter writer = VideoWriter(file_name, CV_FOURCC('X','2','6','4'), 25, S2);
@@ -424,7 +430,8 @@ int videoThread(const int cam_no, const string trans_string, ThreadSafeVector &t
 	// VideoWriter writer = VideoWriter(file_name_mp4, VideoWriter::fourcc('X','2','6','4'), 25, S2);
 
 	//VideoWriter writer = VideoWriter(file_name_mp4, VideoWriter::fourcc('a','v','c','1'), 25, S2);
-	VideoWriter writer = VideoWriter(file_name, VideoWriter::fourcc('M','J','P','G'), 25, S2);
+	// VideoWriter writer = VideoWriter(file_name, VideoWriter::fourcc('M','J','P','G'), 25, S2);
+	VideoWriter writer = VideoWriter(file_name_mp4, VideoWriter::fourcc('a','v','c','1'), 25, S2);       
 
 	// dont let video record more than 20 min
 	auto start = chrono::steady_clock::now();
@@ -475,7 +482,7 @@ int videoThread(const int cam_no, const string trans_string, ThreadSafeVector &t
 	// isRecording is false
 	if(tsv.exists(trans_string)){
 		// process video
-		videoClose(file_name,file_name_mp4);
+		//videoClose(file_name,file_name_mp4);
 		tsv.remove(trans_string);
 	}
 	else{
@@ -496,8 +503,11 @@ void getCamStatus(ThreadSafeVector &tsv) {
 		con->setSchema(DB.c_str());
 		unique_ptr<sql::Statement> stmt(con->createStatement());
 
-		string query = "SELECT * FROM `cameras` WHERE `status` = 1";
+		// string query = "SELECT * FROM `cameras` WHERE `status` = 1";
+		string query = "SELECT * FROM `cameras` WHERE 1";
 		unique_ptr<sql::ResultSet> res(stmt->executeQuery(query.c_str()));
+		
+		int start_counter = 0;
 		
 
 		if (res->rowsCount() != 0) {
@@ -506,87 +516,98 @@ void getCamStatus(ThreadSafeVector &tsv) {
 				// cout << res->getString("cam_no") << endl;
 				// cout << res->getString("type") << endl;
 				// cout << res->getString("trans_string") << endl;
+				int status = std::stoi(res->getString("status"));
+				string tttype = res->getString("type");
+				if(tttype == "start"){
+					start_counter = start_counter + 1;
+				}				
+
+				if(status == 1){
+
+					try{
+						// make a date string
+						time (&rawtime);
+						timeinfo = localtime (&rawtime);
+						strftime(buffer,80,"%Y-%m-%d",timeinfo);
+						std::string date(buffer);				
 
 
-				try{
-					// make a date string
-					time (&rawtime);
-					timeinfo = localtime (&rawtime);
-					strftime(buffer,80,"%Y-%m-%d",timeinfo);
-					std::string date(buffer);				
+						// make directory if not exists
+						// string cmd = "mkdir -m 777 ./uploads/"+date;
+						string cmd = "mkdir -p -m 777 /opt/lampp/htdocs/pump_master/uploads/"+date;
+						
+						system("clear");
+						system(cmd.c_str());
 
 
-					// make directory if not exists
-					// string cmd = "mkdir -m 777 ./uploads/"+date;
-					string cmd = "mkdir -p -m 777 /opt/lampp/htdocs/pump_master/uploads/"+date;
-					
-					system("clear");
-					system(cmd.c_str());
+						// make file names
+						// string file_name = "uploads/"+date+"/"+res->getString("trans_string") + "_" +res->getString("type")+".jpeg";
+						// string file_name2 = "uploads/"+date+"/"+res->getString("trans_string") + "_" + res->getString("type")+"_top.jpeg";
+						string file_name = "/opt/lampp/htdocs/pump_master/uploads/"+date+"/"+res->getString("trans_string") + "_" +res->getString("type")+".jpeg";
+						string file_name2 = "/opt/lampp/htdocs/pump_master/uploads/"+date+"/"+res->getString("trans_string") + "_" + res->getString("type")+"_top.jpeg";
 
 
-					// make file names
-					// string file_name = "uploads/"+date+"/"+res->getString("trans_string") + "_" +res->getString("type")+".jpeg";
-					// string file_name2 = "uploads/"+date+"/"+res->getString("trans_string") + "_" + res->getString("type")+"_top.jpeg";
-					string file_name = "/opt/lampp/htdocs/pump_master/uploads/"+date+"/"+res->getString("trans_string") + "_" +res->getString("type")+".jpeg";
-					string file_name2 = "/opt/lampp/htdocs/pump_master/uploads/"+date+"/"+res->getString("trans_string") + "_" + res->getString("type")+"_top.jpeg";
+						int cam_no = std::stoi(res->getString("cam_no"));				
+						string t_string = res->getString("trans_string");
+						string t_type = res->getString("type");
 
+						// select camera
+						if (res->getString("cam_no") == "1")
+						{						
+							Mat d = writeDateSecondary(displayFrame1);
+							imwrite(file_name, d );
+							Mat s = writeDatePrimary(displayFrame3);
+							imwrite(file_name2, s );
+						}
+						else if (res->getString("cam_no") == "2") {
+							Mat d = writeDateSecondary(displayFrame2);
+							imwrite(file_name, d );
+							Mat s = writeDatePrimary(displayFrame3);
+							imwrite(file_name2, s );
+						}
+						else if (res->getString("cam_no") == "4") {
+							Mat d = writeDateSecondary(displayFrame4);
+							imwrite(file_name, d );
+							Mat s = writeDatePrimary(displayFrame3);
+							imwrite(file_name2, s );
+						}
+						else if (res->getString("cam_no") == "5") {
+							Mat d = writeDateSecondary(displayFrame5);
+							imwrite(file_name, d );
+							Mat s = writeDatePrimary(displayFrame3);
+							imwrite(file_name2, s );
+						}
+						
 
-					int cam_no = std::stoi(res->getString("cam_no"));				
-					string t_string = res->getString("trans_string");
-					string t_type = res->getString("type");
+						// video routing
+						if(t_type == "start"){
+							tsv.removeCamNo(cam_no);
+							vidHandle vh = {t_string, cam_no, true};
+							tsv.add(vh);
+							thread vidT(videoThread, cam_no, t_string, std::ref(tsv));
+							vidT.detach();
+						}
+						else if(t_type == "stop"){
+							tsv.change(t_string, false);
+							string photo_start = "/opt/lampp/htdocs/pump_master/uploads/"+date+"/"+ t_string + "_start.jpeg";
+							string photo_stop = "/opt/lampp/htdocs/pump_master/uploads/"+date+"/"+ t_string + "_stop.jpeg";
+							updateTransTime(photo_start, photo_stop, t_string);
+						}
 
-					// select camera
-					if (res->getString("cam_no") == "1")
-					{						
-						Mat d = writeDateSecondary(displayFrame1);
-						imwrite(file_name, d );
-						Mat s = writeDatePrimary(displayFrame3);
-						imwrite(file_name2, s );
+						// reset status in cameras
+						setCamStatus(res->getString("cam_no"));
+
 					}
-					else if (res->getString("cam_no") == "2") {
-						Mat d = writeDateSecondary(displayFrame2);
-						imwrite(file_name, d );
-						Mat s = writeDatePrimary(displayFrame3);
-						imwrite(file_name2, s );
+					catch( const std::exception &e) {
+						std::cerr << e.what();
 					}
-					else if (res->getString("cam_no") == "4") {
-						Mat d = writeDateSecondary(displayFrame4);
-						imwrite(file_name, d );
-						Mat s = writeDatePrimary(displayFrame3);
-						imwrite(file_name2, s );
-					}
-					else if (res->getString("cam_no") == "5") {
-						Mat d = writeDateSecondary(displayFrame5);
-						imwrite(file_name, d );
-						Mat s = writeDatePrimary(displayFrame3);
-						imwrite(file_name2, s );
-					}
-					
-
-					// video routing
-					if(t_type == "start"){
-						tsv.removeCamNo(cam_no);
-						vidHandle vh = {t_string, cam_no, true};
-						tsv.add(vh);
-						thread vidT(videoThread, cam_no, t_string, std::ref(tsv));
-						vidT.detach();
-					}
-					else if(t_type == "stop"){
-						tsv.change(t_string, false);
-						string photo_start = "/opt/lampp/htdocs/pump_master/uploads/"+date+"/"+ t_string + "_start.jpeg";
-						string photo_stop = "/opt/lampp/htdocs/pump_master/uploads/"+date+"/"+ t_string + "_stop.jpeg";
-						updateTransTime(photo_start, photo_stop, t_string);
-					}
-
-					// reset status in cameras
-					setCamStatus(res->getString("cam_no"));
-
 				}
-				catch( const std::exception &e) {
-					std::cerr << e.what();
-				}
+			}
 
-	
+			if(start_counter > 0){
+				active_transaction = true;
+			}else{
+				active_transaction = false;
 			}
 		}
 	}
@@ -605,8 +626,12 @@ void camThread(const string IP) {
 
 	Mat pre_frame;
 	Mat frame;
-	VlcCap cap;
-	cap.open(IP.c_str());
+	// VlcCap cap;
+	// cap.open(IP.c_str());
+	VideoCapture cap(IP);
+    cap.set(cv::CAP_PROP_BUFFERSIZE, 5);
+
+
 	// VideoCapture video(IP);
 
 	// open and check video	
@@ -617,8 +642,9 @@ void camThread(const string IP) {
 	while (1) {
 
 		// read frame
-		cap.read(pre_frame);
-		cvtColor(pre_frame, frame, COLOR_RGB2BGR);
+		// cap.read(pre_frame);
+		cap >> frame;
+		// cvtColor(pre_frame, frame, COLOR_RGB2BGR);
 
 		if (!frame.empty()) {			
 
@@ -699,6 +725,7 @@ int main(int argc, char** argv) {
 		if (first1 && first2 && first3 && first4 && first5) {
 		// if (first4 && first5) {
 		// if (first1 && first2) {
+		// if (first1) {
 
 
 			// if(h_size == 0){
@@ -720,6 +747,17 @@ int main(int argc, char** argv) {
 			displayFrame2.copyTo(comboFrame(cv::Rect(640,0,displayFrame2.cols,displayFrame2.rows)));
 			displayFrame4.copyTo(comboFrame(cv::Rect(0,480,displayFrame4.cols,displayFrame4.rows)));
 			displayFrame5.copyTo(comboFrame(cv::Rect(640,480,displayFrame5.cols,displayFrame5.rows)));
+
+
+			if(active_transaction){
+				cv::putText(comboFrame, //target image
+							"ACTIVE", //text
+							cv::Point(10, 40), //top-left position
+							cv::FONT_HERSHEY_DUPLEX,
+							1.5,
+							CV_RGB(255, 0, 0), //font color
+							2);	
+			}
 
 
 			// imshow(C1WINDOW, displayFrame4);

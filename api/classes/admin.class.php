@@ -32,7 +32,25 @@ class Admin
 				case 1:
 				if($this->_getParams[0] == "transactions"){
 					$this->getTransactions(date('Y-m-d'));
-							// echo 'shjow trancs';
+				}
+
+				if($this->_getParams[0] == "local_server"){
+					$this->getLocalServer();
+				}
+
+				// show missing and server uptime
+				if($this->_getParams[0] == "missing"){
+					$this->getMissing();							
+					// echo $_SERVER['DOCUMENT_ROOT'];
+					// echo '<br>';
+					// $mypath = $_SERVER['DOCUMENT_ROOT']."/videos/2019-11-14/EdkcZmz3yo.mp4";
+
+					// if(!file_exists($mypath)){
+					// 	echo 'doesnt exist';
+					// }
+					// else{
+					// 	echo 'exists';
+					// }
 				}
 
 					// echo '<pre>';
@@ -122,6 +140,124 @@ class Admin
 		}
 		echo json_encode($output,JSON_NUMERIC_CHECK);
 	}
+
+
+
+	private function getMissing(){
+
+
+		$start_date = date("Y-m-d", strtotime("-1 month"));
+		$end_date 	= date('Y-m-d');
+
+		$sql = "SELECT `trans_string`, date(`date`) as 'date' FROM `transactions` WHERE date(`date`) BETWEEN '$start_date' AND '$end_date' AND `trans_string` IS NOT NULL ORDER BY `trans_id` DESC;";
+
+		// $sql = "SELECT `trans_string`, date(`date`) as 'date' FROM `transactions` WHERE date(`date`) ='$end_date' AND `trans_string` IS NOT NULL ORDER BY `trans_id` DESC;";
+
+		$this->_db->query($sql);
+		$this->_db->execute();
+
+		// transaction videos
+		$video_dir = $_SERVER['DOCUMENT_ROOT'].'/videos';
+
+		// $video_dir = '../videos';
+		// echo getcwd();
+		// echo $_SERVER['DOCUMENT_ROOT'];
+
+		$output=array();
+		if($this->_db->rowCount() > 0)
+		{
+			$r = $this->_db->resultset();
+			foreach ($r as $row) {
+
+				$trans_string 	= $row['trans_string'];
+				$date 			= $row['date'];
+
+				$vid_path = $video_dir."/".$date."/".$trans_string.".mp4";
+
+				// transaction videos		
+				if(!file_exists($vid_path)){								
+					$new = array('date' => $date, 't_string' => $trans_string,'items' => array('V'));
+					array_push($output, $new);
+				}
+
+
+				// transaction photos
+				// $upload_dir = 'uploads';
+				$upload_dir = $_SERVER['DOCUMENT_ROOT'].'/uploads';
+
+				$check 			= ['_start.jpeg','_start_top.jpeg','_stop.jpeg','_stop_top.jpeg'];
+				$description 	= ['Zero Photo','Zero Overhead Photo','Completion Photo','Completed Overhead Photo'];
+
+				foreach ($check as $i => $extention) {
+
+					$file_path = $upload_dir."/".$date."/".$trans_string.$extention;
+
+					if(!file_exists($file_path)) {
+						// check if exists
+						$key = array_search($trans_string, array_column($output, 't_string'));
+
+						if(!is_bool($key)){
+						// found
+						// print_r($main_array[$key]);
+							array_push($output[$key]["items"], $extention);
+						}
+						else{
+							$new = array('date' => $date, 't_string' => $trans_string,'items' => array($extention));
+							array_push($output, $new);
+						}
+					}
+
+				}			
+			}
+			
+		}
+
+		// spagheti code need to be refactored		
+		for ($i=0; $i < sizeof($output); $i++) { 
+			$temp = "";
+			foreach ($output[$i]['items'] as $value) {
+				$temp.= $value.' ';
+			}
+			
+			
+			$temp = str_replace("_start.jpeg","1",$temp);
+			$temp = str_replace("_start_top.jpeg","2",$temp);
+			$temp = str_replace("_stop.jpeg","3",$temp);
+			$temp = str_replace("_stop_top.jpeg","4",$temp);			
+			$output[$i]['items'] = trim($temp);
+		}
+		
+
+		echo json_encode($output,JSON_NUMERIC_CHECK);
+	}
+
+
+	private function getLocalServer(){
+		// echo $date;
+
+		$sql = "SELECT `last_updated` FROM `sync` WHERE `table_name` = 'local_server';";
+
+		$this->_db->query($sql);		
+		$this->_db->execute();
+
+
+		$output=array();
+		if($this->_db->rowCount() > 0)
+		{
+			$r = $this->_db->single();
+			$last_updated = $r["last_updated"];
+			
+
+			$unix = strtotime(date("Y-m-d H:i:s"));
+
+			$output["server_timestamp"]	= date("Y-m-d H:i:s",$last_updated);
+			$output["local_server"]	 	= date("H:i:s",$last_updated);
+			$output["last_sync"]	 	= ($unix - $last_updated);
+		}
+		echo json_encode($output,JSON_NUMERIC_CHECK);
+	}
+
+
 
 	private function validateDate($date, $format = 'Y-m-d') {
 		$d = DateTime::createFromFormat($format, $date);

@@ -87,6 +87,7 @@ function queryServer(){
 					// 	$exe = mysqli_query($conn, $sql);	
 					// }
 				}
+				else if($table_name == 'local_server'){}
 				else{
 					if($row['last_updated'] != $last_updated){
 						echo 'download '.$table_name;

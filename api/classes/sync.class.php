@@ -42,6 +42,8 @@ class Sync
 
 		$json = array();		
 
+
+
 		foreach($r as $row)
 		{
 			if ($row['table_name']=='transactions') {
@@ -54,11 +56,20 @@ class Sync
 				
 				array_push($json, $t);
 			}
+			// else if ($row['local_server']=='transactions') {}
 			else{
 				array_push($json, $row);
 			}
 			
 		}
+		
+		
+		// update local_server time
+		$unix = strtotime(date("Y-m-d H:i:s"));
+		//$unix = 123;
+		$sql = "UPDATE `sync` SET `last_updated`= '".$unix."' WHERE `table_name` = 'local_server';";		
+		$this->_db->query($sql);
+		$this->_db->execute();		
 
 		echo json_encode($json);
 	}
