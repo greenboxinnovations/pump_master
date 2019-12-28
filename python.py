@@ -8,12 +8,14 @@ import time
 
 
 
-def send_videos():
-    result = subprocess.run('/opt/lampp/bin/php /opt/lampp/htdocs/pump_master/send_videos.php',shell=True,stdout=subprocess.PIPE)
-    print(result.stdout.decode('utf-8'))
-    with open("test.txt", "a+") as myfile:
-    	myfile.write(result.stdout.decode('utf-8'))
-    myfile.close()    	
-    # root.after(3000, send_videos)
+def check_ping():
+    hostname = "192.168.0.1"
+    response = os.system("ping -c 1 " + hostname)
+    # and then check the response...
+    if response == 0:
+        print("Network Active")
+    else:
+        print("Network Error")
+        
 
-send_videos()
+check_ping()

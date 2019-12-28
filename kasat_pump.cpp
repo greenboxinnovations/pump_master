@@ -23,6 +23,8 @@
 #include <ctime>
 #include <sstream>
 
+// log file
+#include <fstream>
 
 #include <sys/stat.h>
 #include <time.h>
@@ -30,7 +32,7 @@
 
 
 // Vlc player
-// #include "VlcCap.h"
+#include "VlcCap.h"
 
 
 // database includes 
@@ -263,6 +265,28 @@ string dateString() {
 
 	// std::cout << str << std::endl;
 	return str;
+}
+
+// consider merging both functions
+// for log timestamp
+std::string getCurrentDateTime( std::string s ){
+    time_t now = time(0);
+    struct tm  tstruct;
+    char  buf[80];
+    tstruct = *localtime(&now);
+    if(s=="now")
+        strftime(buf, sizeof(buf), "%Y-%m-%d %X", &tstruct);
+    else if(s=="date")
+        strftime(buf, sizeof(buf), "%Y-%m-%d", &tstruct);
+    return std::string(buf);
+};
+
+// write to log file
+void write_text_to_log_file( const std::string &text )
+{
+    std::ofstream log_file(
+        "/opt/lampp/htdocs/pump_master/logs/cpp.log", std::ios_base::out | std::ios_base::app );
+    log_file << text << std::endl;
 }
 
 cv::Mat writeDateSecondary(Mat frame){
@@ -626,10 +650,10 @@ void camThread(const string IP) {
 
 	Mat pre_frame;
 	Mat frame;
-	// VlcCap cap;
-	// cap.open(IP.c_str());
-	VideoCapture cap(IP);
-    cap.set(cv::CAP_PROP_BUFFERSIZE, 5);
+	VlcCap cap;
+	cap.open(IP.c_str());
+	// VideoCapture cap(IP);
+    // cap.set(cv::CAP_PROP_BUFFERSIZE, 5);
 
 
 	// VideoCapture video(IP);
@@ -641,34 +665,52 @@ void camThread(const string IP) {
 	}
 	while (1) {
 
-		// read frame
-		// cap.read(pre_frame);
-		cap >> frame;
+		// read frame		
+		try{
+			if(cap.read(pre_frame)){
+				if (!pre_frame.empty()) {
+					cvtColor(pre_frame, frame, COLOR_RGB2BGR);
+					
+
+					if(IP == CAM1_IP){
+						frame.copyTo(displayFrame1);
+						first1 = true;
+					}
+					else if(IP == CAM2_IP){
+						frame.copyTo(displayFrame2);
+						first2 = true;			
+					}
+					else if(IP == CAM3_IP){
+						frame.copyTo(displayFrame3);
+						first3 = true;			
+					}
+					else if(IP == CAM4_IP){
+						frame.copyTo(displayFrame4);
+						first4 = true;			
+					}
+					else if(IP == CAM5_IP){
+						frame.copyTo(displayFrame5);
+						first5 = true;
+					}
+				}else{
+				std::string now = getCurrentDateTime("now");
+				write_text_to_log_file(now + " cap.frame empty");	
+				}	
+			}else{
+				std::string now = getCurrentDateTime("now");
+				write_text_to_log_file(now + " cap.read false");	
+			}	
+		}
+		catch( const std::exception &e) {
+			std::cerr << e.what();
+			std::string now = getCurrentDateTime("now");
+			write_text_to_log_file(now + " " + e.what());
+		}
+		
+		// cap >> frame;
 		// cvtColor(pre_frame, frame, COLOR_RGB2BGR);
 
-		if (!frame.empty()) {			
-
-			if(IP == CAM1_IP){
-				frame.copyTo(displayFrame1);
-				first1 = true;
-			}
-			else if(IP == CAM2_IP){
-				frame.copyTo(displayFrame2);
-				first2 = true;			
-			}
-			else if(IP == CAM3_IP){
-				frame.copyTo(displayFrame3);
-				first3 = true;			
-			}
-			else if(IP == CAM4_IP){
-				frame.copyTo(displayFrame4);
-				first4 = true;			
-			}
-			else if(IP == CAM5_IP){
-				frame.copyTo(displayFrame5);
-				first5 = true;
-			}
-		}
+		
 		std::this_thread::sleep_for(std::chrono::milliseconds(40));
 	}
 }
@@ -743,8 +785,8 @@ int main(int argc, char** argv) {
 			// 	// resize(comboFrame,comboFrame,Size(h_size,v_size));
 			// }
 
-			displayFrame1.copyTo(comboFrame(cv::Rect(0,0,displayFrame1.cols,displayFrame1.rows)));
-			displayFrame2.copyTo(comboFrame(cv::Rect(640,0,displayFrame2.cols,displayFrame2.rows)));
+			displayFrame2.copyTo(comboFrame(cv::Rect(0,0,displayFrame2.cols,displayFrame2.rows)));
+			displayFrame1.copyTo(comboFrame(cv::Rect(640,0,displayFrame1.cols,displayFrame1.rows)));
 			displayFrame4.copyTo(comboFrame(cv::Rect(0,480,displayFrame4.cols,displayFrame4.rows)));
 			displayFrame5.copyTo(comboFrame(cv::Rect(640,480,displayFrame5.cols,displayFrame5.rows)));
 
@@ -770,11 +812,19 @@ int main(int argc, char** argv) {
 		char character = waitKey(10);
 		switch (character)
 		{
-		case 27:			
+		case 27:{
+			// write to log file on exit
+			std::string now = getCurrentDateTime("now");
+    		write_text_to_log_file(now + " PROGRAM EXIT");
+
+    		string png_exit = "/opt/lampp/htdocs/pump_master/logs/"+now+".jpeg";
+
+    		imwrite(png_exit, comboFrame );
+
 			destroyAllWindows();
 			return 0;
 			break;
-
+		}
 		case 32:
 			break;
 

@@ -22,6 +22,7 @@ import logging
 
 isCamUp = 1
 isStarting = 0
+isRouterUp = 0
 
 date_ping_file = "/opt/lampp/htdocs/pump_master/logs/start_cameras.log"
 
@@ -70,18 +71,6 @@ class Window(Frame):
         print(result.stdout.decode('utf-8'))
         # exit()
 
-
-def check_ping():
-    hostname = "192.168.0.128"
-    response = os.system("ping -c 1 " + hostname)
-    # and then check the response...
-    if response == 0:
-        print("Network Active")
-    else:
-        print("Network Error")
-        kill_program_from_out()
-
-
 def writeLog(msg):
     logging.basicConfig(filename=date_ping_file,
                         filemode='a',
@@ -90,12 +79,22 @@ def writeLog(msg):
                         level=logging.DEBUG)
     logging.info(msg)
 
-
-
 def kill_program_from_out():
     result = subprocess.run('/opt/lampp/htdocs/pump_master/program.sh kill',shell=True, stdout=subprocess.PIPE)
     print(result.stdout.decode('utf-8'))
 
+
+def check_ping():
+    hostname = "192.168.0.1"
+    response = os.system("ping -c 1 " + hostname)
+    # and then check the response...
+    if response == 0:
+        print("Router Active")
+        isRouterUp = 1
+    else:
+        writeLog("Router Error")
+        isRouterUp = 0
+        kill_program_from_out()
 
 def networkSelector():
     result = subprocess.run('/opt/lampp/htdocs/pump_master/network.sh',shell=True, stdout=subprocess.PIPE)
@@ -193,43 +192,48 @@ def retry_session(retries, session=None, backoff_factor=0.3, status_forcelist=(5
 
 def send_fcm(file_msg_name, hostname):
 
-    now = time.strftime("%H:%M", time.localtime(time.time()))
-    urgent_msg = "CAMERA " +hostname+ " DOWN:- " + str(now)
+    try:
+        now = time.strftime("%H:%M", time.localtime(time.time()))
+        urgent_msg = "CAMERA " +hostname+ " DOWN:- " + str(now)
 
-    title = "Camera Down"
-    # message = "Different message"
+        title = "Camera Down"
+        # message = "Different message"
 
-    x = {
-        "to": "/topics/weather",
-        "data": {
-            "title" : title,
-            "message" : urgent_msg,
+        x = {
+            "to": "/topics/weather",
+            "data": {
+                "title" : title,
+                "message" : urgent_msg,
+            }
         }
-    }
 
-    json_data = json.dumps(x)
+        json_data = json.dumps(x)
 
 
-    headers={
-        "Accept": "*/*",
-        "Accept-Encoding": "gzip, deflate",
-        "Authorization": "key=AAAASovyhrg:APA91bHMAD2X0uNzJ_ppkY7GS2M7IgVmZbaXJHvECfa86OfOml1KB5FXR5D35tjQ7lIg3Fs0imk9kzlpsI7w1UbFWUHTJjs-cNdYdkvcnZ8JnMY02cg_bBnNo5VWkkkO6TnIeWS0AXGv",
-        "Cache-Control": "no-cache",
-        "Connection": "keep-alive",
-        "Content-Length": str(len(json_data)),
-        "Content-Type": "application/json",
-        "Host": "fcm.googleapis.com",       
-        "cache-control": "no-cache"
-    }
+        headers={
+            "Accept": "*/*",
+            "Accept-Encoding": "gzip, deflate",
+            "Authorization": "key=AAAASovyhrg:APA91bHMAD2X0uNzJ_ppkY7GS2M7IgVmZbaXJHvECfa86OfOml1KB5FXR5D35tjQ7lIg3Fs0imk9kzlpsI7w1UbFWUHTJjs-cNdYdkvcnZ8JnMY02cg_bBnNo5VWkkkO6TnIeWS0AXGv",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Content-Length": str(len(json_data)),
+            "Content-Type": "application/json",
+            "Host": "fcm.googleapis.com",       
+            "cache-control": "no-cache"
+        }
 
-    endpoint = "https://fcm.googleapis.com/fcm/send"
-    session = retry_session(retries=5)
-    # session.post(url=endpoint, data=json.dumps(x), headers=headers)
-    session.post(url=endpoint, data=json_data, headers=headers)
+        endpoint = "https://fcm.googleapis.com/fcm/send"
+        session = retry_session(retries=5)
+        # session.post(url=endpoint, data=json.dumps(x), headers=headers)
+        session.post(url=endpoint, data=json_data, headers=headers)
 
-    # write to msg_file
-    with open(file_msg_name, 'a') as msg_file:
-        msg_file.write(str(time.time()))
+        # write to msg_file
+        with open(file_msg_name, 'a') as msg_file:
+            msg_file.write(str(time.time()))
+
+    except Exception as e:
+        print(e)
+    
 
 
 # def ping_camera():
@@ -248,81 +252,88 @@ def send_fcm(file_msg_name, hostname):
 
 
 def ping_camera():
-    global isCamUp
-    # wait time before msg is sent after ping loss
-    # msg_diff = 1*60
-    msg_diff = 10
-    # wait time before msg is resent after fist msg
-    # msg_interval = 5*60
-    msg_interval = 45
+    try:
+        global isCamUp
+        # wait time before msg is sent after ping loss
+        # msg_diff = 1*60
+        msg_diff = 10
+        # wait time before msg is resent after fist msg
+        # msg_interval = 5*60
+        msg_interval = 45
 
-    counter = 0
+        counter = 0
 
-    ping_list = ["192.168.0.128", "192.168.0.129", "192.168.0.127", "192.168.0.133", "192.168.0.132"]
+        ping_list = ["192.168.0.128", "192.168.0.129", "192.168.0.127", "192.168.0.133", "192.168.0.132"]
 
-    for hostname in ping_list:
-        response = os.system("ping -c 1 " + hostname)
+        for hostname in ping_list:
+            response = os.system("ping -c 4 " + hostname)
 
-        # file names
-        file_name = "/opt/lampp/htdocs/pump_master/"+str(hostname) + ".txt"
-        file_msg_name = "/opt/lampp/htdocs/pump_master/"+str(hostname) + "_msg.txt"
+            # file names
+            file_name = "/opt/lampp/htdocs/pump_master/"+str(hostname) + ".txt"
+            file_msg_name = "/opt/lampp/htdocs/pump_master/"+str(hostname) + "_msg.txt"
 
-        # no response
-        # CAM is down
-        if response != 0:
+            # no response
+            # CAM is down
+            if response != 0:
 
-            writeLog(hostname)
-            
-            # file exists
-            if os.path.isfile(file_name):
-                # read and get time diff
-                my_file = open(file_name, "r") 
-                prev_time = float(my_file.read())
-                sec_diff = time.time() - prev_time
+                writeLog(hostname)
+                
+                # file exists
+                if os.path.isfile(file_name):
+                    # read and get time diff
+                    my_file = open(file_name, "r") 
+                    prev_time = float(my_file.read())
+                    sec_diff = time.time() - prev_time
 
-                if sec_diff > msg_diff:
-                    # if msg file does not exist make one
-                    # and send msg
-                    if not os.path.exists(file_msg_name):
-                        # send_msg(file_msg_name, hostname)
-                        send_fcm(file_msg_name, hostname)
-                        # pass
+                    if sec_diff > msg_diff:
+                        # if msg file does not exist make one
+                        # and send msg
+                        if not os.path.exists(file_msg_name):
+                            # send_msg(file_msg_name, hostname)
+                            if(isRouterUp == 1):
+                                send_fcm(file_msg_name, hostname)
+                                # pass
+                            else:
+                                 writeLog("Cannot send notification as router down")
+                                # pass
+                # does NOT exists
+                else:
+                    # create here
+                    with open(file_name, 'a') as my_file:
+                        my_file.write(str(time.time()))
 
-            # does NOT exists
+            # cam is up
+            # delete files if exist
             else:
-                # create here
-                with open(file_name, 'a') as my_file:
-                    my_file.write(str(time.time()))
+                counter += 1
+                if os.path.exists(file_name):
+                    os.remove(file_name)
 
-        # cam is up
-        # delete files if exist
+
+            # check msg file
+            # if interval is greater than file delete interval
+            # delete file   
+            if os.path.isfile(file_msg_name):
+                # read and get time diff
+                my_msg_file = open(file_msg_name, "r") 
+                prev_msg_time = float(my_msg_file.read())
+                sec_msg_diff = time.time() - prev_msg_time
+
+                if sec_msg_diff > msg_interval:
+                    if os.path.exists(file_msg_name):
+                        os.remove(file_msg_name)
+
+        if counter==5:
+            isCamUp = 1
         else:
-            counter += 1
-            if os.path.exists(file_name):
-                os.remove(file_name)
+            isCamUp = 0
 
-
-        # check msg file
-        # if interval is greater than file delete interval
-        # delete file   
-        if os.path.isfile(file_msg_name):
-            # read and get time diff
-            my_msg_file = open(file_msg_name, "r") 
-            prev_msg_time = float(my_msg_file.read())
-            sec_msg_diff = time.time() - prev_msg_time
-
-            if sec_msg_diff > msg_interval:
-                if os.path.exists(file_msg_name):
-                    os.remove(file_msg_name)
-
-    if counter==5:
-        isCamUp = 1
-    else:
-        isCamUp = 0
-
-    print("counter "+str(counter))
-    print("ISCAMPUP "+str(isCamUp))
-    root.after(10000, ping_camera)
+        print("counter "+str(counter))
+        print("ISCAMPUP "+str(isCamUp))
+        root.after(10000, ping_camera)
+    except Exception as e:
+        print(e)
+    
 
 
 
@@ -333,6 +344,7 @@ def send_photos():
 
 
 def sync_check():
+    check_ping()
     result = subprocess.run('/opt/lampp/bin/php /opt/lampp/htdocs/pump_master/sync_check.php',shell=True,stdout=subprocess.PIPE)
     print(result.stdout.decode('utf-8'))
     root.after(5000, sync_check)
