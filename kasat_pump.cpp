@@ -697,8 +697,12 @@ void camThread(const string IP) {
 				write_text_to_log_file(now + " cap.frame empty");	
 				}	
 			}else{
+				// std::string now = getCurrentDateTime("now");
+				// write_text_to_log_file(now + " cap.read false");	
 				std::string now = getCurrentDateTime("now");
-				write_text_to_log_file(now + " cap.read false");	
+				write_text_to_log_file(now + "VlcCap restart");
+				cap.release();				
+				cap.open(IP.c_str());
 			}	
 		}
 		catch( const std::exception &e) {
