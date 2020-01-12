@@ -24,6 +24,7 @@ if (isset($_POST) ){
 
 	$output = array();
 	$output['success'] = false;
+	$output['error'] = 0;
 	$trans_string = "";
 
 	try {		
@@ -39,7 +40,8 @@ if (isset($_POST) ){
 			$output['success'] = true;
 			$trans_string =  basename($_FILES['file']['name'], ".mp4");
 		}else{
-			trigger_error('Move upload failed');
+			trigger_error('Move upload failed'.$_FILES["file"]["error"]);
+			$output['error'] = $_FILES["file"]["error"];
 		}			
 		
 	} catch (Exception $e) {
@@ -49,6 +51,8 @@ if (isset($_POST) ){
 	}
 
 	$output['trans_string']= $trans_string;
+	$output['date']= $date;
+	$output['file_name']= $_FILES['file']['tmp_name'];
 
 	echo json_encode($output,JSON_NUMERIC_CHECK);
 

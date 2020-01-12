@@ -365,6 +365,27 @@ void setCamStatus(string cam_no) {
 	}
 }
 
+void setCamStatusTimeOut(string cam_no) {
+
+	try {
+		// housekeeping
+		driver = get_driver_instance();
+		unique_ptr<sql::Connection> con(driver->connect(HOST.c_str(), USER.c_str(), PASSWORD.c_str()));
+		con->setSchema(DB.c_str());
+		unique_ptr<sql::Statement> stmt(con->createStatement());
+
+		string update_query = "UPDATE `cameras` SET `status`= 1, `type` = 'stop' WHERE `cam_no` = " + cam_no;
+		stmt->executeUpdate(update_query.c_str());
+	}
+	catch (sql::SQLException &e) {
+		cout << "# ERR: SQLException in " << __FILE__;
+		cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << endl;
+		cout << "# ERR: " << e.what();
+		cout << " (MySQL error code: " << e.getErrorCode();
+		cout << ", SQLState: " << e.getSQLState() << " )" << endl;
+	}
+}
+
 
 // latest file second
 void updateTransTime(const string file1,const string file2, const string trans_string){
@@ -466,6 +487,8 @@ int videoThread(const int cam_no, const string trans_string, ThreadSafeVector &t
 
 		if(chrono::duration_cast<chrono::seconds>(now - start).count() > 1200) {
 			tsv.change(trans_string, false);
+			string s = std::to_string(cam_no);
+			setCamStatusTimeOut(s);
 		}
 
 

@@ -46,6 +46,7 @@ if ($trans_string != "") {
 
 		$path =  $local_install_dir.'videos/'.$dir_date;
 		$video = $path.'/'.$trans_string.'.mp4';
+		// $video = 'videos/2020-01-11/6DX9e2ppKH.mp4';
 		
 
 		if (file_exists($video)) {
@@ -97,6 +98,8 @@ if ($trans_string != "") {
 
 			$postData['date'] = $dir_date;
 
+			//print_r($postData);
+
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL,$url_main);
 			curl_setopt($ch, CURLOPT_POST,1);
@@ -122,29 +125,31 @@ if ($trans_string != "") {
 
 			}else{
 
+				$error = $output['error'];
 				//echo "error";
 				trigger_error("error set status to E");
 				$sql = "UPDATE `transactions` SET `video` = 'N' WHERE `trans_string` = '".$trans_string."' ;";
 				$exe = mysqli_query($conn,$sql);
 
-				if (file_exists($video)) {
-					$video_new = $path.'/1.mp4';
-					$video_converted = $path.'/'.$trans_string.'-converted.mp4';
-					$cmd = "ffmpeg -i ".$video." ".$video_new ;
-					// trigger_error("exists".$cmd);
-					try{
-						$result = shell_exec($cmd);
-						trigger_error("reconverted".$video);
-						if ((file_exists($video))&&(file_exists($video_new))) {
-							rename( $video, $video_converted);
+				if ($error > 1) {
+					if (file_exists($video)) {
+						$video_new = $path.'/1.mp4';
+						$video_converted = $path.'/'.$trans_string.'-converted.mp4';
+						$cmd = "ffmpeg -i ".$video." ".$video_new ;
+						// trigger_error("exists".$cmd);
+						try{
+							$result = shell_exec($cmd);
+							trigger_error("reconverted".$video);
+							if ((file_exists($video))&&(file_exists($video_new))) {
+								rename( $video, $video_converted);
+							}
+							rename( $video_new, $video);
+						}catch(Exception $e) {
+							trigger_error('conversion error'.$trans_string);
 						}
-						rename( $video_new, $video);
-					}catch(Exception $e) {
-						trigger_error('conversion error'.$trans_string);
+						
 					}
-					
 				}
-
 			}
 		} catch (Exception $e) {
 

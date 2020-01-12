@@ -85,16 +85,19 @@ def kill_program_from_out():
 
 
 def check_ping():
+    global isRouterUp
     hostname = "192.168.0.1"
     response = os.system("ping -c 1 " + hostname)
     # and then check the response...
     if response == 0:
         print("Router Active")
         isRouterUp = 1
+        return True
     else:
         writeLog("Router Error")
         isRouterUp = 0
         kill_program_from_out()
+        return False
 
 def networkSelector():
     result = subprocess.run('/opt/lampp/htdocs/pump_master/network.sh',shell=True, stdout=subprocess.PIPE)
@@ -344,9 +347,9 @@ def send_photos():
 
 
 def sync_check():
-    check_ping()
-    result = subprocess.run('/opt/lampp/bin/php /opt/lampp/htdocs/pump_master/sync_check.php',shell=True,stdout=subprocess.PIPE)
-    print(result.stdout.decode('utf-8'))
+    if check_ping():
+        result = subprocess.run('/opt/lampp/bin/php /opt/lampp/htdocs/pump_master/sync_check.php',shell=True,stdout=subprocess.PIPE)
+        print(result.stdout.decode('utf-8'))
     root.after(5000, sync_check)
 
 def send_videos():
