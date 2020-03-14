@@ -23,6 +23,8 @@
 #include <ctime>
 #include <sstream>
 
+// log file
+#include <fstream>
 
 #include <sys/stat.h>
 #include <time.h>
@@ -30,7 +32,7 @@
 
 
 // Vlc player
-// #include "VlcCap.h"
+#include "VlcCap.h"
 
 
 // database includes 
@@ -265,6 +267,28 @@ string dateString() {
 	return str;
 }
 
+// consider merging both functions
+// for log timestamp
+std::string getCurrentDateTime( std::string s ){
+    time_t now = time(0);
+    struct tm  tstruct;
+    char  buf[80];
+    tstruct = *localtime(&now);
+    if(s=="now")
+        strftime(buf, sizeof(buf), "%Y-%m-%d %X", &tstruct);
+    else if(s=="date")
+        strftime(buf, sizeof(buf), "%Y-%m-%d", &tstruct);
+    return std::string(buf);
+};
+
+// write to log file
+void write_text_to_log_file( const std::string &text )
+{
+    std::ofstream log_file(
+        "/opt/lampp/htdocs/pump_master/logs/cpp.log", std::ios_base::out | std::ios_base::app );
+    log_file << text << std::endl;
+}
+
 cv::Mat writeDateSecondary(Mat frame){
 
 	string date = dateString();
@@ -330,6 +354,27 @@ void setCamStatus(string cam_no) {
 		unique_ptr<sql::Statement> stmt(con->createStatement());
 
 		string update_query = "UPDATE `cameras` SET `status`= 0 WHERE `cam_no` = " + cam_no;
+		stmt->executeUpdate(update_query.c_str());
+	}
+	catch (sql::SQLException &e) {
+		cout << "# ERR: SQLException in " << __FILE__;
+		cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << endl;
+		cout << "# ERR: " << e.what();
+		cout << " (MySQL error code: " << e.getErrorCode();
+		cout << ", SQLState: " << e.getSQLState() << " )" << endl;
+	}
+}
+
+void setCamStatusTimeOut(string cam_no) {
+
+	try {
+		// housekeeping
+		driver = get_driver_instance();
+		unique_ptr<sql::Connection> con(driver->connect(HOST.c_str(), USER.c_str(), PASSWORD.c_str()));
+		con->setSchema(DB.c_str());
+		unique_ptr<sql::Statement> stmt(con->createStatement());
+
+		string update_query = "UPDATE `cameras` SET `status`= 1, `type` = 'stop' WHERE `cam_no` = " + cam_no;
 		stmt->executeUpdate(update_query.c_str());
 	}
 	catch (sql::SQLException &e) {
@@ -442,6 +487,8 @@ int videoThread(const int cam_no, const string trans_string, ThreadSafeVector &t
 
 		if(chrono::duration_cast<chrono::seconds>(now - start).count() > 1200) {
 			tsv.change(trans_string, false);
+			string s = std::to_string(cam_no);
+			setCamStatusTimeOut(s);
 		}
 
 
@@ -508,17 +555,22 @@ void getCamStatus(ThreadSafeVector &tsv) {
 		unique_ptr<sql::ResultSet> res(stmt->executeQuery(query.c_str()));
 		
 		int start_counter = 0;
+		
 
 		if (res->rowsCount() != 0) {
 			while (res->next()) {
 
+				// cout << res->getString("cam_no") << endl;
+				// cout << res->getString("type") << endl;
+				// cout << res->getString("trans_string") << endl;
 				int status = std::stoi(res->getString("status"));
 				string tttype = res->getString("type");
 				if(tttype == "start"){
 					start_counter = start_counter + 1;
-				}
+				}				
 
 				if(status == 1){
+
 					try{
 						// make a date string
 						time (&rawtime);
@@ -546,63 +598,59 @@ void getCamStatus(ThreadSafeVector &tsv) {
 						string t_string = res->getString("trans_string");
 						string t_type = res->getString("type");
 
-						// // select camera
-						// if (res->getString("cam_no") == "1")
-						// {						
-						// 	Mat d = writeDateSecondary(displayFrame1);
-						// 	imwrite(file_name, d );
-						// 	Mat s = writeDatePrimary(displayFrame3);
-						// 	imwrite(file_name2, s );
-						// }
-						// else if (res->getString("cam_no") == "2") {
-						// 	Mat d = writeDateSecondary(displayFrame2);
-						// 	imwrite(file_name, d );
-						// 	Mat s = writeDatePrimary(displayFrame3);
-						// 	imwrite(file_name2, s );
-						// }
-						// else if (res->getString("cam_no") == "4") {
-						// 	Mat d = writeDateSecondary(displayFrame4);
-						// 	imwrite(file_name, d );
-						// 	Mat s = writeDatePrimary(displayFrame3);
-						// 	imwrite(file_name2, s );
-						// }
-						// else if (res->getString("cam_no") == "5") {
-						// 	Mat d = writeDateSecondary(displayFrame5);
-						// 	imwrite(file_name, d );
-						// 	Mat s = writeDatePrimary(displayFrame3);
-						// 	imwrite(file_name2, s );
-						// }
+						// select camera
+						if (res->getString("cam_no") == "1")
+						{						
+							Mat d = writeDateSecondary(displayFrame1);
+							imwrite(file_name, d );
+							Mat s = writeDatePrimary(displayFrame3);
+							imwrite(file_name2, s );
+						}
+						else if (res->getString("cam_no") == "2") {
+							Mat d = writeDateSecondary(displayFrame2);
+							imwrite(file_name, d );
+							Mat s = writeDatePrimary(displayFrame3);
+							imwrite(file_name2, s );
+						}
+						else if (res->getString("cam_no") == "4") {
+							Mat d = writeDateSecondary(displayFrame4);
+							imwrite(file_name, d );
+							Mat s = writeDatePrimary(displayFrame3);
+							imwrite(file_name2, s );
+						}
+						else if (res->getString("cam_no") == "5") {
+							Mat d = writeDateSecondary(displayFrame5);
+							imwrite(file_name, d );
+							Mat s = writeDatePrimary(displayFrame3);
+							imwrite(file_name2, s );
+						}
 						
 
-						// // video routing
-						// if(t_type == "start"){
-						// 	tsv.removeCamNo(cam_no);
-						// 	vidHandle vh = {t_string, cam_no, true};
-						// 	tsv.add(vh);
-						// 	thread vidT(videoThread, cam_no, t_string, std::ref(tsv));
-						// 	vidT.detach();
-						// }
-						// else if(t_type == "stop"){
-						// 	tsv.change(t_string, false);
-						// 	string photo_start = "/opt/lampp/htdocs/pump_master/uploads/"+date+"/"+ t_string + "_start.jpeg";
-						// 	string photo_stop = "/opt/lampp/htdocs/pump_master/uploads/"+date+"/"+ t_string + "_stop.jpeg";
-						// 	//updateTransTime(photo_start, photo_stop, t_string);
-						// }
+						// video routing
+						if(t_type == "start"){
+							tsv.removeCamNo(cam_no);
+							vidHandle vh = {t_string, cam_no, true};
+							tsv.add(vh);
+							thread vidT(videoThread, cam_no, t_string, std::ref(tsv));
+							vidT.detach();
+						}
+						else if(t_type == "stop"){
+							tsv.change(t_string, false);
+							string photo_start = "/opt/lampp/htdocs/pump_master/uploads/"+date+"/"+ t_string + "_start.jpeg";
+							string photo_stop = "/opt/lampp/htdocs/pump_master/uploads/"+date+"/"+ t_string + "_stop.jpeg";
+							updateTransTime(photo_start, photo_stop, t_string);
+						}
 
 						// reset status in cameras
-						//setCamStatus(res->getString("cam_no"));
+						setCamStatus(res->getString("cam_no"));
 
 					}
 					catch( const std::exception &e) {
 						std::cerr << e.what();
 					}
 				}
-				// cout << res->getString("cam_no") << endl;
-				// cout << res->getString("type") << endl;
-				// cout << res->getString("trans_string") << endl;
 			}
 
-			cout << start_counter << endl;
 			if(start_counter > 0){
 				active_transaction = true;
 			}else{
@@ -625,10 +673,10 @@ void camThread(const string IP) {
 
 	Mat pre_frame;
 	Mat frame;
-	// VlcCap cap;
-	// cap.open(IP.c_str());
-	VideoCapture cap(IP);
-    cap.set(cv::CAP_PROP_BUFFERSIZE, 1);
+	VlcCap cap;
+	cap.open(IP.c_str());
+	// VideoCapture cap(IP);
+    // cap.set(cv::CAP_PROP_BUFFERSIZE, 5);
 
 
 	// VideoCapture video(IP);
@@ -640,34 +688,56 @@ void camThread(const string IP) {
 	}
 	while (1) {
 
-		// read frame
-		// cap.read(pre_frame);
-		cap >> frame;
+		// read frame		
+		try{
+			if(cap.read(pre_frame)){
+				if (!pre_frame.empty()) {
+					cvtColor(pre_frame, frame, COLOR_RGB2BGR);
+					
+
+					if(IP == CAM1_IP){
+						frame.copyTo(displayFrame1);
+						first1 = true;
+					}
+					else if(IP == CAM2_IP){
+						frame.copyTo(displayFrame2);
+						first2 = true;			
+					}
+					else if(IP == CAM3_IP){
+						frame.copyTo(displayFrame3);
+						first3 = true;			
+					}
+					else if(IP == CAM4_IP){
+						frame.copyTo(displayFrame4);
+						first4 = true;			
+					}
+					else if(IP == CAM5_IP){
+						frame.copyTo(displayFrame5);
+						first5 = true;
+					}
+				}else{
+				std::string now = getCurrentDateTime("now");
+				write_text_to_log_file(now + " cap.frame empty");	
+				}	
+			}else{
+				// std::string now = getCurrentDateTime("now");
+				// write_text_to_log_file(now + " cap.read false");	
+				std::string now = getCurrentDateTime("now");
+				write_text_to_log_file(now + "VlcCap restart");
+				cap.release();				
+				cap.open(IP.c_str());
+			}	
+		}
+		catch( const std::exception &e) {
+			std::cerr << e.what();
+			std::string now = getCurrentDateTime("now");
+			write_text_to_log_file(now + " " + e.what());
+		}
+		
+		// cap >> frame;
 		// cvtColor(pre_frame, frame, COLOR_RGB2BGR);
 
-		if (!frame.empty()) {			
-
-			if(IP == CAM1_IP){
-				frame.copyTo(displayFrame1);
-				first1 = true;
-			}
-			else if(IP == CAM2_IP){
-				frame.copyTo(displayFrame2);
-				first2 = true;			
-			}
-			else if(IP == CAM3_IP){
-				frame.copyTo(displayFrame3);
-				first3 = true;			
-			}
-			else if(IP == CAM4_IP){
-				frame.copyTo(displayFrame4);
-				first4 = true;			
-			}
-			else if(IP == CAM5_IP){
-				frame.copyTo(displayFrame5);
-				first5 = true;
-			}
-		}
+		
 		std::this_thread::sleep_for(std::chrono::milliseconds(40));
 	}
 }
@@ -742,11 +812,10 @@ int main(int argc, char** argv) {
 			// 	// resize(comboFrame,comboFrame,Size(h_size,v_size));
 			// }
 
-			displayFrame1.copyTo(comboFrame(cv::Rect(0,0,displayFrame1.cols,displayFrame1.rows)));
-			displayFrame2.copyTo(comboFrame(cv::Rect(640,0,displayFrame2.cols,displayFrame2.rows)));
+			displayFrame2.copyTo(comboFrame(cv::Rect(0,0,displayFrame2.cols,displayFrame2.rows)));
+			displayFrame1.copyTo(comboFrame(cv::Rect(640,0,displayFrame1.cols,displayFrame1.rows)));
 			displayFrame4.copyTo(comboFrame(cv::Rect(0,480,displayFrame4.cols,displayFrame4.rows)));
 			displayFrame5.copyTo(comboFrame(cv::Rect(640,480,displayFrame5.cols,displayFrame5.rows)));
-
 
 
 			if(active_transaction){
@@ -758,14 +827,11 @@ int main(int argc, char** argv) {
 							CV_RGB(255, 0, 0), //font color
 							2);	
 			}
-			
 
 
 			// imshow(C1WINDOW, displayFrame4);
 			// imshow(C2WINDOW, displayFrame5);
 			imshow(C3WINDOW, comboFrame);
-
-
 
 			getCamStatus(std::ref(tsv));
 		}
@@ -773,11 +839,19 @@ int main(int argc, char** argv) {
 		char character = waitKey(10);
 		switch (character)
 		{
-		case 27:			
+		case 27:{
+			// write to log file on exit
+			std::string now = getCurrentDateTime("now");
+    		write_text_to_log_file(now + " PROGRAM EXIT");
+
+    		string png_exit = "/opt/lampp/htdocs/pump_master/logs/"+now+".jpeg";
+
+    		imwrite(png_exit, comboFrame );
+
 			destroyAllWindows();
 			return 0;
 			break;
-
+		}
 		case 32:
 			break;
 

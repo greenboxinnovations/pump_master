@@ -30,7 +30,7 @@ function sendOTP($otp,$mobile_no){
 if (isset($_POST['request_otp'])) {
 	$mobile_no	= addslashes($_POST['mobile_no']);
 
-	$sql   = "SELECT * FROM `customers` WHERE  `cust_ph_no` = '".$mobile_no."';";
+	$sql   = "SELECT * FROM `customers` WHERE  `cust_ph_no` LIKE '%".$mobile_no."%';";
 	$exe   = mysqli_query($conn ,$sql);
 	$count = mysqli_num_rows($exe);
 

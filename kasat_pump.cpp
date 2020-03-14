@@ -4,6 +4,9 @@
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgproc.hpp"
 
+#include <opencv2/core/core.hpp>
+#include <opencv2/calib3d/calib3d.hpp>
+
 #include <thread>
 #include <atomic>
 #include <mutex>
@@ -23,6 +26,8 @@
 #include <ctime>
 #include <sstream>
 
+// log file
+#include <fstream>
 
 #include <sys/stat.h>
 #include <time.h>
@@ -30,7 +35,7 @@
 
 
 // Vlc player
-// #include "VlcCap.h"
+#include "VlcCap.h"
 
 
 // database includes 
@@ -65,8 +70,8 @@ std::atomic<bool> active_transaction(0);
 
 
 
-const string CAM1_IP = "rtsp://192.168.0.129:554/Streaming/Channels/2/?transportmode=unicast";
-const string CAM2_IP = "rtsp://192.168.0.128:554/Streaming/Channels/2/?transportmode=unicast";
+const string CAM1_IP = "rtsp://192.168.0.142:8554/live0.264";
+const string CAM2_IP = "rtsp://192.168.0.143:8554/live0.264";
 const string CAM3_IP = "rtsp://192.168.0.127:554/Streaming/Channels/1/?transportmode=unicast";
 const string CAM4_IP = "rtsp://192.168.0.133/12";
 const string CAM5_IP = "rtsp://192.168.0.132/12";
@@ -83,6 +88,19 @@ const string PASSWORD = "toor";
 const string DB = "pump_master";
 
 
+// calib files
+string calib_file_142 = "/opt/lampp/htdocs/pump_master/calib/cam_142.yml";
+string calib_file_143 = "/opt/lampp/htdocs/pump_master/calib/cam_143.yml";
+// FileStorage fs_142(calib_file_142, FileStorage::READ);
+Mat K_142, D_142;
+// fs_142["camera_matrix"] >> K_142;  
+// fs_142["distortion_coefficients"] >> D_142;
+
+// FileStorage fs_143(calib_file_143, FileStorage::READ);
+Mat K_143, D_143;
+// fs_143["camera_matrix"] >> K_143;  
+// fs_143["distortion_coefficients"] >> D_143;
+
 
 struct vidHandle {
 	string trans_string;
@@ -95,6 +113,7 @@ class ThreadSafeVector {
 private:
 	std::mutex mu_;
 	std::vector<vidHandle> myVector;
+	bool network_lock;
 
 public:
 	void add(const vidHandle vh) {
@@ -170,6 +189,18 @@ public:
 			}
 		}
 		return;
+	}
+
+
+	// change bool val
+	void set_network_bool(const bool change) {
+		std::lock_guard<std::mutex> lock(mu_);
+		network_lock = change;
+	}
+
+	bool get_network_bool() {
+		std::lock_guard<std::mutex> lock(mu_);
+		return network_lock;
 	}
 
 	// looks for entries with cam_no
@@ -265,6 +296,28 @@ string dateString() {
 	return str;
 }
 
+// consider merging both functions
+// for log timestamp
+std::string getCurrentDateTime( std::string s ){
+    time_t now = time(0);
+    struct tm  tstruct;
+    char  buf[80];
+    tstruct = *localtime(&now);
+    if(s=="now")
+        strftime(buf, sizeof(buf), "%Y-%m-%d %X", &tstruct);
+    else if(s=="date")
+        strftime(buf, sizeof(buf), "%Y-%m-%d", &tstruct);
+    return std::string(buf);
+};
+
+// write to log file
+void write_text_to_log_file( const std::string &text )
+{
+    std::ofstream log_file(
+        "/opt/lampp/htdocs/pump_master/logs/cpp.log", std::ios_base::out | std::ios_base::app );
+    log_file << text << std::endl;
+}
+
 cv::Mat writeDateSecondary(Mat frame){
 
 	string date = dateString();
@@ -330,6 +383,27 @@ void setCamStatus(string cam_no) {
 		unique_ptr<sql::Statement> stmt(con->createStatement());
 
 		string update_query = "UPDATE `cameras` SET `status`= 0 WHERE `cam_no` = " + cam_no;
+		stmt->executeUpdate(update_query.c_str());
+	}
+	catch (sql::SQLException &e) {
+		cout << "# ERR: SQLException in " << __FILE__;
+		cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << endl;
+		cout << "# ERR: " << e.what();
+		cout << " (MySQL error code: " << e.getErrorCode();
+		cout << ", SQLState: " << e.getSQLState() << " )" << endl;
+	}
+}
+
+void setCamStatusTimeOut(string cam_no) {
+
+	try {
+		// housekeeping
+		driver = get_driver_instance();
+		unique_ptr<sql::Connection> con(driver->connect(HOST.c_str(), USER.c_str(), PASSWORD.c_str()));
+		con->setSchema(DB.c_str());
+		unique_ptr<sql::Statement> stmt(con->createStatement());
+
+		string update_query = "UPDATE `cameras` SET `status`= 1, `type` = 'stop' WHERE `cam_no` = " + cam_no;
 		stmt->executeUpdate(update_query.c_str());
 	}
 	catch (sql::SQLException &e) {
@@ -442,6 +516,8 @@ int videoThread(const int cam_no, const string trans_string, ThreadSafeVector &t
 
 		if(chrono::duration_cast<chrono::seconds>(now - start).count() > 1200) {
 			tsv.change(trans_string, false);
+			string s = std::to_string(cam_no);
+			setCamStatusTimeOut(s);
 		}
 
 
@@ -536,8 +612,13 @@ void getCamStatus(ThreadSafeVector &tsv) {
 						// string cmd = "mkdir -m 777 ./uploads/"+date;
 						string cmd = "mkdir -p -m 777 /opt/lampp/htdocs/pump_master/uploads/"+date;
 						
-						system("clear");
+						// system("clear");
 						system(cmd.c_str());
+
+						string cmd2 = "mkdir -p -m 777 /opt/lampp/htdocs/pump_master/ocr/"+date;
+						
+						// system("clear");
+						system(cmd2.c_str());
 
 
 						// make file names
@@ -545,6 +626,8 @@ void getCamStatus(ThreadSafeVector &tsv) {
 						// string file_name2 = "uploads/"+date+"/"+res->getString("trans_string") + "_" + res->getString("type")+"_top.jpeg";
 						string file_name = "/opt/lampp/htdocs/pump_master/uploads/"+date+"/"+res->getString("trans_string") + "_" +res->getString("type")+".jpeg";
 						string file_name2 = "/opt/lampp/htdocs/pump_master/uploads/"+date+"/"+res->getString("trans_string") + "_" + res->getString("type")+"_top.jpeg";
+
+						string file_name_ocr = "/opt/lampp/htdocs/pump_master/ocr/"+date+"/"+res->getString("trans_string") + "_" + res->getString("type")+"_top.jpeg";
 
 
 						int cam_no = std::stoi(res->getString("cam_no"));				
@@ -558,12 +641,22 @@ void getCamStatus(ThreadSafeVector &tsv) {
 							imwrite(file_name, d );
 							Mat s = writeDatePrimary(displayFrame3);
 							imwrite(file_name2, s );
+
+							// // CAM1_IP = 142
+							// Mat u_img;
+							// undistort(displayFrame1, u_img, K_142, D_142);
+							// imwrite(file_name_ocr, u_img );
 						}
 						else if (res->getString("cam_no") == "2") {
 							Mat d = writeDateSecondary(displayFrame2);
 							imwrite(file_name, d );
 							Mat s = writeDatePrimary(displayFrame3);
 							imwrite(file_name2, s );
+
+							// // CAM1_IP = 143
+							// Mat u_img;
+							// undistort(displayFrame2, u_img, K_143, D_143);
+							// imwrite(file_name_ocr, u_img );
 						}
 						else if (res->getString("cam_no") == "4") {
 							Mat d = writeDateSecondary(displayFrame4);
@@ -626,10 +719,10 @@ void camThread(const string IP) {
 
 	Mat pre_frame;
 	Mat frame;
-	// VlcCap cap;
-	// cap.open(IP.c_str());
-	VideoCapture cap(IP);
-    cap.set(cv::CAP_PROP_BUFFERSIZE, 5);
+	VlcCap cap;
+	cap.open(IP.c_str());
+	// VideoCapture cap(IP);
+    // cap.set(cv::CAP_PROP_BUFFERSIZE, 5);
 
 
 	// VideoCapture video(IP);
@@ -641,34 +734,61 @@ void camThread(const string IP) {
 	}
 	while (1) {
 
-		// read frame
-		// cap.read(pre_frame);
-		cap >> frame;
+		// read frame		
+		try{
+			if(cap.read(pre_frame)){
+				if (!pre_frame.empty()) {
+					cvtColor(pre_frame, frame, COLOR_RGB2BGR);
+					
+
+					if(IP == CAM1_IP){
+						frame.copyTo(displayFrame1);
+						first1 = true;
+					}
+					else if(IP == CAM2_IP){
+						frame.copyTo(displayFrame2);
+						first2 = true;			
+					}
+					else if(IP == CAM3_IP){
+						frame.copyTo(displayFrame3);
+						first3 = true;			
+					}
+					else if(IP == CAM4_IP){
+						frame.copyTo(displayFrame4);
+						first4 = true;			
+					}
+					else if(IP == CAM5_IP){
+						frame.copyTo(displayFrame5);
+						first5 = true;
+					}
+				}else{
+				std::string now = getCurrentDateTime("now");
+				write_text_to_log_file(now + " cap.frame empty");	
+				}	
+			}else{
+				// std::string now = getCurrentDateTime("now");
+				// write_text_to_log_file(now + " cap.read false");	
+				std::string now = getCurrentDateTime("now");
+				write_text_to_log_file(now + "VlcCap restart");
+
+				cap.release();
+
+				string cmd_f = "/home/selectautomobiles/Desktop/pump_master/network.sh";
+				exec(cmd_f.c_str());
+
+				cap.open(IP.c_str());
+			}	
+		}
+		catch( const std::exception &e) {
+			std::cerr << e.what();
+			std::string now = getCurrentDateTime("now");
+			write_text_to_log_file(now + " " + e.what());
+		}
+		
+		// cap >> frame;
 		// cvtColor(pre_frame, frame, COLOR_RGB2BGR);
 
-		if (!frame.empty()) {			
-
-			if(IP == CAM1_IP){
-				frame.copyTo(displayFrame1);
-				first1 = true;
-			}
-			else if(IP == CAM2_IP){
-				frame.copyTo(displayFrame2);
-				first2 = true;			
-			}
-			else if(IP == CAM3_IP){
-				frame.copyTo(displayFrame3);
-				first3 = true;			
-			}
-			else if(IP == CAM4_IP){
-				frame.copyTo(displayFrame4);
-				first4 = true;			
-			}
-			else if(IP == CAM5_IP){
-				frame.copyTo(displayFrame5);
-				first5 = true;
-			}
-		}
+		
 		std::this_thread::sleep_for(std::chrono::milliseconds(40));
 	}
 }
@@ -677,6 +797,16 @@ void camThread(const string IP) {
 
 
 int main(int argc, char** argv) {
+
+
+	// // calib files
+	// FileStorage fs_142(calib_file_142, FileStorage::READ);
+	// fs_142["camera_matrix"] >> K_142;  
+	// fs_142["distortion_coefficients"] >> D_142;
+
+	// FileStorage fs_143(calib_file_143, FileStorage::READ);
+	// fs_143["camera_matrix"] >> K_143;  
+	// fs_143["distortion_coefficients"] >> D_143;
 
 	cout << "ESC on window to exit" << endl;
 	// namedWindow(C1WINDOW,WINDOW_NORMAL);
@@ -743,8 +873,8 @@ int main(int argc, char** argv) {
 			// 	// resize(comboFrame,comboFrame,Size(h_size,v_size));
 			// }
 
-			displayFrame1.copyTo(comboFrame(cv::Rect(0,0,displayFrame1.cols,displayFrame1.rows)));
-			displayFrame2.copyTo(comboFrame(cv::Rect(640,0,displayFrame2.cols,displayFrame2.rows)));
+			displayFrame2.copyTo(comboFrame(cv::Rect(0,0,displayFrame2.cols,displayFrame2.rows)));
+			displayFrame1.copyTo(comboFrame(cv::Rect(640,0,displayFrame1.cols,displayFrame1.rows)));
 			displayFrame4.copyTo(comboFrame(cv::Rect(0,480,displayFrame4.cols,displayFrame4.rows)));
 			displayFrame5.copyTo(comboFrame(cv::Rect(640,480,displayFrame5.cols,displayFrame5.rows)));
 
@@ -770,11 +900,19 @@ int main(int argc, char** argv) {
 		char character = waitKey(10);
 		switch (character)
 		{
-		case 27:			
+		case 27:{
+			// write to log file on exit
+			std::string now = getCurrentDateTime("now");
+    		write_text_to_log_file(now + " PROGRAM EXIT");
+
+    		string png_exit = "/opt/lampp/htdocs/pump_master/logs/"+now+".jpeg";
+
+    		imwrite(png_exit, comboFrame );
+
 			destroyAllWindows();
 			return 0;
 			break;
-
+		}
 		case 32:
 			break;
 

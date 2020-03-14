@@ -19,6 +19,8 @@
 #include <ctime>
 #include <sstream>
 
+// log file
+#include <fstream>
 
 #include <sys/stat.h>
 #include <time.h>
@@ -56,6 +58,8 @@ std::atomic<bool> first2(0);
 std::atomic<bool> first3(0);
 std::atomic<bool> first4(0);
 std::atomic<bool> first5(0);
+
+std::atomic<bool> toggle(0);
 
 
 
@@ -284,6 +288,28 @@ cv::Mat writeDateSecondary(Mat frame){
 		0.5);
 	return frame;
 }
+
+
+// write to log file
+void write_text_to_log_file( const std::string &text )
+{
+    std::ofstream log_file(
+        "/opt/lampp/htdocs/pump_master/logs/cpp_test.log", std::ios_base::out | std::ios_base::app );
+    log_file << text << std::endl;
+}
+// consider merging both functions
+// for log timestamp
+std::string getCurrentDateTime( std::string s ){
+    time_t now = time(0);
+    struct tm  tstruct;
+    char  buf[80];
+    tstruct = *localtime(&now);
+    if(s=="now")
+        strftime(buf, sizeof(buf), "%Y-%m-%d %X", &tstruct);
+    else if(s=="date")
+        strftime(buf, sizeof(buf), "%Y-%m-%d", &tstruct);
+    return std::string(buf);
+};
 
 
 cv::Mat writeDatePrimary(Mat frame){
@@ -616,33 +642,58 @@ void camThread(const string IP) {
 	}
 	while (1) {
 
-		// read frame
-		cap.read(pre_frame);
-		cvtColor(pre_frame, frame, COLOR_RGB2BGR);
+		// read frame		
+		try{
 
-		if (!frame.empty()) {			
+			if(toggle){
+				toggle = false;
+				std::string now = getCurrentDateTime("now");
+				write_text_to_log_file(now + " restart");
+				cap.release();
+				// cap = VlcCap();
+				cap.open(IP.c_str());
+			}
 
-			if(IP == CAM1_IP){
-				frame.copyTo(displayFrame1);
-				first1 = true;
-			}
-			else if(IP == CAM2_IP){
-				frame.copyTo(displayFrame2);
-				first2 = true;			
-			}
-			else if(IP == CAM3_IP){
-				frame.copyTo(displayFrame3);
-				first3 = true;			
-			}
-			else if(IP == CAM4_IP){
-				frame.copyTo(displayFrame4);
-				first4 = true;			
-			}
-			else if(IP == CAM5_IP){
-				frame.copyTo(displayFrame5);
-				first5 = true;
-			}
+
+			if(cap.read(pre_frame)){
+				if (!pre_frame.empty()) {
+					cvtColor(pre_frame, frame, COLOR_RGB2BGR);
+					
+
+					if(IP == CAM1_IP){
+						frame.copyTo(displayFrame1);
+						first1 = true;
+					}
+					else if(IP == CAM2_IP){
+						frame.copyTo(displayFrame2);
+						first2 = true;			
+					}
+					else if(IP == CAM3_IP){
+						frame.copyTo(displayFrame3);
+						first3 = true;			
+					}
+					else if(IP == CAM4_IP){
+						frame.copyTo(displayFrame4);
+						first4 = true;			
+					}
+					else if(IP == CAM5_IP){
+						frame.copyTo(displayFrame5);
+						first5 = true;
+					}
+				}else{
+				std::string now = getCurrentDateTime("now");
+				write_text_to_log_file(now + " cap.frame empty");	
+				}	
+			}else{
+				std::string now = getCurrentDateTime("now");
+				write_text_to_log_file(now + " cap.read false");	
+			}	
 		}
+		catch( const std::exception &e) {
+			std::cerr << e.what();
+			std::string now = getCurrentDateTime("now");
+			write_text_to_log_file(now + " " + e.what());
+		}		
 		std::this_thread::sleep_for(std::chrono::milliseconds(40));
 	}
 }
@@ -677,28 +728,27 @@ int main(int argc, char** argv) {
 	thread t1(camThread, CAM1_IP);
 	t1.detach();
 
-	thread t2(camThread, CAM2_IP);
-	t2.detach();	
+	// thread t2(camThread, CAM2_IP);
+	// t2.detach();	
 
-	thread t3(camThread, CAM3_IP);
-	t3.detach();
+	// thread t3(camThread, CAM3_IP);
+	// t3.detach();
 
-	thread t4(camThread, CAM4_IP);
-	t4.detach();	
+	// thread t4(camThread, CAM4_IP);
+	// t4.detach();	
 
-	thread t5(camThread, CAM5_IP);
-	t5.detach();
+	// thread t5(camThread, CAM5_IP);
+	// t5.detach();
 
 	
 	ThreadSafeVector tsv;
 
-
-	string checkExit;
+	
 	while (1) {
 
-		if (first1 && first2 && first3 && first4 && first5) {
+		// if (first1 && first2 && first3 && first4 && first5) {
 		// if (first4 && first5) {
-		// if (first1 && first2) {
+		if (first1) {
 
 
 			// if(h_size == 0){
@@ -716,17 +766,17 @@ int main(int argc, char** argv) {
 			// 	// resize(comboFrame,comboFrame,Size(h_size,v_size));
 			// }
 
-			displayFrame1.copyTo(comboFrame(cv::Rect(0,0,displayFrame1.cols,displayFrame1.rows)));
-			displayFrame2.copyTo(comboFrame(cv::Rect(640,0,displayFrame2.cols,displayFrame2.rows)));
-			displayFrame4.copyTo(comboFrame(cv::Rect(0,480,displayFrame4.cols,displayFrame4.rows)));
-			displayFrame5.copyTo(comboFrame(cv::Rect(640,480,displayFrame5.cols,displayFrame5.rows)));
+			// displayFrame1.copyTo(comboFrame(cv::Rect(0,0,displayFrame1.cols,displayFrame1.rows)));
+			// displayFrame2.copyTo(comboFrame(cv::Rect(640,0,displayFrame2.cols,displayFrame2.rows)));
+			// displayFrame4.copyTo(comboFrame(cv::Rect(0,480,displayFrame4.cols,displayFrame4.rows)));
+			// displayFrame5.copyTo(comboFrame(cv::Rect(640,480,displayFrame5.cols,displayFrame5.rows)));
 
 
 			// imshow(C1WINDOW, displayFrame4);
 			// imshow(C2WINDOW, displayFrame5);
-			imshow(C3WINDOW, comboFrame);
+			imshow(C3WINDOW, displayFrame1);
 
-			getCamStatus(std::ref(tsv));
+			//getCamStatus(std::ref(tsv));
 		}
 
 		char character = waitKey(10);
@@ -738,6 +788,8 @@ int main(int argc, char** argv) {
 			break;
 
 		case 32:
+			cout << "space key" << endl;
+			toggle = !toggle;
 			break;
 
 

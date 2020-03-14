@@ -8,7 +8,7 @@ if [ $# -eq 0 ]
 				a=$(basename $1 .cpp)
 				# g++ -std=c++0x $1 -o $a `pkg-config --cflags --libs opencv ` -lpthread  -lmysqlcppconn
 				# ADDED VLC AND VLC CAP HELPER CLASS IN COMPILER
-				g++ -g -std=c++11 VlcCap.cpp $1 -o $a `pkg-config --cflags --libs opencv4 libvlc` -lpthread  -lmysqlcppconn 
+				g++ -g -std=c++11 $1 -o $a `pkg-config --cflags --libs opencv4 libvlc` -lpthread  -lmysqlcppconn 
 				# g++ -g -std=c++11 $1 -o $a `pkg-config --cflags --libs opencv4 libvlc` -lpthread  -lmysqlcppconn 
 			else
 				# g++ -std=c++0x $1 -o $2 `pkg-config --cflags --libs opencv` -lpthread  -lmysqlcppconn

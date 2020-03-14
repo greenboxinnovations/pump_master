@@ -21,7 +21,7 @@ function myErrorHandler( $errType, $errStr, $errFile, $errLine, $errContext ) {
 }
 
 ini_set('log_errors', 1);
-ini_set('error_log', $local_install_dir.'sync_check.log');
+ini_set('error_log', $local_install_dir.'/logs/sync_check.log');
 error_reporting(E_ALL);
 set_error_handler('myErrorHandler');
 

@@ -22,7 +22,6 @@ import logging
 
 isCamUp = 1
 isStarting = 0
-isInternet = 0
 
 date_ping_file = "/opt/lampp/htdocs/pump_master/logs/start_cameras.log"
 
@@ -79,7 +78,6 @@ def writeLog(msg):
                         level=logging.DEBUG)
     logging.info(msg)
 
-
 def kill_program_from_out():
     result = subprocess.run('/opt/lampp/htdocs/pump_master/program.sh kill',shell=True, stdout=subprocess.PIPE)
     print(result.stdout.decode('utf-8'))
@@ -97,18 +95,14 @@ def check_ping():
     root.after(10000, check_ping)
 
 def check_internet():
-    global isInternet
     hostname = "8.8.8.8"
     response = os.system("ping -c 1 " + hostname)
     # and then check the response...
     if response == 0:
         print("Internet Active")
-        isInternet = 0
         return True
     else:
-        isInternet = isInternet + 1
-        if (isInternet > 6):
-            writeLog("Internet Down")
+        writeLog("Internet Down")
         return False
 
 def networkSelector():
@@ -277,8 +271,8 @@ def ping_camera():
         msg_interval = 45
 
         counter = 0
-        
-        ping_list = ["192.168.0.142", "192.168.0.143", "192.168.0.127", "192.168.0.133", "192.168.0.132"]
+
+        ping_list = ["192.168.0.128", "192.168.0.129", "192.168.0.127", "192.168.0.133", "192.168.0.132"]
 
         for hostname in ping_list:
             response = os.system("ping -c 1 " + hostname)
@@ -353,7 +347,6 @@ def ping_camera():
 
 
 def send_photos():
-    # writeLog("photos")
     if check_internet():
         result = subprocess.run('/opt/lampp/bin/php /opt/lampp/htdocs/pump_master/send_photos.php',shell=True,stdout=subprocess.PIPE)
         print(result.stdout.decode('utf-8'))
@@ -361,14 +354,12 @@ def send_photos():
 
 
 def sync_check():
-    # writeLog("sync")
     if check_internet():
         result = subprocess.run('/opt/lampp/bin/php /opt/lampp/htdocs/pump_master/sync_check.php',shell=True,stdout=subprocess.PIPE)
         print(result.stdout.decode('utf-8'))
     root.after(5000, sync_check)
 
 def send_videos():
-    # writeLog("videos")
     if check_internet():
         result = subprocess.run('/opt/lampp/bin/php /opt/lampp/htdocs/pump_master/send_videos.php',shell=True,stdout=subprocess.PIPE)
         print(result.stdout.decode('utf-8'))
