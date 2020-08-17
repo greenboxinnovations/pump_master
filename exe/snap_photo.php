@@ -1,6 +1,8 @@
 <?php
 
-require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+// require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require dirname(__DIR__,1).'/query/conn.php';
+
 date_default_timezone_set("Asia/Kolkata");
 $date = date("Y-m-d");
 $time = date("Y-m-d H:i:s");
@@ -10,11 +12,34 @@ $json = file_get_contents('php://input');
 $obj = json_decode($json,true);
 
 $car_id = addslashes($obj['car_id']);
-$pump_code = addslashes($obj['pump_code']);
+$pump_qr_code = addslashes($obj['pump_qr_code']);
 $photo_type = addslashes($obj['photo_type']);
 
+// online customers post extra fields
+$user_type = "";
+$user_qr_code = "";
 
-function generateRand(){
+if(array_key_exists("user_type", $obj)){
+   $user_type = addslashes($obj['user_type']); 
+}
+
+if(array_key_exists("user_qr_code", $obj)){
+   $user_qr_code = addslashes($obj['user_qr_code']); 
+}
+
+// try {
+//     $user_type = addslashes($obj['user_type']);
+//     $user_qr_code = addslashes($obj['user_qr_code']);
+// } catch (Exception $e) {
+    
+// }
+
+
+// var_dump($obj);
+
+
+
+function generateRand() {
 
     Global $conn;
 
@@ -39,9 +64,12 @@ function generateRand(){
     }           
 }
 
-if ($photo_type == 'stop') {
+function stopTransaction($pump_qr_code, $photo_type) {
 
-    $sql2 = "SELECT `trans_string` FROM `cameras` WHERE `cam_qr_code` =  '".$pump_code."' ;";
+    Global $conn;
+    Global $date;
+    
+    $sql2 = "SELECT `trans_string` FROM `cameras` WHERE `cam_qr_code` =  '".$pump_qr_code."' ;";
     $exe2 = mysqli_query($conn, $sql2);
     $row2 = mysqli_fetch_assoc($exe2);
     if(mysqli_num_rows($exe2)> 0){
@@ -52,22 +80,55 @@ if ($photo_type == 'stop') {
         $output['success'] = false;
     }
 
-    $sql1 = "UPDATE `cameras` SET `status` = 1,`type` = '".$photo_type."'  WHERE `cam_qr_code` = '".$pump_code."';";
+    $sql1 = "UPDATE `cameras` SET `status` = 1,`type` = '".$photo_type."'  WHERE `cam_qr_code` = '".$pump_qr_code."';";
+    $exe1 = mysqli_query($conn ,$sql1);
 
-}else{
+    echo json_encode($output);
+}
 
-    $trans_string = generateRand();
-    // $trans_string = Globals::generateRand();
+function startCreditTransaction($pump_qr_code, $photo_type) {
 
-    $sql1 = "UPDATE `cameras` SET `status` = 1,`trans_string` = '".$trans_string."',`type` = '".$photo_type."'  WHERE `cam_qr_code` = '".$pump_code."';";
+    Global $conn;
+    Global $date;
+
+    $trans_string = generateRand();    
+
+    $sql1 = "UPDATE `cameras` SET `status` = 1,`trans_string` = '".$trans_string."',`type` = '".$photo_type."'  WHERE `cam_qr_code` = '".$pump_qr_code."';";
+    $exe1 = mysqli_query($conn ,$sql1);
 
     $output['photo_url'] =  "uploads/".$date."/".$trans_string."_start.jpeg";
-
     $output['success'] = true;
 
+    echo json_encode($output);
 }
-$exe1 = mysqli_query($conn ,$sql1);
 
-echo json_encode($output);
+
+function startOnlineCustTransaction($pump_qr_code, $photo_type, $user_qr_code) {
+
+    Global $conn;
+    Global $date;
+
+    $sql1 = "UPDATE `cameras` SET `status` = 1,`trans_string` = '".$user_qr_code."',`type` = '".$photo_type."'  WHERE `cam_qr_code` = '".$pump_qr_code."';";
+    $exe1 = mysqli_query($conn ,$sql1);
+
+    $output['photo_url'] =  "uploads/".$date."/".$user_qr_code."_start.jpeg";
+    $output['success'] = true;
+
+    echo json_encode($output);
+}
+
+if ($photo_type == 'stop') {
+    // stop photo/video is common
+    stopTransaction($pump_qr_code, $photo_type);
+
+} else {
+    // need to check if user is credit or online customer
+    if($user_type == "online") {
+        startOnlineCustTransaction($pump_qr_code, $photo_type, $user_qr_code);
+    }
+    else {
+        startCreditTransaction($pump_qr_code, $photo_type);
+    }    
+}
 
 ?> 

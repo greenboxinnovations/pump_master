@@ -5,7 +5,7 @@ date_default_timezone_set("Asia/Kolkata");
 require __DIR__.'/query/conn.php';
 
 $local_install_dir = Globals::LOCAL_INSTALL_DIR;
-$url_main = Globals::URL_SYNC_CHECK.'/receive_videos.php';
+// $url_main = Globals::URL_SYNC_CHECK.'/receive_videos.php';
 
 function myErrorHandler( $errType, $errStr, $errFile, $errLine, $errContext ) {
 	$displayErrors 	= ini_get( 'display_errors' );
@@ -32,7 +32,8 @@ $date = date('Y-m-d H:i:s');
 
 
 $trans_array = array();
-$sql = "SELECT `trans_string` , date(`date`) as 'dir_date', `date` as t FROM `transactions` WHERE `video` = 'N' ORDER BY RAND() LIMIT 1;";
+// $sql = "SELECT `trans_string` , date(`date`) as 'dir_date', `date` as t FROM `transactions` WHERE `video` = 'N' ORDER BY RAND() LIMIT 1;";
+$sql = "SELECT `trans_string` , date(`date`) as 'dir_date', `date` as t FROM `transactions` WHERE `video` = 'N' AND `cust_type` is null ORDER BY RAND() LIMIT 1;";
 $exe = mysqli_query($conn,$sql);
 while($row1 = mysqli_fetch_assoc($exe)){
 	$trans_string = $row1['trans_string'];	
@@ -98,7 +99,8 @@ if ($trans_string != "") {
 
 			$postData['date'] = $dir_date;
 
-			//print_r($postData);
+			print_r($postData);
+			/*
 
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL,$url_main);
@@ -151,6 +153,7 @@ if ($trans_string != "") {
 					}
 				}
 			}
+			*/
 		} catch (Exception $e) {
 
 			print_r($e);

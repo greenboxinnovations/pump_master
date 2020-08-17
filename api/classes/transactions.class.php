@@ -299,146 +299,28 @@ class Transactions
 
 		date_default_timezone_set("Asia/Kolkata");
 
-		$valid = false;
-		$output = array();
 
 
-		$pump_id		= trim($postParams['pump_id']);		
+		$cust_type 		= trim($postParams['cust_type']);
 
-		$car_id			= trim($postParams['car_id']);		
+// car_id = 0;
+// cust_id = 0;
+// cust_name = "";
+// receipt_number = "";
+// car_no = "";
 
-		$cust_id		= trim($postParams['cust_id']);		
-
-		$isPetrol		= $postParams['isPetrol'];
-		$fuel 			= $isPetrol ? 'petrol' : 'diesel';
-
-		$user_id		= trim($postParams['user_id']);
-
-		$receipt_no	    = trim($postParams['receipt_no']);		
-
-		$amount		 	= trim($postParams['amount']);		
-		$liters		 	= number_format($postParams['liters'],2);
-
-		$rate 			= trim($postParams['fuel_rate']);
-		
-		$pre_shift	 	= trim($postParams['shift']);
-		$shift 			= ($pre_shift == "a") ? 1 : 2;
-
-		$date 			= date("Y-m-d H:i:s");
-		$ch_date 	= date('Y-m-d');
-		$last_updated	= $date;
-
-		$pump_code      = trim($postParams['pump_code']);	
-
-
-		//DUPLICATE RECEIPT_NO TEMPORARY FIX
-		$sql = "SELECT `receipt_no` FROM `transactions` WHERE `receipt_no` = '".$receipt_no."';";	
-		$this->_db->query($sql);
-		$this->_db->execute();
-		if($this->_db->rowCount() > 0){
-			$receipt_no	 = 0;
-		}
-
-
-		$sql = "SELECT `trans_string` FROM `cameras` WHERE `cam_qr_code` = '".$pump_code."';";		
-		$this->_db->query($sql);
-		$r = $this->_db->single();
-		$trans_string = $r['trans_string'];
-		
-		
-
-		$sql_pre = "SELECT `last_updated` FROM `transactions` 
-					WHERE `pump_id` = :field1
-					AND `cust_id` = :field2
-					AND `car_id` = :field3
-					AND date(`date`) = :field4;";
-		$this->_db->query($sql_pre);
-		$this->_db->bind(':field1', $pump_id);
-		$this->_db->bind(':field2', $cust_id);
-		$this->_db->bind(':field3', $car_id);
-		$this->_db->bind(':field4', date('Y-m-d'));
-		$this->_db->execute();
-		
-		if($this->_db->rowCount() > 0){
-			$r = $this->_db->single();
-
-
-			$last_found = $r['last_updated'];
-
-			$diff = strtotime($date) - strtotime($last_found);
-
-			// 20 seconds
-			if($diff > 20){
-				$valid = true;
-			}else{
-				$output['success'] 	= false;		
-				$output['msg'] 		= "something went wrong";
-
-			}			
-		}
+		if($cust_type == "online") {
+			$this->postAndroidOnlineTransaction($postParams);
+		}		
+		// credit customer
 		else{
-			$valid = true;
-		}
+			// proceed to old code
 
-		$sql1 = "SELECT * FROM `transactions` WHERE `car_id` = '".$car_id."' AND  date(`date`) = '".$ch_date."' AND `amount` = '".$amount."' ;";	
-		$this->_db->query($sql1);
-		$this->_db->execute();
+			$this->postAndroidCreditTransaction($postParams);
 
-		if($this->_db->rowCount() > 0){
-			$valid = false;
-			$output['success'] 	= false;		
-			$output['msg'] 		= "Duplicate Entry";
-		}
 
-		if($valid){
-			$sql = "INSERT INTO `transactions` (`pump_id`,`cust_id`,`car_id`,`user_id`,`fuel`,`amount`,`rate`,`liters`,`date`,`last_updated`,`shift`,`trans_string`,`receipt_no`) VALUES (:field1,:field2,:field3,:field4,:field5,:field6,:field7,:field8,:field9,:field10,:field11,:field12,:field13);";
 
-			$this->_db->query($sql);
-
-			$this->_db->bind(':field1', $pump_id);
-			$this->_db->bind(':field2', $cust_id);
-			$this->_db->bind(':field3', $car_id);
-			$this->_db->bind(':field4', $user_id);		
-			$this->_db->bind(':field5', $fuel);
-			$this->_db->bind(':field6', $amount);
-			$this->_db->bind(':field7', $rate);
-			$this->_db->bind(':field8', $liters);
-			$this->_db->bind(':field9', $date);
-			$this->_db->bind(':field10', $last_updated);
-			$this->_db->bind(':field11', $shift);
-			$this->_db->bind(':field12', $trans_string);
-			$this->_db->bind(':field13', $receipt_no);
-			$this->_db->execute();
-
-			$output['success'] = true;	
-
-			$table_name	  = "transactions";
-			$id           = "trans_id";
-			$unix = strtotime($last_updated); 
-
-			$sql = "SELECT `trans_id` FROM `transactions` WHERE 1 ORDER BY `trans_id` DESC LIMIT 1;";		
-			$this->_db->query($sql);
-			$r = $this->_db->single();
-			$trans_id = $r['trans_id'];
-
-			$transaction_no = "S".$trans_id;
-
-			$sql = "UPDATE `transactions` SET `transaction_no`= '".$transaction_no."' WHERE `trans_id` = '".$trans_id."';";
-			$this->_db->query($sql);
-			$this->_db->execute();
-
-			if((Globals::PRINT_RECEIPT)&&($receipt_no == 0)){
-				$this->printReceipt($trans_id);
-				$this->printReceipt($trans_id);	
-			}			
-			// $this->updateSyncTable($table_name,$id,$unix);
-			Globals::updateSyncTable($table_name,$id,$unix);
-		}
-		// else{
-		// 	$output['success'] 	= false;		
-		// 	$output['msg'] 		= "Something went wrong";		
-		// }		
-		echo json_encode($output);
+		}// credit customer	
 	}
 
 	private function printReceipt($trans_id){
@@ -729,6 +611,265 @@ class Transactions
 		$resp = curl_exec($curl);
 		// Close request to clear up some resources
 		curl_close($curl);
+	}
+
+
+
+	private function postAndroidOnlineTransaction($postParams) {
+
+		$valid = false;
+		$output = array();
+
+
+		$pump_id		= trim($postParams['pump_id']);
+		$pump_qr_code	= trim($postParams['pump_qr_code']);
+
+
+		$isPetrol		= $postParams['isPetrol'];
+		$fuel 			= $isPetrol ? 'petrol' : 'diesel';
+
+		$user_id		= trim($postParams['user_id']);
+		
+
+		$amount		 	= trim($postParams['amount']);		
+		$liters		 	= number_format($postParams['liters'],2);
+
+		$rate 			= trim($postParams['fuel_rate']);
+		
+		$pre_shift	 	= trim($postParams['shift']);
+		$shift 			= ($pre_shift == "a") ? 1 : 2;
+
+		$date 			= date("Y-m-d H:i:s");
+		$ch_date 		= date('Y-m-d');
+		$last_updated	= $date;		
+
+			// 		$this->_db->bind(':field1', $pump_id);
+			// $this->_db->bind(':field2', 0);
+			// $this->_db->bind(':field3', 0);
+			// $this->_db->bind(':field4', $user_id);		
+			// $this->_db->bind(':field5', $fuel);
+			// $this->_db->bind(':field6', $amount);
+			// $this->_db->bind(':field7', $rate);
+			// $this->_db->bind(':field8', $liters);
+			// $this->_db->bind(':field9', $date);
+			// $this->_db->bind(':field10', $last_updated);
+			// $this->_db->bind(':field11', $shift);
+			// $this->_db->bind(':field12', $trans_string);
+			// $this->_db->bind(':field13', $receipt_no);
+		
+
+		// get trans_string / cust_qr_code using pump_qr_code
+		$sql = "SELECT `trans_string` FROM `cameras` WHERE `cam_qr_code` = :pump_qr_code;";		
+		$this->_db->query($sql);
+		$this->_db->bind(':pump_qr_code', $pump_qr_code);
+		$r = $this->_db->single();
+		$trans_string = $r['trans_string'];
+
+		// prevent double entry less than 20 seconds
+		$sql_pre = "SELECT `trans_id`,`last_updated` FROM `transactions` WHERE `trans_string` = :trans_string ORDER BY `trans_id` DESC LIMIT 1";					
+		$this->_db->query($sql_pre);
+		$this->_db->bind(':trans_string', $trans_string);		
+		$this->_db->execute();
+		if($this->_db->rowCount() > 0){
+			$r = $this->_db->single();
+			$last_found = $r['last_updated'];
+			$diff = strtotime($date) - strtotime($last_found);
+			// 20 seconds
+			if($diff > 20) {
+				$valid = true;
+			} else {
+				$output['success'] 	= false;		
+				$output['msg'] 		= "something went wrong";
+			}
+		}
+		else{
+			$valid = true;
+		}
+
+
+		if($valid){
+			$sql = "INSERT INTO `transactions` 
+						(`pump_id`,`cust_id`,`cust_type`,`car_id`,`user_id`,`fuel`,`amount`,`rate`,`liters`,`date`,`last_updated`,`shift`,`trans_string`) 
+					VALUES 
+						(:pump_id, :cust_id, :cust_type, :car_id, :user_id, :fuel, :amount, :rate, :liters, :mdate, :last_updated, :shift, :trans_string);";
+
+			$this->_db->query($sql);
+
+			$this->_db->bind(':pump_id', $pump_id);
+			$this->_db->bind(':cust_id', 0);
+			$this->_db->bind(':cust_type', "online");
+			$this->_db->bind(':car_id', 0);
+			$this->_db->bind(':user_id', $user_id);		
+			$this->_db->bind(':fuel', $fuel);
+			$this->_db->bind(':amount', $amount);
+			$this->_db->bind(':rate', $rate);
+			$this->_db->bind(':liters', $liters);
+			$this->_db->bind(':mdate', $date);
+			$this->_db->bind(':last_updated', $last_updated);
+			$this->_db->bind(':shift', $shift);
+			$this->_db->bind(':trans_string', $trans_string);			
+			$this->_db->execute();
+
+			$output['success'] = true;
+		}
+		else{
+			$output['success'] 	= false;		
+			$output['msg'] 		= "Something went wrong";		
+		}
+
+
+		echo json_encode($output);
+	}
+
+
+	private function postAndroidCreditTransaction($postParams) {
+
+		$valid = false;
+		$output = array();
+
+
+		$pump_id		= trim($postParams['pump_id']);		
+
+		$car_id			= trim($postParams['car_id']);		
+
+		$cust_id		= trim($postParams['cust_id']);		
+
+		$isPetrol		= $postParams['isPetrol'];
+		$fuel 			= $isPetrol ? 'petrol' : 'diesel';
+
+		$user_id		= trim($postParams['user_id']);
+
+		$receipt_no	    = trim($postParams['receipt_no']);		
+
+		$amount		 	= trim($postParams['amount']);		
+		$liters		 	= number_format($postParams['liters'],2);
+
+		$rate 			= trim($postParams['fuel_rate']);
+		
+		$pre_shift	 	= trim($postParams['shift']);
+		$shift 			= ($pre_shift == "a") ? 1 : 2;
+
+		$date 			= date("Y-m-d H:i:s");
+		$ch_date 		= date('Y-m-d');
+		$last_updated	= $date;
+
+		$pump_qr_code	= trim($postParams['pump_qr_code']);
+
+
+		// DUPLICATE RECEIPT_NO TEMPORARY FIX
+		$sql = "SELECT `receipt_no` FROM `transactions` WHERE `receipt_no` = :receipt_no;";	
+		$this->_db->query($sql);
+		$this->_db->bind(':receipt_no', $receipt_no);
+		$this->_db->execute();
+		if($this->_db->rowCount() > 0){
+			$receipt_no	 = 0;
+		}
+
+
+		// get trans_string / cust_qr_code using pump_qr_code
+		$sql = "SELECT `trans_string` FROM `cameras` WHERE `cam_qr_code` = :pump_qr_code;";		
+		$this->_db->query($sql);
+		$this->_db->bind(':pump_qr_code', $pump_qr_code);
+		$r = $this->_db->single();
+		$trans_string = $r['trans_string'];
+		
+		
+		// prevent double entry less than 20 seconds
+		$sql_pre = "SELECT `last_updated` FROM `transactions` 
+					WHERE `pump_id` = :field1
+					AND `cust_id` = :field2
+					AND `car_id` = :field3
+					AND date(`date`) = :field4;";
+		$this->_db->query($sql_pre);
+		$this->_db->bind(':field1', $pump_id);
+		$this->_db->bind(':field2', $cust_id);
+		$this->_db->bind(':field3', $car_id);
+		$this->_db->bind(':field4', date('Y-m-d'));
+		$this->_db->execute();
+		
+		if($this->_db->rowCount() > 0){
+			$r = $this->_db->single();
+
+
+			$last_found = $r['last_updated'];
+
+			$diff = strtotime($date) - strtotime($last_found);
+
+			// 20 seconds
+			if($diff > 20) {
+				$valid = true;
+			} else {
+				$output['success'] 	= false;		
+				$output['msg'] 		= "something went wrong";
+			}			
+		}
+		else{
+			$valid = true;
+		}
+
+
+
+		
+		// prevent a double entry for a date-amount-car
+		$sql1 = "SELECT * FROM `transactions` WHERE `car_id` = '".$car_id."' AND  date(`date`) = '".$ch_date."' AND `amount` = '".$amount."' ;";	
+		$this->_db->query($sql1);
+		$this->_db->execute();
+
+		if($this->_db->rowCount() > 0){
+			$valid = false;
+			$output['success'] 	= false;		
+			$output['msg'] 		= "Duplicate Entry";
+		}
+
+		if($valid){
+			$sql = "INSERT INTO `transactions` (`pump_id`,`cust_id`,`car_id`,`user_id`,`fuel`,`amount`,`rate`,`liters`,`date`,`last_updated`,`shift`,`trans_string`,`receipt_no`) VALUES (:field1,:field2,:field3,:field4,:field5,:field6,:field7,:field8,:field9,:field10,:field11,:field12,:field13);";
+
+			$this->_db->query($sql);
+
+			$this->_db->bind(':field1', $pump_id);
+			$this->_db->bind(':field2', $cust_id);
+			$this->_db->bind(':field3', $car_id);
+			$this->_db->bind(':field4', $user_id);		
+			$this->_db->bind(':field5', $fuel);
+			$this->_db->bind(':field6', $amount);
+			$this->_db->bind(':field7', $rate);
+			$this->_db->bind(':field8', $liters);
+			$this->_db->bind(':field9', $date);
+			$this->_db->bind(':field10', $last_updated);
+			$this->_db->bind(':field11', $shift);
+			$this->_db->bind(':field12', $trans_string);
+			$this->_db->bind(':field13', $receipt_no);
+			$this->_db->execute();
+
+			$output['success'] = true;	
+
+			$table_name	  = "transactions";
+			$id           = "trans_id";
+			$unix = strtotime($last_updated); 
+
+			$sql = "SELECT `trans_id` FROM `transactions` WHERE 1 ORDER BY `trans_id` DESC LIMIT 1;";		
+			$this->_db->query($sql);
+			$r = $this->_db->single();
+			$trans_id = $r['trans_id'];
+
+			$transaction_no = "S".$trans_id;
+
+			$sql = "UPDATE `transactions` SET `transaction_no`= '".$transaction_no."' WHERE `trans_id` = '".$trans_id."';";
+			$this->_db->query($sql);
+			$this->_db->execute();
+
+			if((Globals::PRINT_RECEIPT)&&($receipt_no == 0)){
+				$this->printReceipt($trans_id);
+				$this->printReceipt($trans_id);	
+			}			
+			// $this->updateSyncTable($table_name,$id,$unix);
+			Globals::updateSyncTable($table_name,$id,$unix);
+		}
+		else{
+			$output['success'] 	= false;		
+			$output['msg'] 		= "Something went wrong";		
+		}		
+		echo json_encode($output);
 	}
 }
 ?>
