@@ -306,8 +306,8 @@ def ping_camera():
                         if not os.path.exists(file_msg_name):
                             # send_msg(file_msg_name, hostname)
                             if(check_internet()):
-                                send_fcm(file_msg_name, hostname)
-                                # pass
+                                # send_fcm(file_msg_name, hostname)
+                                pass
                             else:
                                  writeLog("Cannot send notification as router down")
                                 # pass
