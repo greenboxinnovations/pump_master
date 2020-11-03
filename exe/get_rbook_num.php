@@ -4,23 +4,47 @@ require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
 
 function getCustId($rbook_num, &$conn){
 
-	$sql = "SELECT 1 FROM `transactions` WHERE `receipt_no` =  ".$rbook_num." ";
+	$ret = array();
+
+	//$sql = "SELECT 1 FROM `transactions` WHERE `receipt_no` =  ".$rbook_num." ";
+
+
+	$sql = "SELECT a.cust_id,a.amount,date(a.date) as tdate,b.cust_disp_name FROM transactions  a
+			JOIN customers b
+			ON a.cust_id = b.cust_id
+			WHERE a.receipt_no = ".$rbook_num;
+
 	$exe = mysqli_query($conn, $sql);
+	
 	if(mysqli_num_rows($exe) < 1){
-		$sql = "SELECT cust_id FROM `receipt_books` WHERE ".$rbook_num." BETWEEN `min` and `max`";
+		// rbook num not found in transactions
+		// might exist in rbooks, because unused
+		$sql = "SELECT a.cust_id, b.cust_disp_name, b.cust_post_paid FROM `receipt_books` a JOIN `customers` b ON a.cust_id = b.cust_id WHERE ".$rbook_num." BETWEEN a.min and a.max";
 		$exe = mysqli_query($conn, $sql);
+
 		if(mysqli_num_rows($exe) == 1){
+			// found, unused
+			// return cust id
 			$row = mysqli_fetch_assoc($exe);
-			$cust_id	 = $row["cust_id"];	
+			$ret['cust_id'] = $row["cust_id"];	
+			$ret['cust_disp_name'] = $row['cust_disp_name'];
+			$ret['cust_post_paid'] = $row['cust_post_paid'];		
 		}
 		else{
-			$cust_id = -1;
+			// rnum does not exist
+			$ret['cust_id'] = -1;
 		}
 	}
 	else{
-		$cust_id = -1;
+		$row = mysqli_fetch_assoc($exe);
+		// duplicate receipt number
+		$ret['cust_id'] = -2;
+		$ret['amount'] = $row['amount'];
+		$ret['tdate'] = $row['tdate'];
+		$ret['cust_disp_name'] = $row['cust_disp_name'];
 	}
-	return $cust_id;
+	//print_r($ret);
+	return $ret;
 }
 
 
@@ -31,28 +55,22 @@ if(isset($_GET['rbook_num'])){
 	$rbook_num = $_GET['rbook_num'];
 
 	// get cust id from rbook range
-	$cust_id = getCustId($rbook_num, $conn);	
+	$ret = getCustId($rbook_num, $conn);	
 	
-	if($cust_id != -1){
+	
+	// receipt number not found
+	if($ret['cust_id'] == -1){
+		// no id found
+		echo 'nothing found';
+	}
+	// rnum found but duplicate
+	else if($ret['cust_id'] == -2){
+		echo 'Duplicate :'.$ret['cust_disp_name'].' Amount: '.$ret['amount'].' Date: '.$ret['tdate'];
+	}
+	// rnum valid and unused
+	else{
 
-		// use cust id to get name
-		$sql = "SELECT cust_company,cust_f_name, cust_m_name, cust_l_name, cust_post_paid FROM `customers` WHERE `cust_id` = '".$cust_id."';";
-		$exe = mysqli_query($conn, $sql);
-		$row = mysqli_fetch_assoc($exe);
-
-
-		$cust_post_paid	 = $row["cust_post_paid"];
-		$cust_company	 = $row["cust_company"];
-		if($cust_company == ""){
-			$cust_f_name	 = $row["cust_f_name"];
-			$cust_m_name	 = $row["cust_m_name"];
-			$cust_l_name	 = $row["cust_l_name"];
-			
-			$full_name = ucwords($cust_f_name." ".$cust_m_name." ".$cust_l_name);
-		}
-		else{
-			$full_name = ucwords($cust_company);
-		}
+		$full_name = ucwords($ret['cust_disp_name']);
 
 		
 
@@ -61,7 +79,7 @@ if(isset($_GET['rbook_num'])){
 
 
 		// get customer cars
-		$sql = "SELECT car_id, car_no_plate,car_fuel_type FROM `cars` WHERE `car_cust_id` = '".$cust_id."' AND `status` = 'active';";
+		$sql = "SELECT car_id, car_no_plate,car_fuel_type FROM `cars` WHERE `car_cust_id` = '".$ret['cust_id']."' AND `status` = 'active';";
 		$exe = mysqli_query($conn, $sql);
 		echo '<select id="sel_car" style="margin-bottom:6px;">';
 		echo '<option value="-1" ftype="invalid_fuel">Choose Car</option>';
@@ -101,17 +119,16 @@ if(isset($_GET['rbook_num'])){
 		</div>';
 		*/
 
- 		echo '<div><input type="hidden" id="cust_post_paid" custid="'.$cust_id.'" value="'.$cust_post_paid.'"></div>';
+ 		echo '<div><input type="hidden" id="cust_post_paid" custid="'.$ret['cust_id'].'" value="'.$ret['cust_post_paid'].'"></div>';
 
 		// show input boxes
 		echo '<div><input type="number" id="m_trans_rs" placeholder="Rupees" class="single_decimal_twodigit" tabindex="11"></div>';
 		echo '<div><input type="number" id="m_trans_lit" placeholder="Litres" class="single_decimal_twodigit" tabindex="12"></div>';
 		echo '<div style="margin-top:20px;"><div class="mat_btn" id="btn_manual_t_cancel">CANCEL</div><div class="mat_btn" style="background-color: #0087C1;" id="btn_manual_t_confirm" tabindex="9">CONFIRM</div></div>';
 	}
-	else{
-		// no id found
-		echo 'nothing found';
-	}		
+	
+	
+			
 }
 
 
