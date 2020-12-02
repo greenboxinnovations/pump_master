@@ -1,6 +1,7 @@
 <?php
 
-require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+// require $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require dirname(__DIR__,1).'/query/conn.php';
 
 
 // echo date("Y-m-d H:i:s");

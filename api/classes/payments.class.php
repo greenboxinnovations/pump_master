@@ -128,20 +128,20 @@ class Payments
 
 		$this->_db->execute();
 
-		// update CUSTOMERS table from paymrnt method
+		// update CUSTOMERS table from payment method
 
-		// $sql = "UPDATE `customers` SET `payment_balance` = :field1, `cust_last_updated` = :field3 WHERE `cust_id` = '".$cust_id."' ;";
+		 $sql = "UPDATE `customers` SET `payment_balance` = :field1, `cust_last_updated` = :field3 WHERE `cust_id` = '".$cust_id."' ;";
 
-		// $this->_db->query($sql);
+		 $this->_db->query($sql);
 
-		// $this->_db->bind(':field1', $payment_balance);
-		// $this->_db->bind(':field3', $last_updated);
+		 $this->_db->bind(':field1', $payment_balance);
+		 $this->_db->bind(':field3', $last_updated);
 
-		// $this->_db->execute();
+		 $this->_db->execute();
 
-		// $table_name	  = "customers";
+		 //$table_name	  = "customers";
 		// $id           = "cust_id";
-		// $unix = $last_updated;
+		 //$unix = $last_updated;
 
 		// Globals::updateSyncTable($table_name,$id,$unix);
 

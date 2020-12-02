@@ -263,7 +263,7 @@ if(isset($_GET['cust_id'])){
 		$a_b = round(($service+$late_fee)*(9/100),2);
 		$grand = round($total+$service+$late_fee+(2*$a_b));
 
-		echo '<tr><td colspan="7" class="td_num g">CGST: 9%(A+B)</td><td class="td_num">'.$a_b.'</td></tr>';
+		echo '<tr><td colspan="7" class="td_num g">HSN-9997 CGST: 9%(A+B)</td><td class="td_num">'.$a_b.'</td></tr>';
 		echo '<tr><td colspan="7" class="td_num g">SGST: 9%(A+B)</td><td class="td_num">'.$a_b.'</td></tr>';
 
 
@@ -297,9 +297,9 @@ if(isset($_GET['cust_id'])){
 			$exe1 = mysqli_query($conn, $sql1);
 
 			if ($cust_post_paid == "Y") {
-				$sql4 = "UPDATE `customers` SET `cust_outstanding` = `cust_outstanding` - '".$total."' , `payment_balance` = `payments_balance` + '".$grand."' WHERE `cust_id` = '".$cust_id."' ;";
+				$sql4 = "UPDATE `customers` SET `cust_outstanding` = `cust_outstanding` - '".$total."' , `payment_balance` = `payment_balance` + '".$grand."' WHERE `cust_id` = '".$cust_id."' ;";
 			}else{
-				$sql4 = "UPDATE `customers` SET `cust_balance` = `cust_balance` + '".$total."' , `payment_balance` = `payments_balance` + '".$grand."'  WHERE `cust_id` = '".$cust_id."' ;";
+				$sql4 = "UPDATE `customers` SET `cust_balance` = `cust_balance` + '".$total."' , `payment_balance` = `payment_balance` + '".$grand."'  WHERE `cust_id` = '".$cust_id."' ;";
 			}
 			
 			$exe4 = mysqli_query($conn, $sql4);

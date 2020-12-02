@@ -29,9 +29,9 @@ $sql1 = "UPDATE `transactions` SET `billed`= 'N', `last_updated` = '".$date."'  
 $exe1 = mysqli_query($conn, $sql1);
 
 if ($cust_post_paid == "Y") {
-	$sql4 = "UPDATE `customers` SET `cust_outstanding` = `cust_outstanding` + '".$total."' WHERE `cust_id` = '".$cust_id."' ;";
+	$sql4 = "UPDATE `customers` SET `cust_outstanding` = `cust_outstanding` + '".$total."', `payment_balance` = `payment_balance`-'".$total."' WHERE `cust_id` = '".$cust_id."' ;";
 }else{
-	$sql4 = "UPDATE `customers` SET `cust_balance` = `cust_balance` - '".$total."' WHERE `cust_id` = '".$cust_id."' ;";
+	$sql4 = "UPDATE `customers` SET `cust_balance` = `cust_balance` - '".$total."', `payment_balance` = `payment_balance`-'".$total."' WHERE `cust_id` = '".$cust_id."' ;";
 }
 
 $exe4 = mysqli_query($conn, $sql4);
