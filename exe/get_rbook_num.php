@@ -15,17 +15,20 @@ function getCustId($rbook_num, &$conn){
 			WHERE a.receipt_no = ".$rbook_num;
 
 	$exe = mysqli_query($conn, $sql);
+	
 	if(mysqli_num_rows($exe) < 1){
 		// rbook num not found in transactions
 		// might exist in rbooks, because unused
-		$sql = "SELECT cust_id FROM `receipt_books` WHERE ".$rbook_num." BETWEEN `min` and `max`";
-		$exe1 = mysqli_query($conn, $sql);
-		if(mysqli_num_rows($exe1) == 1){
+		$sql = "SELECT a.cust_id, b.cust_disp_name, b.cust_post_paid FROM `receipt_books` a JOIN `customers` b ON a.cust_id = b.cust_id WHERE ".$rbook_num." BETWEEN a.min and a.max";
+		$exe = mysqli_query($conn, $sql);
+
+		if(mysqli_num_rows($exe) == 1){
 			// found, unused
 			// return cust id
 			$row = mysqli_fetch_assoc($exe);
 			$ret['cust_id'] = $row["cust_id"];	
-			$ret['cust_disp_name'] = $row['cust_disp_name'];		
+			$ret['cust_disp_name'] = $row['cust_disp_name'];
+			$ret['cust_post_paid'] = $row['cust_post_paid'];		
 		}
 		else{
 			// rnum does not exist
@@ -33,14 +36,14 @@ function getCustId($rbook_num, &$conn){
 		}
 	}
 	else{
-		// duplicate receipt number
 		$row = mysqli_fetch_assoc($exe);
-
+		// duplicate receipt number
 		$ret['cust_id'] = -2;
 		$ret['amount'] = $row['amount'];
 		$ret['tdate'] = $row['tdate'];
 		$ret['cust_disp_name'] = $row['cust_disp_name'];
 	}
+	//print_r($ret);
 	return $ret;
 }
 
@@ -54,6 +57,7 @@ if(isset($_GET['rbook_num'])){
 	// get cust id from rbook range
 	$ret = getCustId($rbook_num, $conn);	
 	
+	
 	// receipt number not found
 	if($ret['cust_id'] == -1){
 		// no id found
@@ -66,24 +70,7 @@ if(isset($_GET['rbook_num'])){
 	// rnum valid and unused
 	else{
 
-		// use cust id to get name
-		$sql = "SELECT cust_company,cust_f_name, cust_m_name, cust_l_name, cust_post_paid FROM `customers` WHERE `cust_id` = '".$ret['cust_id']."';";
-		$exe = mysqli_query($conn, $sql);
-		$row = mysqli_fetch_assoc($exe);
-
-
-		$cust_post_paid	 = $row["cust_post_paid"];
-		$cust_company	 = $row["cust_company"];
-		if($cust_company == ""){
-			$cust_f_name	 = $row["cust_f_name"];
-			$cust_m_name	 = $row["cust_m_name"];
-			$cust_l_name	 = $row["cust_l_name"];
-			
-			$full_name = ucwords($cust_f_name." ".$cust_m_name." ".$cust_l_name);
-		}
-		else{
-			$full_name = ucwords($cust_company);
-		}
+		$full_name = ucwords($ret['cust_disp_name']);
 
 		
 
@@ -92,7 +79,7 @@ if(isset($_GET['rbook_num'])){
 
 
 		// get customer cars
-		$sql = "SELECT car_id, car_no_plate,car_fuel_type FROM `cars` WHERE `car_cust_id` = '".$cust_id."' AND `status` = 'active';";
+		$sql = "SELECT car_id, car_no_plate,car_fuel_type FROM `cars` WHERE `car_cust_id` = '".$ret['cust_id']."' AND `status` = 'active';";
 		$exe = mysqli_query($conn, $sql);
 		echo '<select id="sel_car" style="margin-bottom:6px;">';
 		echo '<option value="-1" ftype="invalid_fuel">Choose Car</option>';
@@ -132,7 +119,7 @@ if(isset($_GET['rbook_num'])){
 		</div>';
 		*/
 
- 		echo '<div><input type="hidden" id="cust_post_paid" custid="'.$cust_id.'" value="'.$cust_post_paid.'"></div>';
+ 		echo '<div><input type="hidden" id="cust_post_paid" custid="'.$ret['cust_id'].'" value="'.$ret['cust_post_paid'].'"></div>';
 
 		// show input boxes
 		echo '<div><input type="number" id="m_trans_rs" placeholder="Rupees" class="single_decimal_twodigit" tabindex="11"></div>';

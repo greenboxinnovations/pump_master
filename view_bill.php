@@ -321,15 +321,24 @@ if(isset($_GET['cust_id'])){
 
 		$service = round($total*($cust_service/100),2);
 
-		$grand = round($total+$service+$late_fee);
+		
 
 		echo '<tr style="border-top:2px solid rgb(170,170,170);"><td></td><td colspan="5" class="td_num g">HSD</td><td class="td_num">'.$hsd_lit.'</td><td></td><td class="td_num">'.$hsd.'</td></tr>';
 		echo '<tr style="border-bottom:2px solid rgb(170,170,170);"><td></td><td colspan="5" class="td_num g">MS</td><td class="td_num">'.$ms_lit.'</td><td></td><td class="td_num">'.$ms.'</td></tr>';
 
 
 		echo '<tr><td></td><td colspan="7" class="td_num g">TOTAL ITEM AMOUNT</td><td class="td_num">'.$total.'</td></tr>';
-		echo '<tr><td></td><td colspan="7" class="td_num g">MISC CHARGES</td><td class="td_num">'.$service.'</td></tr>';
-		echo '<tr><td></td><td colspan="7" class="td_num g">LATE PAYMENT FEE</td><td class="td_num">'.$late_fee.'</td></tr>';
+		echo '<tr><td></td><td colspan="7" class="td_num g">A: SERVICE CHARGES</td><td class="td_num">'.$service.'</td></tr>';
+		echo '<tr><td></td><td colspan="7" class="td_num g">B: LATE PAYMENT FEE</td><td class="td_num">'.$late_fee.'</td></tr>';
+
+		$a_b = round(($service+$late_fee)*(9/100),2);
+		$grand = round($total+$service+$late_fee+(2*$a_b));
+
+		echo '<tr><td></td><td colspan="7" class="td_num g">HSN-9997 CGST: 9%(A+B)</td><td class="td_num">'.$a_b.'</td></tr>';
+		echo '<tr><td></td><td colspan="7" class="td_num g">SGST: 9%(A+B)</td><td class="td_num">'.$a_b.'</td></tr>';
+
+
+
 		echo '<tr style="font-weight: 700;"><td></td><td colspan="7" class="td_num g">TOTAL BILL AMOUNT</td><td class="td_num">'.$grand.'</td></tr>';
 		echo '</table>';
 
