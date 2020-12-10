@@ -10,12 +10,16 @@ if(!isset($_SESSION))
 
 if(isset($_POST['new_cashier'])){
 
-	$sql = "SELECT * FROM `users` WHERE `user_pump_id` = '".$_SESSION['pump_id']."' AND `name` = '".$_POST['new_cashier']."' ;";
+	$cashier = strtolower($_POST['new_cashier']);
+
+	$sql = "SELECT * FROM `users` WHERE `user_pump_id` = '".$_SESSION['pump_id']."' AND `name` = '".$cashier."' ;";
 	$exe = mysqli_query($conn, $sql);
 	$count = mysqli_num_rows($exe);
 
+	$p = "$2y$12$rFB9FuiEMwmuBvcjd5o.aubS/4FwJ/A5hXZ/WptPTAMQU0xgPZ11S";
+
 	if ($count < 1) {
-		$sql = "INSERT INTO `users`(`name`,`pass`,`user_pump_id`,`role`) VALUES('".$_POST['new_cashier']."','$2y$12$rFB9FuiEMwmuBvcjd5o.aubS/4FwJ/A5hXZ/WptPTAMQU0xgPZ11S','".$_SESSION['pump_id']."','operator') ;";
+		$sql = "INSERT INTO `users`(`name`,`pass`,`user_pump_id`,`role`) VALUES('".$cashier."','".$p."','".$_SESSION['pump_id']."','operator') ;";
 		$exe = mysqli_query($conn, $sql);		
 
 		echo'User added successfully';
