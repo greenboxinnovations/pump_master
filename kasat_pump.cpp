@@ -70,7 +70,7 @@ std::atomic<bool> active_transaction(0);
 
 
 
-const string CAM1_IP = "rtsp://192.168.0.142:8554/live0.264";
+const string CAM1_IP = "rtsp://192.168.0.140:8554/live0.264";
 const string CAM2_IP = "rtsp://192.168.0.143:8554/live0.264";
 const string CAM3_IP = "rtsp://192.168.0.127:554/Streaming/Channels/1/?transportmode=unicast";
 const string CAM4_IP = "rtsp://192.168.0.133/12";

@@ -7,7 +7,9 @@ $obj = json_decode($json,true);
 
 $myuser = addslashes($obj['name']);
 $pass = addslashes($obj['pass']);
-$imei = addslashes($obj['imei']); 
+$imei = addslashes($obj['imei']);
+
+//$imei = '354020093694677';
 
 $json = array();
 
