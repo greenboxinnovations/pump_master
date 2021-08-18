@@ -58,6 +58,9 @@ if($_SERVER['REQUEST_METHOD'] == "POST"){
 				$sql5 = "UPDATE `cars` SET `car_qr_code` = '".$qr_code."'  WHERE `car_id` = '".$car_id."' ;";
 				$exe5 = mysqli_query($conn, $sql5);
 
+				$sql6 = "UPDATE `codes` SET `status` = 'Y'  WHERE `qr_code` = '".$qr_code."' ;";
+				$exe6 = mysqli_query($conn, $sql6);
+
 				$date_new = date("Y-m-d H:i:s");
 				$unix = strtotime($date_new);
 
